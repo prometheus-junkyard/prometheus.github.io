@@ -97,8 +97,14 @@
       <h1 id="operators" class="page-header">Operators<a class="header-anchor" href="#operators"></a>
 </h1>
 
-<h2 id="arithmetic-binary-operators">Arithmetic binary operators<a class="header-anchor" href="#arithmetic-binary-operators"></a>
-</h2>
+<h2 id="binary-operators">Binary operators<a class="header-anchor" href="#binary-operators"></a></h2>
+
+<p>Prometheus' query language supports the basic logical and arithmetic operators. For operations
+between two instant vectors the <a href="#vector-matching">matching behaviour</a> can be modified.</p>
+
+
+<h3 id="arithmetic-binary-operators">Arithmetic binary operators<a class="header-anchor" href="#arithmetic-binary-operators"></a>
+</h3>
 
 <p>The following binary arithmetic operators exist in Prometheus:</p>
 
@@ -126,14 +132,15 @@ value of every data sample in the vector. E.g. if a time series instant vector
 is multiplied by 2, the result is another vector in which every sample value of
 the original vector is multiplied by 2.</p>
 
-<p><strong>Between two instant vectors</strong>, a binary arithmetic operator only applies to
-vector elements that have identical sets of labels between the two vectors.
-Vector elements that don't find an exact label match on the other side get
-dropped from the result. The metric name of the result vector is carried over
-from the left hand side of the expression.</p>
+<p><strong>Between two instant vectors</strong>, a binary arithmetic operator is applied
+to each entry in the left-hand-side vector and its <a href="#vector-matching">matching element</a>
+in the right hand side. The result is carried over to the element to the left and
+the metric name is dropped. Entries for which no matching entry in the right vector can
+be found are dropped from the result.</p>
 
-<h2 id="comparison-/-filter-binary-operators">Comparison / filter binary operators<a class="header-anchor" href="#comparison-/-filter-binary-operators"></a>
-</h2>
+
+<h3 id="comparison-/-filter-binary-operators">Comparison/filter binary operators<a class="header-anchor" href="#comparison-/-filter-binary-operators"></a>
+</h3>
 
 <p>The following binary comparison/filter operators exist in Prometheus:</p>
 
@@ -161,12 +168,12 @@ comparison result is <code>false</code> get dropped from the result vector.</p>
 <p><strong>Between two instant vectors</strong>, these operators behave as a filter: They apply
 to vector elements that have identical sets of labels between the two vectors.
 Vector elements for which the expression evaluates to <code>false</code> or which don't
-find an exact label match on the other side of the expression get dropped from
+find a <a href="#vector-matching">match</a> on the other side of the expression get dropped from
 the result, while the others get carried over into a result vector with their
-original (left-hand-side) metric names and data values.</p>
+original (left-hand-side) metric names and label values.</p>
 
-<h1 id="logical/set-binary-operators" class="page-header">Logical/set binary operators<a class="header-anchor" href="#logical/set-binary-operators"></a>
-</h1>
+<h3 id="logical/set-binary-operators">Logical/set binary operators<a class="header-anchor" href="#logical/set-binary-operators"></a>
+</h3>
 
 <p>These logical/set binary operators are only defined between instant vectors:</p>
 
@@ -174,7 +181,7 @@ original (left-hand-side) metric names and data values.</p>
 <li>
 <code>and</code> (intersection)</li>
 <li>
-<code>or</code> (union) (<strong>not yet implemented!</strong>)</li>
+<code>or</code> (union)</li>
 </ul>
 
 <p><code>vector1 and vector2</code> results in a vector consisting of the elements of
@@ -184,11 +191,64 @@ over from the left-hand-side vector.</p>
 
 <p><code>vector1 or vector2</code> results in a vector that contains all original elements
 (labelsets + values) of <code>vector1</code> and additionally all elements of <code>vector2</code>,
-which don't have matching labelsets in <code>vector1</code>. The metric name is carried
-over from the left-hand-side vector in both cases.</p>
+which don't have matching labelsets in <code>vector1</code>.</p>
 
-<h1 id="aggregation-operators" class="page-header">Aggregation operators<a class="header-anchor" href="#aggregation-operators"></a>
-</h1>
+
+<h3 id="vector-matching">Vector matching<a class="header-anchor" href="#vector-matching"></a></h3>
+
+<p>Operations between vectors attempt to find a matching element in the right-hand-side vector for
+each entry in the left-hand-side. There are two basic types of matching behaviour:</p>
+
+<p><strong>One-to-one</strong> finds a unique pair of entries from each side of the operation.
+In the default case, that is an operation following the format <code>vector1 &lt;operator&gt; vector2</code>.
+Two entries match if they have the exact same set of labels and corresponding values.<br>
+By means of the <code>on</code> keyword one can reduce the set of considered labels to a provided list:</p>
+
+<pre><code>&lt;vector expr&gt; &lt;bin-op&gt; on(&lt;label list&gt;) &lt;vector expr&gt;</code></pre>
+
+<p><em>Modified matching methods can only be used for <a href="#comparison-/-filter-binary-operators">comparison/filtering</a>
+and <a href="#arithmetic-binary-operators">arithmetic</a> operations.</em></p>
+
+<p>Example:</p>
+
+<pre><code>http_errors_total / <strong>on</strong>(method) http_requests_total</code></pre>
+
+<p>This returns a result vector of average errors per request for the different HTTP methods.
+Without <code>on(method)</code> there would have been no match as the metrics do not share the
+same set of labels, e.g. <code>http_errors_total</code> has a label for the error type.</p>
+
+<p><strong>Many-to-one</strong> and <strong>one-to-many</strong> matching refer to the case
+that each vector entry on the "one"-side can match with numerous elements on the "many"-side.
+This has to be explicitly enforced using the <code>group_left</code> or <code>group_right</code>
+modifier, where left/right determines which vector has the higher cardinality.</p>
+
+<pre>
+<code>&lt;vector expr&gt; &lt;bin-op&gt; <strong>group_left</strong>(&lt;label list&gt;) on(&lt;label list&gt;) &lt;vector expr&gt;</code>
+<code>&lt;vector expr&gt; &lt;bin-op&gt; <strong>group_right</strong>(&lt;label list&gt;) on(&lt;label list&gt;) &lt;vector expr&gt;</code>
+</pre>
+
+<p>The label list provided with the modifier contains additional labels to be included in the
+result metrics. The intersection of both lists must be empty. Labels appearing on either side
+of the operation may be used but they must not occur on both. Every time series of the result
+vector must be uniquely identifiable by the labels from both lists combined.</p>
+
+<p>Example:</p>
+
+<pre><code>cpu_rate / group_left(mode) on(instance) cpu_count</code></pre>
+
+<p>In this case the <code>cpu_rate</code> vector contains metrics for different CPU modes and
+instances. The operation adjusts these numbers by the number of CPUs on each instance. As there
+numerous modes on each instance, grouping left states that one entry of <code>cpu_count</code>
+is used for all <code>cpu_rate{mode}</code> entries with the same instance. The inclusion of the
+mode label ensures, that all result entries are uniquely identified by the label/value pairs of
+<code>instance</code> and <code>mode</code> combined.</p>
+
+<p><em>Many-to-one and one-to-many matching are advanced use cases that should be carefully considered.
+Often timesa proper use of <code>on(&lt;labels&gt;)</code> provides the desired outcome.</em></p>
+
+
+<h2 id="aggregation-operators">Aggregation operators<a class="header-anchor" href="#aggregation-operators"></a>
+</h2>
 
 <p>Prometheus supports the following built-in aggregation operators that can be
 used to aggregate the elements of a single instant vector, resulting in a new
