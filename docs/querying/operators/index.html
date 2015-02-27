@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Prometheus</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Query language</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li class="active"><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording and alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters for third-party systems</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="operators" class="page-header">Operators<a class="header-anchor" href="#operators"></a>
+</h1>
+
+<h2 id="arithmetic-binary-operators">Arithmetic binary operators<a class="header-anchor" href="#arithmetic-binary-operators"></a>
+</h2>
+
+<p>The following binary arithmetic operators exist in Prometheus:</p>
+
+<ul>
+<li>
+<code>+</code> (addition)</li>
+<li>
+<code>-</code> (subtraction)</li>
+<li>
+<code>*</code> (multiplication)</li>
+<li>
+<code>/</code> (division)</li>
+<li>
+<code>%</code> (modulo)</li>
+</ul>
+
+<p>Binary arithmetic operators are defined between scalar/scalar, vector/scalar,
+and vector/vector value pairs.</p>
+
+<p><strong>Between two scalars</strong>, the behavior is obvious: they evaluate to another
+scalar that is the result of the operator applied to both scalar operands.</p>
+
+<p><strong>Between an instant vector and a scalar</strong>, the operator is applied to the
+value of every data sample in the vector. E.g. if a time series instant vector
+is multiplied by 2, the result is another vector in which every sample value of
+the original vector is multiplied by 2.</p>
+
+<p><strong>Between two instant vectors</strong>, a binary arithmetic operator only applies to
+vector elements that have identical sets of labels between the two vectors.
+Vector elements that don't find an exact label match on the other side get
+dropped from the result. The metric name of the result vector is carried over
+from the left hand side of the expression.</p>
+
+<h2 id="comparison-/-filter-binary-operators">Comparison / filter binary operators<a class="header-anchor" href="#comparison-/-filter-binary-operators"></a>
+</h2>
+
+<p>The following binary comparison/filter operators exist in Prometheus:</p>
+
+<ul>
+<li>
+<code>&gt;</code> (greater-than)</li>
+<li>
+<code>&lt;</code> (less-than)</li>
+<li>
+<code>&gt;=</code> (greater-or-equal)</li>
+<li>
+<code>&lt;=</code> (less-or-equal)</li>
+</ul>
+
+<p>Comparison/filters operators are defined between scalar/scalar, vector/scalar,
+and vector/vector value pairs.</p>
+
+<p><strong>Between two scalars</strong>, these operators result in another scalar that is
+either <code>0</code> (<code>false</code>) or <code>1</code> (<code>true</code>), depending on the comparison result.</p>
+
+<p><strong>Between an instant vector and a scalar</strong>, these operators are applied to the
+value of every data sample in the vector, and vector elements between which the
+comparison result is <code>false</code> get dropped from the result vector.</p>
+
+<p><strong>Between two instant vectors</strong>, these operators behave as a filter: They apply
+to vector elements that have identical sets of labels between the two vectors.
+Vector elements for which the expression evaluates to <code>false</code> or which don't
+find an exact label match on the other side of the expression get dropped from
+the result, while the others get carried over into a result vector with their
+original (left-hand-side) metric names and data values.</p>
+
+<h1 id="logical/set-binary-operators" class="page-header">Logical/set binary operators<a class="header-anchor" href="#logical/set-binary-operators"></a>
+</h1>
+
+<p>These logical/set binary operators are only defined between instant vectors:</p>
+
+<ul>
+<li>
+<code>and</code> (intersection)</li>
+<li>
+<code>or</code> (union) (<strong>not yet implemented!</strong>)</li>
+</ul>
+
+<p><code>vector1 and vector2</code> results in a vector consisting of the elements of
+<code>vector1</code> for which there are elements in <code>vector2</code> with exactly matching
+labelsets. Other elements are dropped. The metric name and values are carried
+over from the left-hand-side vector.</p>
+
+<p><code>vector1 or vector2</code> results in a vector that contains all original elements
+(labelsets + values) of <code>vector1</code> and additionally all elements of <code>vector2</code>,
+which don't have matching labelsets in <code>vector1</code>. The metric name is carried
+over from the left-hand-side vector in both cases.</p>
+
+<h1 id="aggregation-operators" class="page-header">Aggregation operators<a class="header-anchor" href="#aggregation-operators"></a>
+</h1>
+
+<p>Prometheus supports the following built-in aggregation operators that can be
+used to aggregate the elements of a single instant vector, resulting in a new
+vector of fewer elements with aggregated values:</p>
+
+<ul>
+<li>
+<code>sum</code> (calculate sum over dimensions)</li>
+<li>
+<code>min</code> (select minimum over dimensions)</li>
+<li>
+<code>max</code> (select maximum over dimensions)</li>
+<li>
+<code>avg</code> (calculate the average over dimensions)</li>
+<li>
+<code>count</code> (count number of elements in the vector)</li>
+</ul>
+
+<p>These operators can either be used to aggregate over <strong>all</strong> label dimensions
+or preserve distinct dimensions by including a <code>by</code>-clause.</p>
+
+<pre><code>&lt;aggr-op&gt;(&lt;vector expression&gt;) [by (&lt;label list&gt;)] [keeping_extra]
+</code></pre>
+
+<p>By default, labels that are not listed in the <code>by</code> clause will be dropped from
+the result vector, even if their label values are identical between all
+elements of the vector. The <code>keeping_extra</code> clause allows to keep those extra
+labels (labels that are identical between elements, but not in the <code>by</code>
+clause).</p>
+
+<p>Example:</p>
+
+<p>If the metric <code>http_requests_total</code> had time series that fan out by
+<code>application</code>, <code>instance</code>, and <code>group</code> labels, we could calculate the total
+number of seen HTTP requests per application and group over all instances via:</p>
+
+<pre><code>sum(http_requests_total) by (application, group)
+</code></pre>
+
+<p>If we are just interested in the total of HTTP requests we've seen in <strong>all</strong>
+applications, we could simply write:</p>
+
+<pre><code>sum(http_requests_total)
+</code></pre>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+  <p class="pull-right">
+    Brought to you by <a href="http://soundcloud.com/" class="sc-logo" title="Go to SoundCloud.com"><img src="/assets/sc_sbs_grey_96x12.png"></a>
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

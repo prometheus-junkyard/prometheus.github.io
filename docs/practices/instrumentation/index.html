@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Prometheus</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Query language</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording and alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters for third-party systems</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li class="active"><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="instrumentation" class="page-header">Instrumentation<a class="header-anchor" href="#instrumentation"></a>
+</h1>
+
+<p>This page provides an opinionated set of guidelines for instrumenting your code.</p>
+
+<h2 id="how-to-instrument">How to instrument<a class="header-anchor" href="#how-to-instrument"></a>
+</h2>
+
+<p>The short answer is to instrument everything. Every library, subsystem and
+service should have at least a few metrics to give you a rough idea of how it is
+performing.</p>
+
+<p>Instrumentation should be an integral part of your code. Instantiate the metric
+classes in the same file you use them. This makes going from alert to console to code
+easy when you are chasing an error.</p>
+
+<h3 id="the-three-types-of-services">The three types of services<a class="header-anchor" href="#the-three-types-of-services"></a>
+</h3>
+
+<p>For monitoring purposes, services can generally be broken down into three types:
+online-serving, offline-processing, and batch jobs. There is overlap between
+them, but every service tends to fit well into one of these categories.</p>
+
+<h4 id="online-serving-systems">Online-serving systems<a class="header-anchor" href="#online-serving-systems"></a>
+</h4>
+
+<p>An online-serving system is one where a human or another system is expecting an
+immediate response. For example, most database and HTTP requests fall into
+this category.</p>
+
+<p>The key metrics in such a system are the number of performed queries, errors,
+and latency. The number of in-progress requests can also be useful.</p>
+
+<p>Online-serving systems should be monitored on both the client and server side.
+If the two sides see different behaviors, that is very useful information for debugging.
+If a service has many clients, it is also not practical for the service to track them
+individally, so they have to rely on their own stats.</p>
+
+<p>Be consistent in whether you count queries when they start or when they end.
+When they end is suggested, as it will line up with the error and latency stats,
+and tends to be easier to code.</p>
+
+<h4 id="offline-processing">Offline processing<a class="header-anchor" href="#offline-processing"></a>
+</h4>
+
+<p>For offline processing, no one is actively waiting for a response, and batching
+of work is common. There may also be multiple stages of processing.</p>
+
+<p>For each stage, track the items coming in, how many are in progress, the last
+time you processed something, and how many items were sent out. If batching, you
+should also track batches going in and out.</p>
+
+<p>Knowing the last time that a system processed something is useful for detecting if it has stalled,
+but it is very localised information. A better approach is to send a heartbeat
+through the system: some dummy item that gets passed all the way through
+and includes the timestamp when it was inserted. Each stage can export the most
+recent heartbeat timestamp it has seen, letting you know how long items are
+taking to propagate through the system. For systems that do not have quiet
+periods where no processing occurs, an explicit heartbeat may not be needed.</p>
+
+<h4 id="batch-jobs">Batch jobs<a class="header-anchor" href="#batch-jobs"></a>
+</h4>
+
+<p>There is a fuzzy line between offline-processing and batch jobs, as offline
+processing may be done in batch jobs. Batch jobs are distinguished by the
+fact that they do not run continuously, which makes scraping them difficult.</p>
+
+<p>The key metric of a batch job is the last time it succeeded. It is also useful to track
+how long each major stage of the job took, the overall runtime and the last
+time the job completed (successful or failed). These are all gauges, and should
+be <a href="/docs/instrumenting/pushing/">pushed to a PushGateway</a>.
+There are generally also some overall job-specific statistics that would be
+useful to track, such as the total number of records processed.</p>
+
+<p>For batch jobs that take more than a few minutes to run, it is useful to also
+scrape them using pull-based monitoring. This lets you track the same metrics over time
+as for other types of jobs, such as resource usage and latency when talking to other
+systems. This can aid debugging if the job starts to get slow.</p>
+
+<p>For batch jobs that run very often (say, more often than every 15 minutes), you should
+consider converting them into daemons and handling them as offline-processing jobs.</p>
+
+<h3 id="subsystems">Subsystems<a class="header-anchor" href="#subsystems"></a>
+</h3>
+
+<p>In addition to the three main types of services, systems have sub-parts that
+should also be monitored.</p>
+
+<h4 id="libraries">Libraries<a class="header-anchor" href="#libraries"></a>
+</h4>
+
+<p>Libraries should provide instrumentation with no additional configuration
+required by users.</p>
+
+<p>If it is a library used to access some resource outside of the process (for example,
+network, disk, or IPC), track the overall query count, errors (if errors are possible)
+and latency at a minimum.</p>
+
+<p>Depending on how heavy the library is, track internal errors and
+latency within the library itself, and any general statistics you think may be
+useful.</p>
+
+<p>A library may be used by multiple independent parts of an application against
+different resources, so take care to distinguish uses with labels where
+appropriate. For example, a database connection pool should distinguish the databases
+it is talking to, whereas there is no need to differentiate
+between users of a DNS client library.</p>
+
+<h4 id="logging">Logging<a class="header-anchor" href="#logging"></a>
+</h4>
+
+<p>As a general rule, for every line of logging code you should also have a
+counter that is incremented. If you find an interesting log message, you want to
+be able to see how often it has been happening and for how long.</p>
+
+<p>If there are multiple closely-related log messages in the same function (for example,
+different branches of an if or switch statement), it can sometimes make sense
+increment a single counter for all of them.</p>
+
+<p>It is also generally useful to export the total number of info/error/warning
+lines that were logged by the application as a whole, and check for significant
+differences as part of your release process.</p>
+
+<h4 id="failures">Failures<a class="header-anchor" href="#failures"></a>
+</h4>
+
+<p>Failures should be handled similarly to logging. Every time there is a failure, a
+counter should be incremented. Unlike logging, the error may also bubble up to a
+more general error counter depending on how your code is strctured.</p>
+
+<p>When reporting failures, you should generally have some other metric
+representing the total number of attempts. This makes the failure ratio easy to calculate.</p>
+
+<h4 id="threadpools">Threadpools<a class="header-anchor" href="#threadpools"></a>
+</h4>
+
+<p>For any sort of threadpool, the key metrics are the number of queued requests, the number of
+threads in use, the total number of threads, the number of tasks processed, and how long they took.
+It is also useful to track how long things were waiting in the queue.</p>
+
+<h4 id="caches">Caches<a class="header-anchor" href="#caches"></a>
+</h4>
+
+<p>The key metrics for a cache are total queries, hits, overall latency and then
+the query count, errors and latency of whatever online-serving system the cache is in front of.</p>
+
+<h4 id="collectors">Collectors<a class="header-anchor" href="#collectors"></a>
+</h4>
+
+<p>When implementing a non-trivial custom metrics collector, it is advised to export a
+gauge for how long the collection took in seconds and another for the number of
+errors encountered.</p>
+
+<p>This is one of the two cases when it is okay to export a duration as a gauge
+rather than a summary, the other being batch job durations. This is because both
+represent information about that particular push/scrape, rather than
+tracking multiple durations over time.</p>
+
+<h2 id="things-to-watch-out-for">Things to watch out for<a class="header-anchor" href="#things-to-watch-out-for"></a>
+</h2>
+
+<p>There are some general things to be aware of when doing monitoring, and also
+Prometheus-specific ones in particular.</p>
+
+<h3 id="use-labels">Use labels<a class="header-anchor" href="#use-labels"></a>
+</h3>
+
+<p>Few monitoring systems have the notion of labels and an expression language to
+take advantage of them, so it takes a bit of getting used to.</p>
+
+<p>When you have multiple metrics that you want to add/average/sum, they should
+usually be one metric with labels rather than multiple metrics.</p>
+
+<p>For example, rather than <code>http_responses_500_total</code> and <code>http_resonses_403_total</code>,
+create a single metric called <code>http_responses_total</code> with a <code>code</code> label
+for the HTTP response code. You can then process the entire metric as one in
+rules and graphs.</p>
+
+<p>As a rule of thumb, no part of a metric name should ever be procedurally
+generated (use labels instead). The one exception is when proxying metrics
+from another monitoring/instrumentation system.</p>
+
+<p>See also the <a href="/docs/practices/naming/">naming</a> section.</p>
+
+<h3 id="do-not-overuse-labels">Do not overuse labels<a class="header-anchor" href="#do-not-overuse-labels"></a>
+</h3>
+
+<p>Each labelset is an additional time series that has RAM, CPU, disk, and network
+costs. Usually the overhead is negligible, but in scenarios with lots of
+metrics and hundreds of labelsets across hundreds of servers, this can add up
+quickly.</p>
+
+<p>As a general guideline, try to keep the cardinality of your metrics below 10,
+and for metrics that exceed that, aim to limit them to a handful across your
+whole system. The vast majority of your metrics should have no labels.</p>
+
+<p>If you have a metric that has a cardinality over 100 or the potential to grow
+that large, investigate alternate solutions such as reducing the number of
+dimensions or moving the analysis away from monitoring and to a general-purpose
+processing system.</p>
+
+<p>If you are unsure, start with no labels and add more
+labels over time as concrete use cases arise.</p>
+
+<h3 id="counter-vs.-gauge-vs.-summary">Counter vs. gauge vs. summary<a class="header-anchor" href="#counter-vs.-gauge-vs.-summary"></a>
+</h3>
+
+<p>It is important to know which of the three main metric types to use for a given
+metric. There is a simple rule of thumb: if the value can go down, it's a gauge.</p>
+
+<p>Counters can only go up (and reset, such as when a process restarts). They are
+useful for accumulating the number of events, or the amount of something at
+each event. For example, the total number of HTTP requests, or the total number of
+of bytes sent in HTTP requests. Raw counters are rarely useful. Use the
+<code>rate()</code> function to get the per-second rate at which they are increasing.</p>
+
+<p>Gauges can be set, go up, and go down. They are useful for snapshots of state,
+such as in-progress requests, free/total memory, or temperature. You should
+never take a <code>rate()</code> of a gauge.</p>
+
+<p>Summaries are similar to having two counters. They track the number of events
+<em>and</em> the amount of something for each event, allowing you to calculate the
+average amount per event (useful for latency, for example). In addition,
+summaries can also export quantiles of the amounts, but note that <a href="http://latencytipoftheday.blogspot.de/2014/06/latencytipoftheday-you-cant-average.html">quantiles are not
+aggregatable</a>.</p>
+
+<h3 id="timestamps,-not-time-since">Timestamps, not time since<a class="header-anchor" href="#timestamps,-not-time-since"></a>
+</h3>
+
+<p>If you want to track the amount of time since something happened, export the
+Unix timestamp at which it happened - not the time since it happened.</p>
+
+<p>With the timestamp exported, you can use the expression <code>time() - my_timestamp_metric</code> to
+calculate the time since the event, removing the need for update logic and
+protecting you against the update logic getting stuck.</p>
+
+<h3 id="inner-loops">Inner loops<a class="header-anchor" href="#inner-loops"></a>
+</h3>
+
+<p>In general, the additional resource cost of instrumentation is far outweighed by
+the benefits it brings to operations and development.</p>
+
+<p>For code which is performance-critical or called more than 100k times a second
+inside a given process, you may wish to take some care as to how many metrics
+you update.</p>
+
+<p>A Java Simpleclient counter takes
+<a href="https://github.com/prometheus/client_java/blob/master/benchmark/README.md">12-17ns</a>
+to increment depending on contention. Other languages will have similar
+performance. If that amount of time is significant for your inner loop, limit
+the number of metrics you increment in the inner loop and avoid labels (or
+cache the result of the label lookup, for example, the return value of <code>With()</code>
+in Go or <code>labels()</code> in Java) where possible.</p>
+
+<p>Beware also of metric updates involving time or durations, as getting the time
+may involve a syscall. As with all matters involving performance-critical code,
+benchmarks are the best way to determine the impact of any given change.</p>
+
+<h3 id="avoid-missing-metrics">Avoid missing metrics<a class="header-anchor" href="#avoid-missing-metrics"></a>
+</h3>
+
+<p>Time series that are not present until something happens are difficult to deal with,
+as the usual simple operations are no longer sufficient to correctly handle
+them. To avoid this, export a <code>0</code> for any time series you know may exist in advance.</p>
+
+<p>Most Prometheus client libraries (including Go and Java Simpleclient) will
+automatically export a <code>0</code> for you for metrics with no labels.</p>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+  <p class="pull-right">
+    Brought to you by <a href="http://soundcloud.com/" class="sc-logo" title="Go to SoundCloud.com"><img src="/assets/sc_sbs_grey_96x12.png"></a>
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

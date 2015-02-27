@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Prometheus</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Query language</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording and alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li class="active"><a href="/docs/visualization/promdash/">PromDash</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters for third-party systems</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="promdash" class="page-header">PromDash<a class="header-anchor" href="#promdash"></a>
+</h1>
+
+<h2 id="overview">Overview<a class="header-anchor" href="#overview"></a>
+</h2>
+
+<p>PromDash is a browser-based dashboard builder for Prometheus. It is a
+<a href="http://rubyonrails.org/">Rails</a> application and stores its dashboard metadata
+in a configurable SQL backend.</p>
+
+<p><a href="/assets/promdash_event_processor.png"><img src="/assets/promdash_event_processor.png" alt="PromDash screenshot"></a></p>
+
+<p>For installing and running PromDash, see the
+<a href="https://github.com/prometheus/promdash/blob/master/README.md">README.md</a> for
+more information. The instructions below assume that you have a running
+PromDash installation.</p>
+
+<h2 id="registering-a-prometheus-server">Registering a Prometheus server<a class="header-anchor" href="#registering-a-prometheus-server"></a>
+</h2>
+
+<p>Before you can graph data from a Prometheus server, you need to register it
+with PromDash. Under the "Servers" tab, click "New Server" and enter the name
+and URL of your Prometheus server. The URL needs to be in the form
+<code>http://&lt;host&gt;:&lt;port&gt;/</code> - note the trailing slash. Click "Create Server". This
+server is now available for selection when configuring Prometheus graphs in a
+dashboard.</p>
+
+<h2 id="creating-a-dashboard">Creating a dashboard<a class="header-anchor" href="#creating-a-dashboard"></a>
+</h2>
+
+<p>To create a new dashboard, go to the "Dashboards" tab and click "New
+Dashboard". Enter a name and click "Create Dashboard". The dashboard name is
+now visible in the dashboards listing.</p>
+
+<h2 id="configuring-a-dashboard">Configuring a dashboard<a class="header-anchor" href="#configuring-a-dashboard"></a>
+</h2>
+
+<p>A PromDash dashboard consists of a number of widgets which are arranged in
+columns. Currently, two types of widgets are supported: Prometheus graphs and
+arbitrary iframes (including some special support for auto-adjusting URL
+parameters in Graphite graph links).</p>
+
+<h3 id="global-settings">Global settings<a class="header-anchor" href="#global-settings"></a>
+</h3>
+
+<p>The menu bar at the top of a dashboard lets you configure global options which
+have an effect on the dashboard as a whole:</p>
+
+<ul>
+<li>
+<strong>Time range</strong>: Either use the <code>+</code> or <code>-</code> buttons to increase or decrease the
+global graph time range or type in a duration string of the form
+<code>&lt;number&gt;[smhdwy]</code>.</li>
+<li>
+<strong>Time window</strong>: Either use the <code>&lt;&lt;</code> or <code>&gt;&gt;</code> buttons to shift the global
+graph time window backwards or forwards in time, or click on the input to
+select a specific date/time as the end of the graph range.</li>
+<li>
+<strong>Manual refresh</strong>: The manual refresh button lets you trigger a refresh and
+redraw of all graphs on the dashboard.</li>
+<li>
+<strong>Automatic refresh rate</strong>: This lets you set a periodic refresh interval.</li>
+<li>
+<strong>Dashboard settings menu</strong>:
+
+<ul>
+<li>
+<strong>Columns</strong>: Choose the number of columns in which to display the
+dashboard's widgets.</li>
+<li>
+<strong>Aspect ratio</strong>: For each widget, this sets an aspect ratio which will be
+automatically maintained across resizes.</li>
+<li>
+<strong>Theme</strong>: Choose a light or dark look for you dashboard.</li>
+<li>
+<strong>Color Scheme</strong>: Allows you to select the color scheme for lines in your
+graphs.</li>
+<li>
+<strong>Resolution</strong>: A slider that selects the resolution with which to load
+data from Prometheus.</li>
+<li>
+<strong>Show annotation tags</strong>: Select whether to show the UI for editing tags
+that specify which annotations to load and display in graphs. See the
+<a href="#annotations">Annotations</a> section.</li>
+<li>
+<strong>Show template variables</strong>: Select whether to show the UI for editing
+global template variables for the dashboard. See the <a href="#using-template-variables">Using template
+variables</a> section.</li>
+<li>
+<strong>Encode entire dashboard in URL</strong>: Select whether to continuously update the
+browser URL as changes to the dashboard are made. The browser URL will then
+always reflect the current contents and state of the dashboard and may be
+sent around to exactly recreate the dashboard in the state when the link
+was generated.</li>
+</ul>
+</li>
+<li>
+<strong>Fullscreen mode</strong>: This displays the entire dashboard in fullscreen/TV
+mode, without any global menus. You may exit fullscreen mode by pressing
+"Escape".</li>
+<li>
+<strong>Save Changes</strong>: This saves any changes to either the global dashboard
+settings or the settings of individual widgets. Without saving, any changes
+made to the dashboard are lost when reloading the page.</li>
+</ul>
+
+<h2 id="adding-prometheus-graphs">Adding Prometheus graphs<a class="header-anchor" href="#adding-prometheus-graphs"></a>
+</h2>
+
+<p>To add a Prometheus graph, click the "Add Graph" button on the dashboard.</p>
+
+<p>To configure the graph, move the mouse over its widget area until a
+menu bar appears in the top left corner.</p>
+
+<h3 id="datasources">Datasources<a class="header-anchor" href="#datasources"></a>
+</h3>
+
+<p>To configure which data to display, select the <code>Datasources</code> menu tab. It
+allows you to set one or multiple expressions to be graphed, along with the
+Prometheus server they should be queried from. The supported expressions are
+any standard <a href="https://github.com/prometheus/prometheus/wiki/Expression-Language">Prometheus expression language
+expressions</a>.</p>
+
+<p>For each expression, you can select a graph axis to map the resulting data on,
+as well as a format string that specifies how the returned time series labels
+should be reflected in the legend. See later sections on how to add axes and
+format strings.</p>
+
+<h3 id="time-options">Time options<a class="header-anchor" href="#time-options"></a>
+</h3>
+
+<p>The time options let you configure a custom range and time window per graph.
+Note, however, that these are reset to the global time settings once the global
+ones are changed again.</p>
+
+<h3 id="graph-and-axis-settings">Graph and axis settings<a class="header-anchor" href="#graph-and-axis-settings"></a>
+</h3>
+
+<p>The graph and axis settings allow you to configure a title for your graph, as
+well as the preferred line interpolation and query resolution. Furthermore,
+you may add a second axis and configure various options for each axis (stacked
+vs. lines, axis scales, etc.).</p>
+
+<h3 id="palette-settings">Palette settings<a class="header-anchor" href="#palette-settings"></a>
+</h3>
+
+<p>The palette settings allow you to select a color scheme for drawing the lines
+and filled areas in graphs. If set, this overrides the global setting as long
+as the global setting remains unchanged.</p>
+
+<h3 id="legend-settings">Legend settings<a class="header-anchor" href="#legend-settings"></a>
+</h3>
+
+<p>The legend settings menu tab allows you to configure when to show the legend on
+a graph, as well as defining how it should be formatted.</p>
+
+<p>By default, each time series will be displayed with their full name (metric name
+plus all label names and values) in the legend. If you have many time series or
+time series with many labels, this can quickly lead to unusably long legends.</p>
+
+<p>The <code>Legend format</code> builder allows you to create a list of format strings which
+you can then assign to expressions in the <code>Datasources</code> tab. Each format string
+allows you to customize how results returned from an expression should be
+displayed in the legend. For each time series, the legend will show an
+interpolated version of the given format string. To reference specific label
+values in the format string, use double curly braces: <code>{{label-name}}</code>. For
+example: <code>{{host}} - cluster {{cluster}}</code>.</p>
+
+<h3 id="link-to-graph">Link to graph<a class="header-anchor" href="#link-to-graph"></a>
+</h3>
+
+<p>The "Link to this graph" menu tab allows you to generate a link to a specific
+graph. This link will show the graph in a single-widget fullscreen view as it
+was configured when the link was generated. Subsequent changes to the
+underlying graph will not affect the linked version of the graph.</p>
+
+<h2 id="adding-inline-frames">Adding inline frames<a class="header-anchor" href="#adding-inline-frames"></a>
+</h2>
+
+<p>You can add arbitrary iframes as widgets to a PromDash dashboard by clicking
+the "Add Frame" button. You will be prompted to enter a URL to display, which
+may later be configured via the "Frame Source" menu tab. Similarly to
+Prometheus graph widgets, frame widgets allow you to configure a title and
+generate a link to the frame.</p>
+
+<h3 id="automatic-graphite-graph-url-adjustment">Automatic Graphite graph URL adjustment<a class="header-anchor" href="#automatic-graphite-graph-url-adjustment"></a>
+</h3>
+
+<p>PromDash has limited support for parsing and rewriting links to Graphite graph
+URLs. If you want to embed a Graphite graph via a PromDash frame, enable the
+option "this is a graphite graph" under the "Frame options" menu tab. PromDash
+will then automatically resize the Graphite graph to fit its widget by
+dynamically rewriting the frame URL. It will also add time controls which act
+similarly to those found in Prometheus graph widgets.</p>
+
+<h2 id="using-template-variables">Using template variables<a class="header-anchor" href="#using-template-variables"></a>
+</h2>
+
+<p>Template variables allow you to make generalized dashboards in which you set
+only certain variables each time you display them. For example, if you were
+interested in building a dashboard that shows statistics for a host, you
+would not want to build a separate dashboard for each host. Instead, PromDash
+lets you define the dashboard once and then create global template variables
+for the changing parts of your dashboard. In the case of the host dashboard,
+you might create a template variable called <code>host</code> and then let the user set
+this variable to the name of the host which they are currently interested in.
+The value of the variable value may then be inserted into relevant text input
+fields in a widget's settings.</p>
+
+<p>A variable is interpolated into a text input field by enclosing it with a set
+of two curly braces: <code>{{variable-name}}</code>. The text inputs that support template
+variable interpolation are:</p>
+
+<ul>
+<li>The widget title.</li>
+<li>The expression input fields in a Prometheus graph.</li>
+<li>The URL input of an iframe widget.</li>
+<li>Annotation tag input fields.</li>
+</ul>
+
+<p>In the example of a host dashboard, we could interpolate the <code>host</code> variable
+into each widget's Prometheus expressions, like:</p>
+
+<pre><code>cpu_time_ns{host="{{host}}"}
+</code></pre>
+
+<p>...and set the title to:</p>
+
+<pre><code>CPU time for {{host}} in nanoseconds
+</code></pre>
+
+<p>Besides creating and setting variables via the user interface, you may set
+existing variables or even define new ones via the URL:</p>
+
+<pre><code>http://&lt;promdash-url&gt;/&lt;dashboard-name&gt;#!?var.&lt;var1&gt;=&lt;val1&gt;&amp;var.&lt;var2&gt;=&lt;val2&gt;
+</code></pre>
+
+<p>In the example of the host dashboard, the URL could look like this:</p>
+
+<pre><code>http://promdash.somedomain.int/hoststats#!?var.host=myhost
+</code></pre>
+
+<h2 id="annotations">Annotations<a class="header-anchor" href="#annotations"></a>
+</h2>
+
+<p>PromDash allows you to load timestamped annotations from an external service
+and display them in graphs as vertical lines:</p>
+
+<p><a href="/assets/annotations_example.png"><img src="/assets/annotations_example.png" alt="Annotation screenshot"></a></p>
+
+<h3 id="configuring-annotations">Configuring annotations<a class="header-anchor" href="#configuring-annotations"></a>
+</h3>
+
+<p>This section assumes that you already have a working annotation server. For
+details on building one, see the <a href="#annotations-api">Annotations API</a> section below.</p>
+
+<p>The URL that PromDash should query for annotations is set
+via the <code>ANNOTATIONS_URL</code> environment variable.</p>
+
+<p>To enable annotations on a dashboard, first select "Display annotation tags" in
+the global dashboard settings. Each input can hold an arbitrary number of
+comma-separated tags that will be used to query your designated annotations
+server. Once you have added your tags you can hide the annotation list by
+un-checking annotations setting in the global dashboard settings.</p>
+
+<p>Hovering over an annotation on a graph will display the annotation's message:</p>
+
+<p><a href="/assets/annotations_hover.png"><img src="/assets/annotations_hover.png" alt="Annotation global config screenshot"></a></p>
+
+<h3 id="annotations-api">Annotations API<a class="header-anchor" href="#annotations-api"></a>
+</h3>
+
+<p>Although we do not distribute a publicly available annotations server yet, it
+is easy to build one.</p>
+
+<p>The URL from which PromDash fetches annotations has the following format:</p>
+
+<pre><code>${ANNOTATIONS_URL}?range=3600&amp;tags[]=chef&amp;tags[]=prometheus&amp;until=1423491311.424
+</code></pre>
+
+<p>The parameters have the following meaning:</p>
+
+<ul>
+<li>
+<code>${ANNOTATIONS_URL}</code>: this is the configured <code>${ANNOTATIONS_URL}</code> environment
+variable.</li>
+<li>
+<code>until</code>: This is the graph's end time as a Unix timestamp in seconds.</li>
+<li>
+<code>range</code>: This is the graph's range (stretching back from the end time) in seconds.</li>
+<li>
+<code>tags[]</code>: This is a list of the tags for which annotations should be loaded.</li>
+</ul>
+
+<p>Each tag input on your dashboard represents a separate query. For example, if
+you have three tag inputs, three requests will be made to your annotations
+server.</p>
+
+<p>The <code>until</code> and <code>range</code> parameters define the time window displayed by the
+graph. Annotations that are returned to PromDash that do not fall within this
+window will not be rendered.</p>
+
+<p>The JSON payload returned from the annotations server needs to conform to this
+schema:</p>
+
+<pre><code class="javascript">{
+  posts: [
+    {
+      created_at: 111232553, // UNIX timestamp
+      message: "annotation message here"
+    },
+    // ... more tags
+  ]
+}
+</code></pre>
+
+<p>All returned annotation tags will be rendered on every graph. There currently
+is no support for rendering specific tags on only a subset of graphs.</p>
+
+<h2 id="embedding-a-dashboard">Embedding a dashboard<a class="header-anchor" href="#embedding-a-dashboard"></a>
+</h2>
+
+<p>PromDash has support for embedding dashboards into other pages via iframes. To
+get an embeddable view for a PromDash dashboard, add <code>embed</code> to the URL of a
+dashboard as the first path element:</p>
+
+<pre><code>http://&lt;promdash-url&gt;/embed/&lt;dashboard-name&gt;
+</code></pre>
+
+<p>This view shows the dashboard's graphs in a carousel-view, one graph at a time.
+It omits the menu structure, the dashboard title, and global controls.</p>
+
+<p>In the example of the host dashboard, the embeddable URL could look like this:</p>
+
+<pre><code>http://promdash.somedomain.int/embed/hoststats#!?var.host=myhost
+</code></pre>
+
+<h2 id="pushing-dashboard-representations-as-json-via-http">Pushing dashboard representations as JSON via HTTP<a class="header-anchor" href="#pushing-dashboard-representations-as-json-via-http"></a>
+</h2>
+
+<p>It's possible to retrieve and update the content of existing PromDash
+dashboards via the JSON format over HTTP. For example, this allows you to
+manage the authoritative version of your dashboard content in source control,
+while still using PromDash for the display.</p>
+
+<h3 id="getting-a-dashboard's-json-representation">Getting a dashboard's JSON representation<a class="header-anchor" href="#getting-a-dashboard's-json-representation"></a>
+</h3>
+
+<pre><code>curl http://&lt;promdash-url&gt;/&lt;dashboard-slug&gt;.json &gt; dashboard.json
+</code></pre>
+
+<h3 id="updating-a-dashboard's-json-representation">Updating a dashboard's JSON representation<a class="header-anchor" href="#updating-a-dashboard's-json-representation"></a>
+</h3>
+
+<pre><code>curl -H 'Content-Type: application/json' -X PUT -d @dashboard.json http://&lt;promdash-url&gt;/&lt;dashboard-slug&gt;.json
+</code></pre>
+
+<h3 id="specifying-servers-by-url">Specifying servers by URL<a class="header-anchor" href="#specifying-servers-by-url"></a>
+</h3>
+
+<p>Any occurrences of <code>serverID</code> in the JSON format may now be optionally replaced
+by a <code>serverURL</code> property, specifying a server by its URL instead of by its
+internal database ID. A <code>serverURL</code> property needs to match the URL of an
+existing configured server in PromDash exactly - otherwise a <code>422 Unprocessable
+Entity</code> HTTP error is returned.</p>
+
+<p>Be aware that if you GET the JSON representation of a dashboard, it will always
+show <code>serverID</code> fields, and never <code>serverURL</code>, since any uploaded JSON
+containing <code>serverURL</code>s is transformed immediately to <code>serverID</code>s before being
+saved server-side.</p>
+
+<h2 id="todos">TODOs<a class="header-anchor" href="#todos"></a>
+</h2>
+
+<p>Add documention about:</p>
+
+<ul>
+<li>
+<code>fullscreen</code> / <code>fullscreenTitle</code> URL parameters</li>
+<li>document the dashboard JSON format</li>
+</ul>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+  <p class="pull-right">
+    Brought to you by <a href="http://soundcloud.com/" class="sc-logo" title="Go to SoundCloud.com"><img src="/assets/sc_sbs_grey_96x12.png"></a>
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

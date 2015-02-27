@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Prometheus</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Query language</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li class="active"><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording and alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters for third-party systems</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="functions" class="page-header">Functions<a class="header-anchor" href="#functions"></a>
+</h1>
+
+<h2 id="abs()">
+<code>abs()</code><a class="header-anchor" href="#abs()"></a>
+</h2>
+
+<p><code>abs(v vector)</code> returns the input vector with all sample values converted to
+their absolute value.</p>
+
+<h2 id="absent(v-vector)">
+<code>absent(v vector)</code><a class="header-anchor" href="#absent(v-vector)"></a>
+</h2>
+
+<p><code>absent(v vector)</code> returns an empty vector if the vector passed to it has any
+elements and a 1-element vector with the value 1 if the vector passed to it has
+no elements.</p>
+
+<p>In the second case, <code>absent()</code> tries to be smart about deriving labels of
+the 1-element output vector from the input vector:</p>
+
+<table class=" table table-bordered">
+<thead>
+<tr>
+<th>Expression</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>absent(nonexistent{job="myjob"})</td>
+<td>{job="myjob"}</td>
+</tr>
+<tr>
+<td>absent(nonexistent{job="myjob",instance=~".*"})</td>
+<td>{job="myjob"}</td>
+</tr>
+<tr>
+<td>absent(sum(nonexistent{job="myjob"}))</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+
+<p>This is useful for alerting on when no time series
+exist for a given metric name and label combination.</p>
+
+<h2 id="ceil()">
+<code>ceil()</code><a class="header-anchor" href="#ceil()"></a>
+</h2>
+
+<p><code>ceil(v instant-vector)</code> rounds the sample values of all elements in <code>v</code> up to
+the nearest integer.</p>
+
+<h2 id="count_scalar()">
+<code>count_scalar()</code><a class="header-anchor" href="#count_scalar()"></a>
+</h2>
+
+<p><code>count_scalar(v instant-vector)</code> returns the number of elements in a time series
+vector as a scalar. This is in contrast to the <code>count()</code> aggregation operator,
+which always returns a vector (an empty one if the input vector is empty) and
+allows grouping by labels via a <code>by</code> clause.</p>
+
+<h2 id="delta()">
+<code>delta()</code><a class="header-anchor" href="#delta()"></a>
+</h2>
+
+<p><code>delta(v range-vector)</code> calculates the difference between the
+first and last value of each time series element in a range vector <code>v</code>,
+returning an instant vector with the given deltas and equivalent labels.
+The delta is interpolated to cover the full time range. </p>
+
+<p>The following example expression returns the difference in CPU temperature
+between now and 2 hours ago:</p>
+
+<pre><code>delta(cpu_temp_celsius{host="zeus"}[2h])
+</code></pre>
+
+<p><code>delta</code> should only be used with gauges.</p>
+
+<h2 id="deriv()">
+<code>deriv()</code><a class="header-anchor" href="#deriv()"></a>
+</h2>
+
+<p><code>deriv(v range-vector)</code> calculates the derivative of the time series in a range
+vector <code>v</code>, using <a href="http://en.wikipedia.org/wiki/Simple_linear_regression">simple linear regression</a>.</p>
+
+<p>The following example expression returns the predicted CPU temperature in 5
+minutes based on the previous hour of data:</p>
+
+<pre><code>cpu_temp_celsius{host="zeus"} + deriv(cpu_temp_celsius{host="zeus"}[1h]) * 5 * 60
+</code></pre>
+
+<p><code>deriv</code> should only be used with gauges.</p>
+
+<h2 id="drop_common_labels()">
+<code>drop_common_labels()</code><a class="header-anchor" href="#drop_common_labels()"></a>
+</h2>
+
+<p><code>drop_common_labels(instant-vector)</code> drops all labels that have the same name
+and value across all series in the input vector.</p>
+
+<h2 id="floor()">
+<code>floor()</code><a class="header-anchor" href="#floor()"></a>
+</h2>
+
+<p><code>floor(v instant-vector)</code> rounds the sample values of all elements in <code>v</code> down
+to the nearest integer.</p>
+
+<h2 id="rate()">
+<code>rate()</code><a class="header-anchor" href="#rate()"></a>
+</h2>
+
+<p><code>rate(v range-vector)</code> calculate the per-second average rate of increase of the
+time series in the range vector. Breaks in monotonicity (such as counter
+resets due to target restarts) are automatically adjusted for.</p>
+
+<p>The following example expression returns the per-second rate of HTTP requests as measured
+over the last 5 minutes, per time series in the range vector:</p>
+
+<pre><code>rate(http_requests_total{job="api-server"}[5m])
+</code></pre>
+
+<p><code>rate</code> should only be used with counters.</p>
+
+<h2 id="round()">
+<code>round()</code><a class="header-anchor" href="#round()"></a>
+</h2>
+
+<p><code>round(v instant-vector, to_nearest=1 scalar)</code> rounds the sample values of all
+elements in <code>v</code> to the nearest integer. Ties are resolved by rounding up. The
+optional <code>to_nearest</code> argument allows specifying the nearest multiple to which
+the sample values should be rounded. This multiple may also be a fraction.</p>
+
+<h2 id="scalar()">
+<code>scalar()</code><a class="header-anchor" href="#scalar()"></a>
+</h2>
+
+<p>Given a single-element input vector, <code>scalar(v instant-vector)</code> returns the
+sample value of that single element as a scalar. If the input vector doesn't
+have exactly one element, <code>scalar</code> will return <code>NaN</code>.</p>
+
+<h2 id="sort()">
+<code>sort()</code><a class="header-anchor" href="#sort()"></a>
+</h2>
+
+<p><code>sort(v instant-vector)</code> returns vector elements sorted by their sample values,
+in ascending order.</p>
+
+<h2 id="sort_desc()">
+<code>sort_desc()</code><a class="header-anchor" href="#sort_desc()"></a>
+</h2>
+
+<p>Same as <code>sort</code>, but sorts in descending order.</p>
+
+<h2 id="time()">
+<code>time()</code><a class="header-anchor" href="#time()"></a>
+</h2>
+
+<p><code>time()</code> returns the number of seconds since January 1, 1970 UTC. Note that
+this doesn't actually return the current time, but the time at which the
+expression is to be evaluated.</p>
+
+<h2 id="&lt;aggregation&gt;_over_time():-aggregating-values-over-time:">
+<code>&lt;aggregation&gt;_over_time()</code>: Aggregating values over time:<a class="header-anchor" href="#&lt;aggregation&gt;_over_time():-aggregating-values-over-time:"></a>
+</h2>
+
+<p>The following functions allow aggregating each series of a given range vector
+over time and return an instant vector with per-series aggregation results:</p>
+
+<ul>
+<li>
+<code>avg_over_time(range-vector)</code>: the average value of all points under the specified interval.</li>
+<li>
+<code>min_over_time(range-vector)</code>: the minimum value of all points under the specified interval.</li>
+<li>
+<code>max_over_time(range-vector)</code>: the maximum value of all points under the specified interval.</li>
+<li>
+<code>sum_over_time(range-vector)</code>: the sum of all values under the specified interval.</li>
+<li>
+<code>count_over_time(range-vector)</code>: the count of all values under the specified interval.</li>
+</ul>
+
+<h2 id="topk()-and-bottomk()">
+<code>topk()</code> and <code>bottomk()</code><a class="header-anchor" href="#topk()-and-bottomk()"></a>
+</h2>
+
+<p><code>topk(k integer, v instant-vector)</code> returns the <code>k</code> largest elements of <code>v</code> by
+sample value.</p>
+
+<p><code>bottomk(k integer, v instant-vector</code> returns the <code>k</code> smallest elements of <code>v</code>
+by sample value.</p>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+  <p class="pull-right">
+    Brought to you by <a href="http://soundcloud.com/" class="sc-logo" title="Go to SoundCloud.com"><img src="/assets/sc_sbs_grey_96x12.png"></a>
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

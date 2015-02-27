@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Prometheus</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Query language</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording and alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li><li class="active"><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters for third-party systems</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="console-templates" class="page-header">Console templates<a class="header-anchor" href="#console-templates"></a>
+</h1>
+
+<p>Console templates allow for creation of arbitrary consoles using the <a href="http://golang.org/pkg/text/template/">Go
+templating language</a>. These are served
+from the Prometheus server.</p>
+
+<p>Console templates are the most powerful way to create templates that can be
+easily managed in source control. There is a learning curve though, so users new
+to this style of monitoring should try out <a href="/docs/visualization/promdash/">PromDash</a> first.</p>
+
+<h2 id="getting-started">Getting started<a class="header-anchor" href="#getting-started"></a>
+</h2>
+
+<p>Prometheus comes with an example set of consoles to get you going. These can be
+found at <code>/consoles/index.html.example</code> on a running Prometheus and will
+display Node Exporter consoles if Prometheus is scraping Node Exporters with a
+<code>job="node"</code> label.</p>
+
+<p>The example consoles have 5 parts:</p>
+
+<ol>
+<li>A navigation bar on top</li>
+<li>A menu on the left</li>
+<li>Time controls on the bottom</li>
+<li>The main content in the center, usually graphs</li>
+<li>A table on the right</li>
+</ol>
+
+<p>The navigation bar is for links to other systems, such as other Prometheuses,
+documentation, and whatever else makes sense to you. The menu is for navigation
+inside the same Prometheus server, which is very useful to be able to quickly
+open a console in another tab to correlate information. Both are configured in
+<code>console_libraries/menu.lib</code>.</p>
+
+<p>The time controls allow changing of the duration and range of the graphs.
+Console URLs can be shared and will show the same graphs for others.</p>
+
+<p>The main content is usually graphs. There is a configurable JavaScript graphing
+library provided that will handle requesting data from Prometheus, and rendering
+it via <a href="http://code.shutterstock.com/rickshaw/">Rickshaw</a>.</p>
+
+<p>Finally, the table on the right can be used to display statistics in a more
+compact form than graphs.</p>
+
+<h2 id="example-console">Example Console<a class="header-anchor" href="#example-console"></a>
+</h2>
+
+<p>This is a basic console. It shows the number of tasks, how many of them are up,
+the average CPU usage, and the average memory usage in the right-hand-side
+table. The main content has a queries-per-second graph.</p>
+
+<pre><code>{{template "head" .}}
+
+{{template "prom_right_table_head"}}
+&lt;tr&gt;
+  &lt;th&gt;MyJob&lt;/th&gt;
+  &lt;th&gt;{{ template "prom_query_drilldown" (args "sum(up{job='myjob'})") }}
+      / {{ template "prom_query_drilldown" (args "count(up{job='myjob'})") }}
+  &lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;td&gt;CPU&lt;/td&gt;
+  &lt;td&gt;{{ template "prom_query_drilldown" (args
+      "avg by(job)(rate(process_cpu_seconds_total{job='myjob'}[5m]))"
+      "s/s" "humanizeNoSmallPrefix") }}
+  &lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;td&gt;Memory&lt;/td&gt;
+  &lt;td&gt;{{ template "prom_query_drilldown" (args
+       "avg by(job)(process_resident_memory_bytes{job='myjob'})"
+       "B" "humanize1024") }}
+  &lt;/td&gt;
+&lt;/tr&gt;
+{{template "prom_right_table_tail"}}
+
+
+{{template "prom_content_head" .}}
+&lt;h1&gt;MyJob&lt;/h1&gt;
+
+&lt;h3&gt;Queries&lt;/h3&gt;
+&lt;div id="queryGraph"&gt;&lt;/div&gt;
+&lt;script&gt;
+new PromConsole.Graph({
+  node: document.querySelector("#queryGraph"),
+  expr: "sum(rate(http_query_count{job='myjob'}[5m]))",
+  name: "Queries",
+  yAxisFormatter: PromConsole.NumberFormatter.humanizeNoSmallPrefix,
+  yHoverFormatter: PromConsole.NumberFormatter.humanizeNoSmallPrefix,
+  yUnits: "/s",
+  yTitle: "Queries"
+})
+&lt;/script&gt;
+
+{{template "prom_content_tail" .}}
+
+{{template "tail"}}
+</code></pre>
+
+<p>The <code>prom_right_table_head</code> and <code>prom_right_table_tail</code> templates contain the
+right-hand-side table. This is optional.</p>
+
+<p><code>prom_query_drilldown</code> is a template that will evaluate the expression passed to it, format it,
+and link to the expression in the <a href="/docs/visualization/browser/">expression browser</a>. The first
+argument is the expression. The second argument is the unit to use. The third
+argument is how to format the output. Only the first argument is requred.</p>
+
+<p>Valid output formats for the third argument to <code>prom_query_drilldown</code>:</p>
+
+<ul>
+<li>Not specified: Default Go display output.</li>
+<li>
+<code>humanize</code>: Display the result using <a href="http://en.wikipedia.org/wiki/Metric_prefix">metric prefixes</a>.</li>
+<li>
+<code>humanizeNoSmallPrefix</code>: For absolute values greater than 1, display the
+result using <a href="http://en.wikipedia.org/wiki/Metric_prefix">metric prefixes</a>. For
+absolute values less than 1, display 3 significant digits. This is useful
+to avoid units such as milliqueries per second that can be produced by
+<code>humanize</code>.</li>
+<li>
+<code>humanize1024</code>: Display the humanized result using a base of 1024 rather than 1000.
+This is usually used with <code>B</code> as the second argument to produce units such as <code>KiB</code> and <code>MiB</code>.</li>
+<li>
+<code>printf.3g</code>: Display 3 significant digits.</li>
+</ul>
+
+<p>Custom formats can be defined. See
+<a href="https://github.com/prometheus/prometheus/blob/master/console_libraries/prom.lib">prom.lib</a> for examples.</p>
+
+<h2 id="graph-library">Graph Library<a class="header-anchor" href="#graph-library"></a>
+</h2>
+
+<p>The graph library is invoked as:</p>
+
+<pre><code>&lt;div id="queryGraph"&gt;&lt;/div&gt;
+&lt;script&gt;
+new PromConsole.Graph({
+  node: document.querySelector("#queryGraph"),
+  expr: "sum(rate(http_query_count{job='myjob'}[5m]))"
+})
+&lt;/script&gt;
+</code></pre>
+
+<p>The <code>head</code> template loads the required Javascript and CSS.</p>
+
+<p>Parameters to the graph library:</p>
+
+<table class=" table table-bordered">
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>expr</td>
+<td>Required. Expression to graph.</td>
+</tr>
+<tr>
+<td>node</td>
+<td>Required. DOM node to render into.</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>Optional. Duration of the graph. Defaults to 1 hour.</td>
+</tr>
+<tr>
+<td>endTime</td>
+<td>Optional. Unixtime the graph ends at. Defaults to now.</td>
+</tr>
+<tr>
+<td>width</td>
+<td>Optional. Width of the graph, excluding titles. Defaults to auto-detection.</td>
+</tr>
+<tr>
+<td>height</td>
+<td>Optional. Height of the graph, excluding titles and legends. Defaults to 200 pixels.</td>
+</tr>
+<tr>
+<td>min</td>
+<td>Optional. Minimum x-axis value. Defaults to lowest data value.</td>
+</tr>
+<tr>
+<td>max</td>
+<td>Optional. Maximum y-axis value. Defaults to highest data value.</td>
+</tr>
+<tr>
+<td>renderer</td>
+<td>Optional. Type of graph. Options are <code>line</code> and <code>area</code> (stacked graph). Defaults to <code>line</code>.</td>
+</tr>
+<tr>
+<td>name</td>
+<td>Optional. Title of plots in legend and hover detail. If passed a string, <code>[[ label ]]</code> will be substituted with the label value. If passed a function, it will be passed a map of labels and should return the name as a string.</td>
+</tr>
+<tr>
+<td>xTitle</td>
+<td>Optional. Title of the x-axis. Defaults to <code>Time</code>.</td>
+</tr>
+<tr>
+<td>yUnits</td>
+<td>Optional. Units of the y-axis. Defaults to empty.</td>
+</tr>
+<tr>
+<td>yTitle</td>
+<td>Optional. Title of the y-axis. Defaults to empty.</td>
+</tr>
+<tr>
+<td>yAxisFormatter</td>
+<td>Optional. Number formatter for the y-axis. Defaults to <code>PromConsole.NumberFormatter.humanize</code>.</td>
+</tr>
+<tr>
+<td>yHoverFormatter</td>
+<td>Optional. Number formatter for the hover detail. Defaults to <code>PromConsole.NumberFormatter.humanizeExact</code>.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Valid options for the <code>yAxisFormatter</code> and <code>yHoverFormatter</code>:</p>
+
+<ul>
+<li>
+<code>PromConsole.NumberFormatter.humanize</code>: Format using <a href="http://en.wikipedia.org/wiki/Metric_prefix">metric prefixes</a>.</li>
+<li>
+<code>PromConsole.NumberFormatter.humanizeNoSmallPrefix</code>: For absolute values
+greater than 1, format using using <a href="http://en.wikipedia.org/wiki/Metric_prefix">metric prefixes</a>.
+For absolute values less than 1, format with 3 significant digits. This is
+useful to avoid units such as milliqueries per second that can be produced by
+<code>PromConsole.NumberFormatter.humanize</code>.</li>
+<li>
+<code>PromConsole.NumberFormatter.humanize1024</code>: Format the humanized result using a base of 1024 rather than 1000.</li>
+</ul>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+  <p class="pull-right">
+    Brought to you by <a href="http://soundcloud.com/" class="sc-logo" title="Go to SoundCloud.com"><img src="/assets/sc_sbs_grey_96x12.png"></a>
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
