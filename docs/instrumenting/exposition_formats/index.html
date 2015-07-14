@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Exposition formats | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Querying</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/configuration/">Configuration</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and third-party integrations</a></li><li class="active"><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> Alerting</span><ul class="nav"><li><a href="/docs/alerting/overview/">Alerting Overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="exposition-formats" class="page-header">Exposition formats<a class="header-anchor" href="#exposition-formats" name="exposition-formats"></a>
+</h1>
+
+<p>Prometheus implements two different wire formats which clients may use to
+expose metrics to a Prometheus server: a simple text-based format and a more
+efficient and robust protocol-buffer format. Prometheus servers and clients use
+<a href="http://en.wikipedia.org/wiki/Content_negotiation">content negotation</a> to
+establish the actual format to use. A server will prefer receiving the
+protocol-buffer format, and will fall back to the text-based format if the
+client does not support the former.</p>
+
+<p>The majority of users should use the existing <a href="/docs/instrumenting/clientlibs/">client libraries</a>
+that already implement the exposition formats.</p>
+
+<h2 id="format-version-0.0.4">Format version 0.0.4<a class="header-anchor" href="#format-version-0-0-4" name="format-version-0-0-4"></a>
+</h2>
+
+<p>This is the current metrics exposition format version.</p>
+
+<p>As of this version, there are two alternate formats understood by Prometheus: a
+protocol-buffer based format and a text format. Clients must support at least
+one of these two alternate formats.</p>
+
+<p>In addition, clients may optionally expose other text formats that are not
+understood by Prometheus. They exist solely for consumption by human beings and
+are meant to facilitate debugging. It is strongly recommended that a client
+library supports at least one human-readable format. A human-readable format
+should be the fallback in case the HTTP <code>Content-Type</code> header is not understood
+by the client library. The version <code>0.0.4</code> text format is generally considered
+human readable, so it is a good fallback candidate (and also understood by
+Prometheus).</p>
+
+<h3 id="format-variants-comparison">Format variants comparison<a class="header-anchor" href="#format-variants-comparison" name="format-variants-comparison"></a>
+</h3>
+
+<table class=" table table-bordered">
+<thead>
+<tr>
+<th></th>
+<th>Protocol buffer format</th>
+<th>Text format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inception</strong></td>
+<td>April 2014</td>
+<td>April 2014</td>
+</tr>
+<tr>
+<td><strong>Supported in</strong></td>
+<td>Prometheus version <code>&gt;=0.4.0</code>
+</td>
+<td>Prometheus version <code>&gt;=0.4.0</code>
+</td>
+</tr>
+<tr>
+<td><strong>Transmission</strong></td>
+<td>HTTP</td>
+<td>HTTP</td>
+</tr>
+<tr>
+<td><strong>Encoding</strong></td>
+<td>
+<a href="https://developers.google.com/protocol-buffers/docs/reference/java/com/google/protobuf/AbstractMessageLite#writeDelimitedTo(java.%20%20io.OutputStream)">32-bit varint-encoded record length-delimited</a> Protocol Buffer messages of type <a href="https://github.com/prometheus/client_model/blob/086fe7ca28bde6cec2acd5223423c1475a362858/metrics.proto#L76-%20%20L81">io.prometheus.client.MetricFamily</a>
+</td>
+<td>UTF-8, <code>\n</code> line endings</td>
+</tr>
+<tr>
+<td><strong>HTTP <code>Content-Type</code></strong></td>
+<td><code>application/vnd.google.protobuf; proto=io.prometheus.client.MetricFamily; encoding=delimited</code></td>
+<td>
+<code>text/plain; version=0.0.4</code> (A missing <code>version</code> value will lead to a fall-back to the most recent text format version.)</td>
+</tr>
+<tr>
+<td><strong>Optional HTTP <code>Content-Encoding</code></strong></td>
+<td><code>gzip</code></td>
+<td><code>gzip</code></td>
+</tr>
+<tr>
+<td><strong>Advantages</strong></td>
+<td><ul>
+<li>Cross-platform</li>
+<li>Size</li>
+<li>Encoding and decoding costs</li>
+<li>Strict schema</li>
+<li>Supports concatenation and theoretically streaming (only server-side behavior would need to change)</li>
+</ul></td>
+<td><ul>
+<li>Human-readable</li>
+<li>Easy to assemble, especially for minimalistic cases (no nesting required)</li>
+<li>Readable line by line (with the exception of type hints and docstrings)</li>
+</ul></td>
+</tr>
+<tr>
+<td><strong>Limitations</strong></td>
+<td><ul><li>Not human-readable</li></ul></td>
+<td><ul>
+<li>Verbose</li>
+<li>Types and docstrings not integral part of the syntax, meaning little-to-nonexistent metric contract validation</li>
+<li>Parsing cost</li>
+</ul></td>
+</tr>
+<tr>
+<td><strong>Supported metric primitives</strong></td>
+<td><ul>
+<li>Counter</li>
+<li>Gauge</li>
+<li>Histogram</li>
+<li>Summary</li>
+<li>Untyped</li>
+</ul></td>
+<td><ul>
+<li>Counter</li>
+<li>Gauge</li>
+<li>Histogram</li>
+<li>Summary</li>
+<li>Untyped</li>
+</ul></td>
+</tr>
+<tr>
+<td><strong>Compatibility</strong></td>
+<td>Version <code>0.0.3</code> protocol buffers are also valid version <code>0.0.4</code> protocol buffers.</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="text-format-details">Text format details<a class="header-anchor" href="#text-format-details" name="text-format-details"></a>
+</h3>
+
+<p>The protocol is line-oriented. A line-feed character (<code>\n</code>) separates lines.
+The last line must end with a line-feed character. Empty lines are ignored.</p>
+
+<p>Within a line, tokens can be separated by any number of blanks and/or tabs (and
+have to be separated by at least one if they would otherwise merge with the
+previous token). Leading and trailing whitespace is ignored.</p>
+
+<p>Lines with a <code>#</code> as the first non-whitespace character are comments. They are
+ignored unless the first token after <code>#</code> is either <code>HELP</code> or <code>TYPE</code>. Those
+lines are treated as follows: If the token is <code>HELP</code>, at least one more token
+is expected, which is the metric name. All remaining tokens are considered the
+docstring for that metric name. <code>HELP</code> lines may contain any sequence of UTF-8
+characters (after the metric name), but the backslash and the line-feed
+characters have to be escaped as <code>\\</code> and <code>\n</code>, respectively. Only one <code>HELP</code>
+line may exist for the same metric name.</p>
+
+<p>If the token is <code>TYPE</code>, exactly two more tokens are expected. The first is the
+metric name, and the second is either <code>counter</code>, <code>gauge</code>, <code>histogram</code>,
+<code>summary</code>, or <code>untyped</code>, defining the type for the metric of that name. Only
+one <code>TYPE</code> line may exist for the same metric name. The <code>TYPE</code> line for a
+metric name has to appear before the first sample is reported for that metric
+name. If there is no <code>TYPE</code> line for a metric name, the type is set to
+<code>untyped</code>.  Remaining lines describe samples, one per line, with the following
+syntax (EBNF):</p>
+
+<pre><code>metric_name [
+  "{" label_name "=" `"` label_value `"` { "," label_name "=" `"` label_value `"` } [ "," ] "}"
+] value [ timestamp ]
+</code></pre>
+
+<p><code>metric_name</code> and <code>label_name</code> have the usual Prometheus expression language restrictions. <code>label_value</code> can be any sequence of UTF-8 characters, but the backslash, the double-quote, and the line-feed characters have to be escaped as <code>\\</code>, <code>\"</code>, and <code>\n</code>, respectively.
+<code>value</code> is a float, and timestamp an <code>int64</code> (milliseconds since epoch, i.e. 1970-01-01 00:00:00 UTC, excluding leap seconds), represented as required by the <a href="http://golang.org/pkg/strconv/">Go strconv package</a> (see functions <code>ParseInt</code> and <code>ParseFloat</code>). In particular, <code>Nan</code>, <code>+Inf</code>, and <code>-Inf</code> are valid values.</p>
+
+<p>The <code>histogram</code> and <code>summary</code> types are difficult to represent in the text
+format. The following conventions apply:</p>
+
+<ul>
+<li>The sample sum for a summary or histogram named <code>x</code> is given as a separate sample named <code>x_sum</code>.</li>
+<li>The sample count for a summary or histogram named <code>x</code> is given as a separate sample named <code>x_count</code>.</li>
+<li>Each quantile of a summary named <code>x</code> is given as a separate sample line with the same name <code>x</code> and a label <code>{quantile="y"}</code>.</li>
+<li>Each bucket count of a histogram named <code>x</code> is given as a separate sample line with the name <code>x_bucket</code> and a label <code>{le="y"}</code> (where <code>y</code> is the upper bound of the bucket).</li>
+<li>A histogram <em>must</em> have a bucket with <code>{le="+Inf"}</code>. Its value <em>must</em> be identical to the value of <code>x_count</code>.</li>
+<li>The buckets of a histogram and the quantiles of a summary must appear in increasing numerical order of their label values (for the <code>le</code> or the <code>quantile</code> label, respectively).</li>
+</ul>
+
+<p>See also the example below.</p>
+
+<pre><code># HELP api_http_request_count The total number of HTTP requests.
+# TYPE api_http_request_count counter
+http_request_count{method="post",code="200"} 1027 1395066363000
+http_request_count{method="post",code="400"}    3 1395066363000
+
+# Escaping in label values:
+msdos_file_access_time_ms{path="C:\\DIR\\FILE.TXT",error="Cannot find file:\n\"FILE.TXT\""} 1.234e3
+
+# Minimalistic line:
+metric_without_timestamp_and_labels 12.47
+
+# A weird metric from before the epoch:
+something_weird{problem="division by zero"} +Inf -3982045
+
+# A histogram, which has a pretty complex representation in the text format:
+# HELP http_request_duration_seconds A histogram of the request duration.
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{le="0.05"} 24054
+http_request_duration_seconds_bucket{le="0.1"} 33444
+http_request_duration_seconds_bucket{le="0.2"} 100392
+http_request_duration_seconds_bucket{le="0.5"} 129389
+http_request_duration_seconds_bucket{le="1"} 133988
+http_request_duration_seconds_bucket{le="+Inf"} 144320
+http_request_duration_seconds_sum 53423
+http_request_duration_seconds_count 144320
+
+# Finally a summary, which has a complex representation, too:
+# HELP telemetry_requests_metrics_latency_microseconds A summary of the response latency.
+# TYPE telemetry_requests_metrics_latency_microseconds summary
+telemetry_requests_metrics_latency_microseconds{quantile="0.01"} 3102
+telemetry_requests_metrics_latency_microseconds{quantile="0.05"} 3272
+telemetry_requests_metrics_latency_microseconds{quantile="0.5"} 4773
+telemetry_requests_metrics_latency_microseconds{quantile="0.9"} 9001
+telemetry_requests_metrics_latency_microseconds{quantile="0.99"} 76656
+telemetry_requests_metrics_latency_microseconds_sum 1.7560473e+07
+telemetry_requests_metrics_latency_microseconds_count 2693
+</code></pre>
+
+<h4 id="optional-text-representations">Optional Text Representations<a class="header-anchor" href="#optional-text-representations" name="optional-text-representations"></a>
+</h4>
+
+<p>The following three optional text formats are meant for human consumption only
+and are not understood by Prometheus. Their definition may therefore be
+somewhat loose. Client libraries may or may not support these formats. Tools
+should not rely on these formats.</p>
+
+<ol>
+<li>HTML: This format is requested by an HTTP <code>Content-Type</code> header with value
+of <code>text/html</code>. It is a "pretty" rendering of the metrics to be looked at in a
+browser. While the generating client is technically completely free in
+assembling the HTML, consistency between client libraries should be aimed for.</li>
+<li>Protocol buffer text format: Identical to the protocol buffer format, but in
+text form. It consists of the protocol messages concatenated in their text
+format (also known as "debug strings"), separated by an additional new line
+character (i.e. there is an empty line between protocol messages). The format
+is requested as the protocol buffer format, but the <code>encoding</code> in the HTTP
+<code>Content-Type</code> header set to <code>text</code>.</li>
+<li>Protocol buffer compact text format: Identical to (2) but using the compact
+text format instead of the normal text format. The compact text format puts the
+whole protocol message on one line. The protocol messages are still separated
+by new line characters, but no "empty line" is needed for separation. (Simply
+one protocol message per line.) The format is requested as the protocol buffer
+format, but the <code>encoding</code> in the HTTP <code>Content-Type</code> header set to
+<code>compact-text</code>.</li>
+</ol>
+
+<h2 id="historical-versions">Historical versions<a class="header-anchor" href="#historical-versions" name="historical-versions"></a>
+</h2>
+
+<p>For details on historical format versions, see the legacy
+<a href="https://docs.google.com/document/d/1ZjyKiKxZV83VI9ZKAXRGKaUKK2BIWCT7oiGBKDBpjEY/edit?usp=sharing">Client Data Exposition Format</a>
+document.</p>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+  <p class="pull-right">
+    Brought to you by <a href="http://soundcloud.com/" class="sc-logo" title="Go to SoundCloud.com"><img src="/assets/sc_sbs_grey_96x12.png"></a>
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
