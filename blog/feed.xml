@@ -1,0 +1,1193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>http://prometheus.io/</id>
+  <title>Prometheus Blog</title>
+  <updated>2015-08-17T00:00:00Z</updated>
+  <link rel="alternate" href="http://prometheus.io/"/>
+  <link rel="self" href="http://prometheus.io/blog/feed.xml"/>
+  <author>
+    <name>© Prometheus Authors 2015</name>
+    <uri>http://prometheus.io/blog/</uri>
+  </author>
+  <icon>http://prometheus.io/assets/favicons/favicon.ico</icon>
+  <logo>http://prometheus.io/assets/prometheus_logo.png</logo>
+  <entry>
+    <id>tag:prometheus.io,2015-08-17:/blog/2015/08/17/service-discovery-with-etcd/</id>
+    <title type="html">Custom service discovery with etcd</title>
+    <published>2015-08-17T00:00:00Z</published>
+    <updated>2015-08-17T00:00:00Z</updated>
+    <author>
+      <name>Fabian Reinartz</name>
+      <uri>http://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="http://prometheus.io/blog/2015/08/17/service-discovery-with-etcd/"/>
+    <content type="html">&lt;p&gt;In a &lt;a href="/blog/2015/06/01/advanced-service-discovery/"&gt;previous post&lt;/a&gt; we
+introduced numerous new ways of doing service discovery in Prometheus.
+Since then a lot has happened. We improved the internal implementation and
+received fantastic contributions from our community, adding support for
+service discovery with Kubernetes and Marathon. They will become available
+with the release of version 0.16.&lt;/p&gt;
+
+&lt;p&gt;We also touched on the topic of &lt;a href="/blog/2015/06/01/advanced-service-discovery/#custom-service-discovery"&gt;custom service discovery&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Not every type of service discovery is generic enough to be directly included
+in Prometheus. Chances are your organisation has a proprietary
+system in place and you just have to make it work with Prometheus.
+This does not mean that you cannot enjoy the benefits of automatically
+discovering new monitoring targets.&lt;/p&gt;
+
+&lt;p&gt;In this post we will implement a small utility program that connects a custom
+service discovery approach based on &lt;a href="https://coreos.com/etcd/"&gt;etcd&lt;/a&gt;, the
+highly consistent distributed key-value store, to Prometheus.&lt;/p&gt;
+
+&lt;h2 id="targets-in-etcd-and-prometheus"&gt;Targets in etcd and Prometheus&lt;a class="header-anchor" href="#targets-in-etcd-and-prometheus" name="targets-in-etcd-and-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Our fictional service discovery system stores services and their
+instances under a well-defined key schema:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/services/&amp;lt;service_name&amp;gt;/&amp;lt;instance_id&amp;gt; = &amp;lt;instance_address&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Prometheus should now automatically add and remove targets for all existing
+services as they come and go.
+We can integrate with Prometheus's file-based service discovery, which
+monitors a set of files that describe targets as lists of target groups in
+JSON format.&lt;/p&gt;
+
+&lt;p&gt;A single target group consists of a list of addresses associated with a set of
+labels. Those labels are attached to all time series retrieved from those
+targets.
+One example target group extracted from our service discovery in etcd could
+look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  "targets": ["10.0.33.1:54423", "10.0.34.12:32535"],
+  "labels": {
+    "job": "node_exporter"
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="the-program"&gt;The program&lt;a class="header-anchor" href="#the-program" name="the-program"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;What we need is a small program that connects to the etcd cluster and performs
+a lookup of all services found in the &lt;code&gt;/services&lt;/code&gt; path and writes them out into
+a file of target groups.&lt;/p&gt;
+
+&lt;p&gt;Let's get started with some plumbing. Our tool has two flags: the etcd server
+to connect to and the file to which the target groups are written. Internally,
+the services are represented as a map from service names to instances.
+Instances are a map from the instance identifier in the etcd path to its
+address.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;const servicesPrefix = "/services"
+
+type (
+  instances map[string]string
+  services  map[string]instances
+)
+
+var (
+  etcdServer = flag.String("server", "http://127.0.0.1:4001", "etcd server to connect to")
+  targetFile = flag.String("target-file", "tgroups.json", "the file that contains the target groups")
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our &lt;code&gt;main&lt;/code&gt; function parses the flags and initializes our object holding the
+current services. We then connect to the etcd server and do a recursive read
+of the &lt;code&gt;/services&lt;/code&gt; path.
+We receive the subtree for the given path as a result and call &lt;code&gt;srvs.handle&lt;/code&gt;,
+which recursively performs the &lt;code&gt;srvs.update&lt;/code&gt; method for each node in the
+subtree. The &lt;code&gt;update&lt;/code&gt; method modifies the state of our &lt;code&gt;srvs&lt;/code&gt; object to be
+aligned with the state of our subtree in etcd.
+Finally, we call &lt;code&gt;srvs.persist&lt;/code&gt; which transforms the &lt;code&gt;srvs&lt;/code&gt; object into a list
+of target groups and writes them out to the file specified by the
+&lt;code&gt;-target-file&lt;/code&gt; flag.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func main() {
+  flag.Parse()
+
+  var (
+    client  = etcd.NewClient([]string{*etcdServer})
+    srvs    = services{}
+  )
+
+  // Retrieve the subtree of the /services path.
+  res, err := client.Get(servicesPrefix, false, true)
+  if err != nil {
+    log.Fatalf("Error on initial retrieval: %s", err)
+  }
+  srvs.handle(res.Node, srvs.update)
+  srvs.persist()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let's assume we have this as a working implementation. We could now run this
+tool every 30 seconds to have a mostly accurate view of the current targets in
+our service discovery.&lt;/p&gt;
+
+&lt;p&gt;But can we do better?&lt;/p&gt;
+
+&lt;p&gt;The answer is &lt;em&gt;yes&lt;/em&gt;. etcd provides watches, which let us listen for updates on
+any path and its sub-paths. With that, we are informed about changes
+immediately and can apply them immediately. We also don't have to work through
+the whole &lt;code&gt;/services&lt;/code&gt; subtree again and again, which can become important for
+a large number of services and instances.&lt;/p&gt;
+
+&lt;p&gt;We extend our &lt;code&gt;main&lt;/code&gt; function as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func main() {
+  // ...
+
+  updates := make(chan *etcd.Response)
+
+  // Start recursively watching for updates.
+  go func() {
+    _, err := client.Watch(servicesPrefix, 0, true, updates, nil)
+    if err != nil {
+      log.Errorln(err)
+    }
+  }()
+
+  // Apply updates sent on the channel.
+  for res := range updates {
+    log.Infoln(res.Action, res.Node.Key, res.Node.Value)
+
+    handler := srvs.update
+    if res.Action == "delete" {
+      handler = srvs.delete
+    }
+    srvs.handle(res.Node, handler)
+    srvs.persist()
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We start a goroutine that recursively watches for changes to entries in
+&lt;code&gt;/services&lt;/code&gt;. It blocks forever and sends all changes to the &lt;code&gt;updates&lt;/code&gt; channel.
+We then read the updates from the channel and apply it as before. In case an
+instance or entire service disappears however, we call &lt;code&gt;srvs.handle&lt;/code&gt; using the
+&lt;code&gt;srvs.delete&lt;/code&gt; method instead.&lt;/p&gt;
+
+&lt;p&gt;We finish each update by another call to &lt;code&gt;srvs.persist&lt;/code&gt; to write out the
+changes to the file Promtheus is watching.&lt;/p&gt;
+
+&lt;h3 id="modification-methods"&gt;Modification methods&lt;a class="header-anchor" href="#modification-methods" name="modification-methods"&gt;&lt;/a&gt;
+&lt;/h3&gt;
+
+&lt;p&gt;So far so good – conceptually this works. What remains are the &lt;code&gt;update&lt;/code&gt; and
+&lt;code&gt;delete&lt;/code&gt; handler methods as well as the &lt;code&gt;persist&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;update&lt;/code&gt; and &lt;code&gt;delete&lt;/code&gt; are invoked by the &lt;code&gt;handle&lt;/code&gt; method which simply calls
+them for each node in a subtree, given that the path is valid:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var pathPat = regexp.MustCompile(`/services/([^/]+)(?:/(\d+))?`)
+
+func (srvs services) handle(node *etcd.Node, handler func(*etcd.Node)) {
+  if pathPat.MatchString(node.Key) {
+    handler(node)
+  } else {
+    log.Warnf("unhandled key %q", node.Key)
+  }
+
+  if node.Dir {
+    for _, n := range node.Nodes {
+      srvs.handle(n, handler)
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id="update"&gt;
+&lt;code&gt;update&lt;/code&gt;&lt;a class="header-anchor" href="#update" name="update"&gt;&lt;/a&gt;
+&lt;/h4&gt;
+
+&lt;p&gt;The update methods alters the state of our &lt;code&gt;services&lt;/code&gt; object
+based on the node which was updated in etcd.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (srvs services) update(node *etcd.Node) {
+  match := pathPat.FindStringSubmatch(node.Key)
+  // Creating a new job directory does not require any action.
+  if match[2] == "" {
+    return
+  }
+  srv := match[1]
+  instanceID := match[2]
+
+  // We received an update for an instance.
+  insts, ok := srvs[srv]
+  if !ok {
+    insts = instances{}
+    srvs[srv] = insts
+  }
+  insts[instanceID] = node.Value
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id="delete"&gt;
+&lt;code&gt;delete&lt;/code&gt;&lt;a class="header-anchor" href="#delete" name="delete"&gt;&lt;/a&gt;
+&lt;/h4&gt;
+
+&lt;p&gt;The delete methods removes instances or entire jobs from our &lt;code&gt;services&lt;/code&gt;
+object depending on which node was deleted from etcd.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (srvs services) delete(node *etcd.Node) {
+  match := pathPat.FindStringSubmatch(node.Key)
+  srv := match[1]
+  instanceID := match[2]
+
+  // Deletion of an entire service.
+  if instanceID == "" {
+    delete(srvs, srv)
+    return
+  }
+
+  // Delete a single instance from the service.
+  delete(srvs[srv], instanceID)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id="persist"&gt;
+&lt;code&gt;persist&lt;/code&gt;&lt;a class="header-anchor" href="#persist" name="persist"&gt;&lt;/a&gt;
+&lt;/h4&gt;
+
+&lt;p&gt;The persist method transforms the state of our &lt;code&gt;services&lt;/code&gt; object into a list of &lt;code&gt;TargetGroup&lt;/code&gt;s. It then writes this list into the &lt;code&gt;-target-file&lt;/code&gt; in JSON
+format.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type TargetGroup struct {
+  Targets []string          `json:"targets,omitempty"`
+  Labels  map[string]string `json:"labels,omitempty"`
+}
+
+func (srvs services) persist() {
+  var tgroups []*TargetGroup
+  // Write files for current services.
+  for job, instances := range srvs {
+    var targets []string
+    for _, addr := range instances {
+      targets = append(targets, addr)
+    }
+
+    tgroups = append(tgroups, &amp;amp;TargetGroup{
+      Targets: targets,
+      Labels:  map[string]string{"job": job},
+    })
+  }
+
+  content, err := json.Marshal(tgroups)
+  if err != nil {
+    log.Errorln(err)
+    return
+  }
+
+  f, err := create(*targetFile)
+  if err != nil {
+    log.Errorln(err)
+    return
+  }
+  defer f.Close()
+
+  if _, err := f.Write(content); err != nil {
+    log.Errorln(err)
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="taking-it-live"&gt;Taking it live&lt;a class="header-anchor" href="#taking-it-live" name="taking-it-live"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;All done, so how do we run this?&lt;/p&gt;
+
+&lt;p&gt;We simply start our tool with a configured output file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./etcd_sd -target-file /etc/prometheus/tgroups.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we configure Prometheus with file based service discovery
+using the same file. The simplest possible configuration looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;scrape_configs:
+- job_name: 'default' # Will be overwritten by job label of target groups.
+  file_sd_configs:
+  - names: ['/etc/prometheus/tgroups.json']
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And that's it. Now our Prometheus stays in sync with services and their
+instances entering and leaving our service discovery with etcd.&lt;/p&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;a class="header-anchor" href="#conclusion" name="conclusion"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;If Prometheus does not ship with native support for the service discovery of
+your organisation, don't despair. Using a small utility program you can easily
+bridge the gap and profit from seamless updates to the monitored targets.
+Thus, you can remove changes to the monitoring configuration from your
+deployment equation.&lt;/p&gt;
+
+&lt;p&gt;A big thanks to our contributors &lt;a href="https://twitter.com/jimmidyson"&gt;Jimmy Dyson&lt;/a&gt;
+and &lt;a href="https://twitter.com/xperimental"&gt;Robert Jacob&lt;/a&gt; for adding native support
+for &lt;a href="http://kubernetes.io/"&gt;Kubernetes&lt;/a&gt; and &lt;a href="https://mesosphere.github.io/marathon/"&gt;Marathon&lt;/a&gt;.
+Also check out &lt;a href="https://twitter.com/keegan_csmith"&gt;Keegan C Smith's&lt;/a&gt; take on &lt;a href="https://github.com/keegancsmith/prometheus-ec2-discovery"&gt;EC2 service discovery&lt;/a&gt; based on files.&lt;/p&gt;
+
+&lt;p&gt;You can find the &lt;a href="https://github.com/fabxc/prom_sd_example/tree/master/etcd_simple"&gt;full source of this blog post on GitHub&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2015-06-24:/blog/2015/06/24/monitoring-dreamhack/</id>
+    <title type="html">Monitoring DreamHack - the World's Largest Digital Festival</title>
+    <published>2015-06-24T00:00:00Z</published>
+    <updated>2015-06-24T00:00:00Z</updated>
+    <author>
+      <name>Christian Svensson (DreamHack Network Team)</name>
+      <uri>http://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="http://prometheus.io/blog/2015/06/24/monitoring-dreamhack/"/>
+    <content type="html">&lt;p&gt;&lt;em&gt;Editor's note: This article is a guest post written by a Prometheus user.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;If you are operating the network for 10,000's of demanding gamers, you need to
+really know what is going on inside your network. Oh, and everything needs to be
+built from scratch in just five days.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;If you have never heard about &lt;a href="http://www.dreamhack.se/"&gt;DreamHack&lt;/a&gt; before, here
+is the pitch: Bring 20,000 people together and have the majority of them bring
+their own computer.  Mix in professional gaming (eSports), programming contests,
+and live music concerts. The result is the world's largest festival dedicated
+solely to everything digital.&lt;/p&gt;
+
+&lt;p&gt;To make such an event possible, there needs to be a lot of infrastructure in
+place. Ordinary infrastructures of this size take months to build, but the crew
+at DreamHack builds everything from scratch in just five days. This of course
+includes stuff like configuring network switches, but also building the
+electricity distribution, setting up stores for food and drinks, and even
+building the actual tables.&lt;/p&gt;
+
+&lt;p&gt;The team that builds and operates everything related to the network is
+officially called the Network team, but we usually refer to ourselves as &lt;em&gt;tech&lt;/em&gt;
+or &lt;em&gt;dhtech&lt;/em&gt;. This post is going to focus on the work of dhtech and how we used
+Prometheus during DreamHack Summer 2015 to try to kick our monitoring up another
+notch.&lt;/p&gt;
+
+&lt;h2 id="the-equipment"&gt;The equipment&lt;a class="header-anchor" href="#the-equipment" name="the-equipment"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Turns out that to build a highly performant network for 10,000+
+computers, you need at least the same number of network ports. In our case these
+come in the form of ~400 Cisco 2950 switches. We call these the access switches.
+These are everywhere in the venue where participants will be seated with their
+computers.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://www.flickr.com/photos/dreamhack/8206439882"&gt;&lt;img src="https://c1.staticflickr.com/9/8487/8206439882_4739d39a9c_c.jpg" alt="Access switches"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;Dutifully standing in line, the access switches are ready to greet the
+DreamHackers with high-speed connectivity.&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;Obviously just connecting all these computers to a switch is not enough. That
+switch needs to be connected to the other switches as well. This is where the
+distribution switches (or dist switches) come into play. These are switches that
+take the hundreds of links from all access switches and aggregate them into
+more manageable 10-Gbit/s high-capacity fibre. The dist switches are then
+further aggregated into our core, where the traffic is routed to its
+destination.&lt;/p&gt;
+
+&lt;p&gt;On top of all of this, we operate our own WiFi networks, DNS/DHCP servers, and
+other infrastructure. When completed, our core looks something like the image
+below.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://www.flickr.com/photos/dreamhack/18679671439"&gt;&lt;img src="https://c2.staticflickr.com/4/3951/18679671439_10ce7a8eb4_c.jpg" alt="The DreamHack network core"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The DreamHack network core&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;&lt;a href="http://i.imgur.com/ZCQa2Ab.png"&gt;&lt;img src="http://i.imgur.com/ZCQa2Abl.png" alt="Network planning map"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The planning map for the distribution and core layers. The core is
+clearly visible in "Hall D"&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;All in all this is becoming a lengthy list of stuff to monitor, so let's get to
+the reason you're here: How do we make sure we know what's going on?&lt;/p&gt;
+
+&lt;h2 id="introducing:-dhmon"&gt;Introducing: dhmon&lt;a class="header-anchor" href="#introducing-dhmon" name="introducing-dhmon"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;dhmon is the collective name of the systems that not only
+monitor the network, but also allow other teams to collect metrics on whatever
+they want.&lt;/p&gt;
+
+&lt;p&gt;Since the network needs to be built in five days, it's essential that the
+monitoring systems are easy to set up and keep in sync if we need to do last
+minute infrastructural changes (like adding or removing devices). When we start
+to build the network, we need monitoring as soon as possible to be able to
+discover any problems with the equipment or other issues we hadn't foreseen.&lt;/p&gt;
+
+&lt;p&gt;In the past we have tried to use a mix of commonly available software such as
+Cacti, SNMPc, and Opsview among others. While these have worked they have focused on
+being closed systems and only provided the bare minimum. A few years back a few
+people from the team said "Enough, we can do better ourselves!" and started
+writing a custom monitoring solution.&lt;/p&gt;
+
+&lt;p&gt;At the time the options were limited. Over the years the system went from using
+Graphite (scalability issues), a custom Cassandra store (high complexity), and
+InfluxDB (immature software) to finally land on using Prometheus. I first
+learned about Prometheus back in 2014 when I met Julius Volz and I had been
+eager to try it ever since. This summer we finally replaced the custom
+InfluxDB-based metrics store that we had written with Prometheus. Spoiler: We're
+not going back.&lt;/p&gt;
+
+&lt;h2 id="the-architecture"&gt;The architecture&lt;a class="header-anchor" href="#the-architecture" name="the-architecture"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The monitoring solution consists of three layers:
+collection, storage, presentation. Our most critical collectors are
+snmpcollector (SNMP) and ipplan-pinger (ICMP), closely followed by dhcpinfo
+(DHCP lease stats). We also have some scripts that dump stats about other
+systems into &lt;a href="https://github.com/prometheus/node_exporter"&gt;node_exporter&lt;/a&gt;'s
+textfile collector.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://i.imgur.com/6gN3MRp.png"&gt;&lt;img src="http://i.imgur.com/6gN3MRp.png" alt="dhmon Architecture"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The current architecture plan of dhmon as of Summer 2015&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;We use Prometheus as a central timeseries storage and querying engine, but we
+also use Redis and memcached to export snapshot views of binary information that
+we collect but cannot store in Prometheus in any sensible way, or when we need
+to access very fresh data.&lt;/p&gt;
+
+&lt;p&gt;One such case is in our presentation layer. We use our dhmap web application to
+get an overview of the overall health of the access switches. In order to be
+effective at resolving errors, we need a latency of ~10 seconds from data
+collection to presentation. Our goal is to have fixed the problem before the
+customer notices, or at least before they have walked over to the support people
+to report an issue. For this reason, we have been using memcached since the
+beginning to access the latest snapshot of the network.&lt;/p&gt;
+
+&lt;p&gt;We continued to use memcached this year for our low-latency data, while using
+Prometheus for everything that's historical or not as latency-sensitive. This
+decision was made simply because we were unsure how Prometheus would perform at
+very short sampling intervals. In the end, we found no reason for why we can't
+use Prometheus for this data as well - we will definitely try to replace our
+memcached with Prometheus at the next DreamHack.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://i.imgur.com/D5I0Ztb.png"&gt;&lt;img src="http://i.imgur.com/D5I0Ztbl.png" alt="dhmon Visualization"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The overview of our access layer visualized by dhmon&lt;/em&gt;&lt;/center&gt;
+
+&lt;h2 id="prometheus-setup"&gt;Prometheus setup&lt;a class="header-anchor" href="#prometheus-setup" name="prometheus-setup"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The block that so far has been referred to as &lt;em&gt;Prometheus&lt;/em&gt;
+really consists of three products:
+&lt;a href="https://github.com/prometheus/prometheus"&gt;Prometheus&lt;/a&gt;,
+&lt;a href="https://github.com/prometheus/promdash"&gt;PromDash&lt;/a&gt;, and
+&lt;a href="https://github.com/prometheus/alertmanager"&gt;Alertmanager&lt;/a&gt;. The setup is fairly
+basic and all three components are running on the same host. Everything is
+served by an Apache web server that just acts as a reverse proxy.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ProxyPass /prometheus http://localhost:9090/prometheus
+ProxyPass /alertmanager http://localhost:9093/alertmanager
+ProxyPass /dash http://localhost:3000/dash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="exploring-the-network"&gt;Exploring the network&lt;a class="header-anchor" href="#exploring-the-network" name="exploring-the-network"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Prometheus has a powerful querying engine that allows
+you to do pretty cool things with the streaming information collected from all
+over your network. However, sometimes the queries need to process too much data
+to finish within a reasonable amount of time. This happened to us when we wanted
+to graph the top 5 utilized links out of ~18,000 in total. While the query
+worked, it would take roughly the amount of time we set our timeout limit to,
+meaning it was both slow and flaky. We decided to use Prometheus' &lt;a href="/docs/querying/rules/"&gt;recording
+rules&lt;/a&gt; for precomputing heavy queries.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;precomputed_link_utilization_percent = rate(ifHCOutOctets{layer!='access'}[10m])*8/1000/1000
+                                         / on (device,interface,alias)
+                                       ifHighSpeed{layer!='access'}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After this, running &lt;code&gt;topk(5, precomputed_link_utilization_percent)&lt;/code&gt; was
+blazingly fast.&lt;/p&gt;
+
+&lt;h2 id="being-reactive:-alerting"&gt;Being reactive: alerting&lt;a class="header-anchor" href="#being-reactive-alerting" name="being-reactive-alerting"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;So at this stage we had something we could query for
+the state of the network. Since we are humans, we don't want to spend our time
+running queries all the time to see if things are still running as they should,
+so obviously we need alerting.&lt;/p&gt;
+
+&lt;p&gt;For example: we know that all our access switches use GigabitEthernet0/2 as an
+uplink. Sometimes when the network cables have been in storage for too long they
+oxidize and are not able to negotiate the full 1000 Mbps that we want.&lt;/p&gt;
+
+&lt;p&gt;The negotiated speed of a network port can be found in the SNMP OID
+&lt;code&gt;IF-MIB::ifHighSpeed&lt;/code&gt;. People familiar with SNMP will however recognize that
+this OID is indexed by an arbitrary interface index. To make any sense of this
+index, we need to cross-reference it with data from SNMP OID &lt;code&gt;IF-MIB::ifDescr&lt;/code&gt;
+to retrieve the actual interface name.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, our snmpcollector supports this kind of cross-referencing while
+generating Prometheus metrics. This allows us in a simple way to not only query
+data, but also define useful alerts. In our setup we configured the SNMP
+collection to annotate any metric under the &lt;code&gt;IF-MIB::ifTable&lt;/code&gt; and
+&lt;code&gt;IF-MIB::ifXTable&lt;/code&gt; OIDs with &lt;code&gt;ifDescr&lt;/code&gt;. This will come in handy now when we need
+to specify that we are only interested in the &lt;code&gt;GigabitEthernet0/2&lt;/code&gt; port and no
+other interface.&lt;/p&gt;
+
+&lt;p&gt;Let's have a look at what such an alert definition looks like.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ALERT BadUplinkOnAccessSwitch
+  IF ifHighSpeed{layer='access', interface='GigabitEthernet0/2'} &amp;lt; 1000 FOR 2m
+  SUMMARY "Interface linking at {{$value}} Mbps"
+  DESCRIPTION "Interface {{$labels.interface}} on {{$labels.device}} linking at {{$value}} Mbps"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Done! Now we will get an alert if a switch's uplink suddenly links at a
+non-optimal speed.&lt;/p&gt;
+
+&lt;p&gt;Let's also look at how an alert for an almost full DHCP scope looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ALERT DhcpScopeAlmostFull
+  IF ceil((dhcp_leases_current_count / dhcp_leases_max_count)*100) &amp;gt; 90 FOR 2m
+  SUMMARY "DHCP scope {{$labels.network}} is almost full"
+  DESCRIPTION "DHCP scope {{$labels.network}} is {{$value}}% full"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We found the syntax to define alerts easy to read and understand even if you had
+no previous experience with Prometheus or time series databases.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://i.imgur.com/RV5gM7O.png"&gt;&lt;img src="http://i.imgur.com/RV5gM7Ol.png" alt="Prometheus alerts for DreamHack"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;Oops! Turns out we have some bad uplinks, better run out and fix
+it!&lt;/em&gt;&lt;/center&gt;
+
+&lt;h2 id="being-proactive:-dashboards"&gt;Being proactive: dashboards&lt;a class="header-anchor" href="#being-proactive-dashboards" name="being-proactive-dashboards"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;While alerting is an essential part of
+monitoring, sometimes you just want to have a good overview of the health of
+your network. To achieve this we used &lt;a href="/docs/visualization/promdash/"&gt;PromDash&lt;/a&gt;.
+Every time someone asked us something about the network, we crafted a query to
+get the answer and saved it as a dashboard widget. The most interesting ones
+were then added to an overview dashboard that we proudly displayed.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://i.imgur.com/yYtC8vL.png"&gt;&lt;img src="http://i.imgur.com/yYtC8vLl.png" alt="dhmon Dashboard"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The DreamHack Overview dashboard powered by PromDash&lt;/em&gt;&lt;/center&gt;
+
+&lt;h2 id="the-future"&gt;The future&lt;a class="header-anchor" href="#the-future" name="the-future"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;While changing an integral part of any system is a complex job and
+we're happy that we managed to integrate Prometheus in just one event, there are
+without a doubt a lot of areas to improve. Some areas are pretty basic: using
+more precomputed metrics to improve performance, adding more alerts, and tuning
+the ones we have. Another area is to make it easier for operators: creating an
+alert dashboard suitable for our network operations center (NOC), figuring out
+if we want to page the people on-call, or just let the NOC escalate alerts.&lt;/p&gt;
+
+&lt;p&gt;Some bigger features we're planning on adding: syslog analysis (we have a lot of
+syslog!), alerts from our intrusion detection systems, integrating with our
+Puppet setup, and also integrating more across the different teams at DreamHack.
+We managed to create a proof-of-concept where we got data from one of the
+electrical current sensors into our monitoring, making it easy to see if a
+device is faulty or if it simply doesn't have any electricity anymore. We're
+also working on integrating with the point-of-sale systems that are used in the
+stores at the event. Who doesn't want to graph the sales of ice cream?&lt;/p&gt;
+
+&lt;p&gt;Finally, not all services that the team operates are on-site, and some even run
+24/7 after the event. We want to monitor these services with Prometheus as well,
+and in the long run when Prometheus gets support for federation, utilize the
+off-site Prometheus to replicate the metrics from the event Prometheus.&lt;/p&gt;
+
+&lt;h2 id="closing-words"&gt;Closing words&lt;a class="header-anchor" href="#closing-words" name="closing-words"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We're really excited about Prometheus and how easy it makes
+setting up scalable monitoring and alerting from scratch.&lt;/p&gt;
+
+&lt;p&gt;A huge shout-out to everyone that helped us in &lt;code&gt;#prometheus&lt;/code&gt; on
+&lt;a href="https://freenode.net/"&gt;FreeNode&lt;/a&gt; during the event. Special thanks to Brian
+Brazil, Fabian Reinartz and Julius Volz. Thanks for helping us even in the cases
+where it was obvious that we hadn't read the documentation thoroughly enough.&lt;/p&gt;
+
+&lt;p&gt;Finally, dhmon is all open-source, so head over to &lt;a href="https://github.com/dhtech/"&gt;https://github.com/dhtech/&lt;/a&gt;
+and have a look if you're interested. If you feel like you would like to be a
+part of this, just head over to &lt;code&gt;#dreamhack&lt;/code&gt; on
+&lt;a href="https://www.quakenet.org/"&gt;QuakeNet&lt;/a&gt; and have a chat with us. Who knows, maybe
+you will help us build the next DreamHack?&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2015-06-18:/blog/2015/06/18/practical-anomaly-detection/</id>
+    <title type="html">Practical Anomaly Detection</title>
+    <published>2015-06-18T00:00:00Z</published>
+    <updated>2015-06-18T00:00:00Z</updated>
+    <author>
+      <name>Brian Brazil</name>
+      <uri>http://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="http://prometheus.io/blog/2015/06/18/practical-anomaly-detection/"/>
+    <content type="html">&lt;p&gt;In his &lt;em&gt;&lt;a href="http://www.kitchensoap.com/2015/05/01/openlettertomonitoringproducts/"&gt;Open Letter To Monitoring/Metrics/Alerting Companies&lt;/a&gt;&lt;/em&gt;,
+John Allspaw asserts that attempting "to detect anomalies perfectly, at the right time, is not possible".&lt;/p&gt;
+
+&lt;p&gt;I have seen several attempts by talented engineers to build systems to
+automatically detect and diagnose problems based on time series data. While it
+is certainly possible to get a demonstration working, the data always turned
+out to be too noisy to make this approach work for anything but the simplest of
+real-world systems.&lt;/p&gt;
+
+&lt;p&gt;All hope is not lost though. There are many common anomalies which you can
+detect and handle with custom-built rules. The Prometheus &lt;a href="../../../../../docs/querying/basics/"&gt;query
+language&lt;/a&gt; gives you the tools to discover
+these anomalies while avoiding false positives.&lt;/p&gt;
+
+&lt;h2 id="building-a-query"&gt;Building a query&lt;a class="header-anchor" href="#building-a-query" name="building-a-query"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;A common problem within a service is when a small number of servers are not
+performing as well as the rest, such as responding with increased latency.&lt;/p&gt;
+
+&lt;p&gt;Let us say that we have a metric &lt;code&gt;instance:latency_seconds:mean5m&lt;/code&gt; representing the
+average query latency for each instance of a service, calculated via a
+&lt;a href="/docs/querying/rules/"&gt;recording rule&lt;/a&gt; from a
+&lt;a href="/docs/concepts/metric_types/#summary"&gt;Summary&lt;/a&gt; metric.&lt;/p&gt;
+
+&lt;p&gt;A simple way to start would be to look for instances with a latency
+more than two standard deviations above the mean:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  instance:latency_seconds:mean5m
+&amp;gt; on (job) group_left(instance)
+  (
+      avg by (job)(instance:latency_seconds:mean5m)
+    + on (job)
+      2 * stddev by (job)(instance:latency_seconds:mean5m)
+  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You try this out and discover that there are false positives when
+the latencies are very tightly clustered. So you add a requirement
+that the instance latency also has to be 20% above the average:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  (
+      instance:latency_seconds:mean5m
+    &amp;gt; on (job) group_left(instance)
+      (
+          avg by (job)(instance:latency_seconds:mean5m)
+        + on (job)
+          2 * stddev by (job)(instance:latency_seconds:mean5m)
+      )
+  )
+&amp;gt; on (job) group_left(instance)
+  1.2 * avg by (job)(instance:latency_seconds:mean5m)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Finally, you find that false positives tend to happen at low traffic levels.
+You add a requirement for there to be enough traffic for 1 query per second to
+be going to each instance. You create an alert definition for all of this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ALERT InstanceLatencyOutlier
+  IF
+        (
+            instance:latency_seconds:mean5m
+          &amp;gt; on (job) group_left(instance)
+            (
+                avg by (job)(instance:latency_seconds:mean5m)
+              + on (job)
+                2 * stddev by (job)(instance:latency_seconds:mean5m)
+            )
+        )
+      &amp;gt; on (job) group_left(instance)
+        1.2 * avg by (job)(instance:latency_seconds:mean5m)
+    and on (job)
+        avg by (job)(instance:latency_seconds_count:rate5m)
+      &amp;gt;
+        1
+  FOR 30m
+  SUMMARY "{{$labels.instance}} in {{$labels.job}} is a latency outlier"
+  DESCRIPTION "{{$labels.instance}} has latency of {{humanizeDuration $value}}"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="automatic-actions"&gt;Automatic actions&lt;a class="header-anchor" href="#automatic-actions" name="automatic-actions"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The above alert can feed into the
+&lt;a href="/docs/alerting/alertmanager/"&gt;Alertmanager&lt;/a&gt;, and from there to
+your chat, ticketing, or paging systems. After a while you might discover that the
+usual cause of the alert is something that there is not a proper fix for, but there is an
+automated action such as a restart, reboot, or machine replacement that resolves
+the issue.&lt;/p&gt;
+
+&lt;p&gt;Rather than having humans handle this repetitive task, one option is to
+get the Alertmanager to send the alert to a web service that will perform
+the action with appropriate throttling and safety features.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href="/docs/alerting/alertmanager/#generic-webhook"&gt;generic webhook&lt;/a&gt;
+sends alert notifications to an HTTP endpoint of your choice. A simple Alertmanager
+configuration that uses it could look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# A simple notification configuration which only sends alert notifications to
+# an external webhook.
+notification_config {
+  name: "restart_webhook"
+  webhook_config {
+    url: "http://example.org/my/hook"
+  }
+}
+
+# An aggregation rule which matches all alerts with the label
+# alertname="InstanceLatencyOutlier" and sends them using the "restart_webhook"
+# notification configuration.
+aggregation_rule {
+  filter {
+    name_re: "alertname"
+    value_re: "InstanceLatencyOutlier"
+  }
+  notification_config_name: "restart_webhook"
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="summary"&gt;Summary&lt;a class="header-anchor" href="#summary" name="summary"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The Prometheus query language allows for rich processing of your monitoring
+data. This lets you to create alerts with good signal-to-noise ratios, and the
+Alertmanager's generic webhook support can trigger automatic remediations.
+This all combines to enable oncall engineers to focus on problems where they can
+have the most impact.&lt;/p&gt;
+
+&lt;p&gt;When defining alerts for your services, see also our &lt;a href="http://prometheus.io/docs/practices/alerting/"&gt;alerting best practices&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2015-06-01:/blog/2015/06/01/advanced-service-discovery/</id>
+    <title type="html">Advanced Service Discovery in Prometheus 0.14.0</title>
+    <published>2015-06-01T00:00:00Z</published>
+    <updated>2015-06-01T00:00:00Z</updated>
+    <author>
+      <name>Fabian Reinartz, Julius Volz</name>
+      <uri>http://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="http://prometheus.io/blog/2015/06/01/advanced-service-discovery/"/>
+    <content type="html">&lt;p&gt;This week we released Prometheus v0.14.0 — a version with many long-awaited additions
+and improvements.&lt;/p&gt;
+
+&lt;p&gt;On the user side, Prometheus now supports new service discovery mechanisms. In
+addition to DNS-SRV records, it now supports &lt;a href="https://www.consul.io"&gt;Consul&lt;/a&gt;
+out of the box, and a file-based interface allows you to connect your own
+discovery mechanisms. Over time, we plan to add other common service discovery
+mechanisms to Prometheus.&lt;/p&gt;
+
+&lt;p&gt;Aside from many smaller fixes and improvements, you can now also reload your configuration during
+runtime by sending a &lt;code&gt;SIGHUP&lt;/code&gt; to the Prometheus process. For a full list of changes, check the
+&lt;a href="https://github.com/prometheus/prometheus/blob/master/CHANGELOG.md#0140--2015-06-01"&gt;changelog for this release&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this blog post, we will take a closer look at the built-in service discovery mechanisms and provide
+some practical examples. As an additional resource, see
+&lt;a href="/docs/operating/configuration"&gt;Prometheus's configuration documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="prometheus-and-targets"&gt;Prometheus and targets&lt;a class="header-anchor" href="#prometheus-and-targets" name="prometheus-and-targets"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;For a proper understanding of this blog post, we first need to take a look at how
+Prometheus labels targets.&lt;/p&gt;
+
+&lt;p&gt;There are various places in the configuration file where target labels may be
+set. They are applied in the following order, with later stages overwriting any
+labels set by an earlier stage:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Global labels, which are assigned to every target scraped by the Prometheus instance.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;job&lt;/code&gt; label, which is configured as a default value for each scrape configuration.&lt;/li&gt;
+&lt;li&gt;Labels that are set per target group within a scrape configuration.&lt;/li&gt;
+&lt;li&gt;Advanced label manipulation via &lt;a href="/docs/operating/configuration/#target-relabeling-relabel_config"&gt;&lt;em&gt;relabeling&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Each stage overwrites any colliding labels from the earlier stages. Eventually, we have a flat
+set of labels that describe a single target. Those labels are then attached to every time series that
+is scraped from this target.&lt;/p&gt;
+
+&lt;p&gt;Note: Internally, even the address of a target is stored in a special
+&lt;code&gt;__address__&lt;/code&gt; label. This can be useful during advanced label manipulation
+(relabeling), as we will see later. Labels starting with &lt;code&gt;__&lt;/code&gt; do not appear in
+the final time series.&lt;/p&gt;
+
+&lt;h2 id="scrape-configurations-and-relabeling"&gt;Scrape configurations and relabeling&lt;a class="header-anchor" href="#scrape-configurations-and-relabeling" name="scrape-configurations-and-relabeling"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Aside from moving from an ASCII protocol buffer format to YAML, a fundamental change to
+Prometheus's configuration is the change from per-job configurations to more generalized scrape
+configurations. While the two are almost equivalent for simple setups, scrape configurations
+allow for greater flexibility in more advanced use cases.&lt;/p&gt;
+
+&lt;p&gt;Each scrape configuration defines a job name which serves as a default value for the
+&lt;code&gt;job&lt;/code&gt; label. The &lt;code&gt;job&lt;/code&gt; label can then be redefined for entire target groups or individual targets.
+For example, we can define two target groups, each of which defines targets for one job.
+To scrape them with the same parameters, we can configure them as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;scrape_configs:
+- job_name: 'overwritten-default'
+
+  scrape_interval: 10s
+  scrape_timeout:  5s
+
+  target_groups:
+  - targets: ['10.1.200.130:5051', '10.1.200.134:5051']
+    labels:
+      job: 'job1'
+
+  - targets: ['10.1.200.130:6220', '10.1.200.134:6221']
+    labels:
+      job: 'job2'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Through a mechanism named &lt;a href="http://prometheus.io/docs/operating/configuration/#target-relabeling-relabel_config"&gt;&lt;em&gt;relabeling&lt;/em&gt;&lt;/a&gt;,
+any label can be removed, created, or modified on a per-target level. This
+enables fine-grained labeling that can also take into account metadata coming
+from the service discovery. Relabeling is the last stage of label assignment
+and overwrites any labels previously set.&lt;/p&gt;
+
+&lt;p&gt;Relabeling works as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A list of source labels is defined.&lt;/li&gt;
+&lt;li&gt;For each target, the values of those labels are concatenated with a separator.&lt;/li&gt;
+&lt;li&gt;A regular expression is matched against the resulting string.&lt;/li&gt;
+&lt;li&gt;A new value based on those matches is assigned to another label.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Mutiple relabeling rules can be defined for each scrape configuration. A simple one
+that squashes two labels into one, looks as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;relabel_configs:
+- source_labels: ['label_a', 'label_b']
+  separator:     ';'
+  regex:         '(.*);(.*)'
+  replacement:   '${1}-${2}'
+  target_label:  'label_c'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This rule transforms a target with the label set:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  "job": "job1",
+  "label_a": "foo",
+  "label_b": "bar"
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;...into a target with the label set:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  "job": "job1",
+  "label_a": "foo",
+  "label_b": "bar",
+  "label_c": "foo-bar"
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You could then also remove the source labels in an additional relabeling step.&lt;/p&gt;
+
+&lt;p&gt;You can read more about relabeling and how you can use it to filter targets in the
+&lt;a href="/docs/operating/configuration#target-relabeling-relabel_config"&gt;configuration documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Over the next sections, we will see how you can leverage relabeling when using service discovery.&lt;/p&gt;
+
+&lt;h2 id="discovery-with-dns-srv-records"&gt;Discovery with DNS-SRV records&lt;a class="header-anchor" href="#discovery-with-dns-srv-records" name="discovery-with-dns-srv-records"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Since the beginning, Prometheus has supported target discovery via DNS-SRV records.
+The respective configuration looked like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;job {
+  name: "api-server"
+  sd_name: "telemetry.eu-west.api.srv.example.org"
+  metrics_path: "/metrics"
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Prometheus 0.14.0 allows you to specify multiple SRV records to be queried in a
+single scrape configuration, and also provides service-discovery-specific meta
+information that is helpful during the relabeling phase.&lt;/p&gt;
+
+&lt;p&gt;When querying the the DNS-SRV records, a label named &lt;code&gt;__meta_dns_srv_name&lt;/code&gt; is
+attached to each target. Its value is set to the SRV record name for which it was
+returned. If we have structured SRV record names like &lt;code&gt;telemetry.&amp;lt;zone&amp;gt;.&amp;lt;job&amp;gt;.srv.example.org&lt;/code&gt;,
+we can extract relevant labels from it those names:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;scrape_configs:
+- job_name: 'myjob'
+
+  dns_sd_configs:
+  - names:
+    - 'telemetry.eu-west.api.srv.example.org'
+    - 'telemetry.us-west.api.srv.example.org'
+    - 'telemetry.eu-west.auth.srv.example.org'
+    - 'telemetry.us-east.auth.srv.example.org'
+
+  relabel_configs:
+  - source_labels: ['__meta_dns_srv_name']
+    regex:         'telemetry\.(.+?)\..+?\.srv\.example\.org'
+    target_label:  'zone'
+    replacement:   '$1'
+  - source_labels: ['__meta_dns_srv_name']
+    regex:         'telemetry\..+?\.(.+?)\.srv\.example\.org'
+    target_label:  'job'
+    replacement:   '$1'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will attach the &lt;code&gt;zone&lt;/code&gt; and &lt;code&gt;job&lt;/code&gt; label to each target based on the SRV record
+it came from.&lt;/p&gt;
+
+&lt;h2 id="discovery-with-consul"&gt;Discovery with Consul&lt;a class="header-anchor" href="#discovery-with-consul" name="discovery-with-consul"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Service discovery via Consul is now supported natively. It can be configured by defining
+access parameters for our Consul agent and a list of Consul services for which we want
+to query targets.&lt;/p&gt;
+
+&lt;p&gt;The tags of each Consul node are concatenated by a configurable separator and exposed
+through the &lt;code&gt;__meta_consul_tags&lt;/code&gt; label. Various other Consul-specific meta
+labels are also provided.&lt;/p&gt;
+
+&lt;p&gt;Scraping all instances for a list of given services can be achieved with a simple
+&lt;code&gt;consul_sd_config&lt;/code&gt; and relabeling rules:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;scrape_configs:
+- job_name: 'overwritten-default'
+
+  consul_sd_configs:
+  - server:   '127.0.0.1:5361'
+    services: ['auth', 'api', 'load-balancer', 'postgres']
+
+  relabel_configs:
+  - source_labels: ['__meta_consul_service']
+    regex:         '(.*)'
+    target_label:  'job'
+    replacement:   '$1'
+  - source_labels: ['__meta_consul_node']
+    regex:         '(.*)'
+    target_label:  'instance'
+    replacement:   '$1'
+  - source_labels: ['__meta_consul_tags']
+    regex:         ',(production|canary),'
+    target_label:  'group'
+    replacement:   '$1'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This discovers the given services from the local Consul agent.
+As a result, we get metrics for four jobs (&lt;code&gt;auth&lt;/code&gt;, &lt;code&gt;api&lt;/code&gt;, &lt;code&gt;load-balancer&lt;/code&gt;, and &lt;code&gt;postgres&lt;/code&gt;). If a node
+has the &lt;code&gt;production&lt;/code&gt; or &lt;code&gt;canary&lt;/code&gt; Consul tag, a respective &lt;code&gt;group&lt;/code&gt; label is assigned to the target.
+Each target's &lt;code&gt;instance&lt;/code&gt; label is set to the node name provided by Consul.&lt;/p&gt;
+
+&lt;p&gt;A full documentation of all configuration parameters for service discovery via Consul
+can be found on the &lt;a href="/docs/operating/configuration#target-relabeling-relabel_config"&gt;Prometheus website&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="custom-service-discovery"&gt;Custom service discovery&lt;a class="header-anchor" href="#custom-service-discovery" name="custom-service-discovery"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Finally, we added a file-based interface to integrate your custom service discovery or other common mechanisms
+that are not yet supported out of the box.&lt;/p&gt;
+
+&lt;p&gt;With this mechanism, Prometheus watches a set of directories or files which define target groups.
+Whenever any of those files changes, a list of target groups is read from the files and scrape targets
+are extracted.
+It's now our job to write a small bridge program that runs as Prometheus's side-kick.
+It retrieves changes from an arbitrary service discovery mechanism and writes the target information
+to the watched files as lists of target groups.&lt;/p&gt;
+
+&lt;p&gt;These files can either be in YAML:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- targets: ['10.11.150.1:7870', '10.11.150.4:7870']
+  labels:
+    job: 'mysql'
+
+- targets: ['10.11.122.11:6001', '10.11.122.15:6002']
+  labels:
+    job: 'postgres'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;...or in JSON format:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[
+  {
+    "targets": ["10.11.150.1:7870", "10.11.150.4:7870"],
+    "labels": {
+      "job": "mysql"
+    }
+  },
+  {
+    "targets": ["10.11.122.11:6001", "10.11.122.15:6002"],
+    "labels": {
+      "job": "postgres"
+    }
+  }
+]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We now configure Prometheus to watch the &lt;code&gt;tgroups/&lt;/code&gt; directory in its working directory
+for all &lt;code&gt;.json&lt;/code&gt; files:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;scrape_configs:
+- job_name: 'overwritten-default'
+
+  file_sd_configs:
+  - names: ['tgroups/*.json']
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;What's missing now is a program that writes files to this directory. For the sake of this example,
+let's assume we have all our instances for different jobs in a single denormalized MySQL table.
+(Hint: you probably don't want to do service discovery this way.)&lt;/p&gt;
+
+&lt;p&gt;Every 30 seconds, we read all instances from the MySQL table and write the
+resulting target groups into a JSON file. Note that we do not have to keep
+state whether or not any targets or their labels have changed. Prometheus will
+automatically detect changes and applies them to targets without interrupting
+their scrape cycles.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import os, time, json
+
+from itertools import groupby
+from MySQLdb import connect
+
+
+def refresh(cur):
+    # Fetch all rows.
+    cur.execute("SELECT address, job, zone FROM instances")
+
+    tgs = []
+    # Group all instances by their job and zone values.
+    for key, vals in groupby(cur.fetchall(), key=lambda r: (r[1], r[2])):
+        tgs.append({
+            'labels': dict(zip(['job', 'zone'], key)),
+            'targets': [t[0] for t in vals],
+        })
+
+    # Persist the target groups to disk as JSON file.
+    with open('tgroups/target_groups.json.new', 'w') as f:
+        json.dump(tgs, f)
+        f.flush()
+        os.fsync(f.fileno())
+
+    os.rename('tgroups/target_groups.json.new', 'tgroups/target_groups.json')
+
+
+if __name__ == '__main__':
+    while True:
+        with connect('localhost', 'root', '', 'test') as cur:
+            refresh(cur)
+        time.sleep(30)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;While Prometheus will not apply any malformed changes to files, it is considered best practice to
+update your files atomically via renaming, as we do in our example.
+It is also recommended to split larger amounts of target groups into several files based on
+logical grouping.&lt;/p&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;a class="header-anchor" href="#conclusion" name="conclusion"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;With DNS-SRV records and Consul, two major service discovery methods are now
+natively supported by Prometheus. We've seen that relabeling is a powerful
+approach to make use of metadata provided by service discovery mechanisms.&lt;/p&gt;
+
+&lt;p&gt;Make sure to take a look at the new &lt;a href="/docs/operating/configuration/"&gt;configuration documentation&lt;/a&gt;
+to upgrade your Prometheus setup to the new release and find out about other configuration options,
+such as basic HTTP authentication and target filtering via relabeling.&lt;/p&gt;
+
+&lt;p&gt;We provide a &lt;a href="https://github.com/prometheus/migrate/releases"&gt;migration tool&lt;/a&gt; that upgrades
+your existing configuration files to the new YAML format.
+For smaller configurations we recommend a manual upgrade to get familiar with the new format and
+to preserve comments.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2015-04-24:/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/</id>
+    <title type="html">Prometheus Monitoring Spreads through the Internet</title>
+    <published>2015-04-24T00:00:00Z</published>
+    <updated>2015-04-24T00:00:00Z</updated>
+    <author>
+      <name>Brian Brazil</name>
+      <uri>http://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="http://prometheus.io/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/"/>
+    <content type="html">&lt;p&gt;It has been almost three months since we publicy announced Prometheus version
+0.10.0, and we're now at version 0.13.1.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://developers.soundcloud.com/blog/prometheus-monitoring-at-soundcloud"&gt;SoundCloud's announcement blog post&lt;/a&gt;
+remains the best overview of the key components of Prometheus, but there has
+been a lot of other online activity around Prometheus. This post will let you
+catch up on anything you missed.&lt;/p&gt;
+
+&lt;p&gt;In the future, we will use this blog to publish more articles and announcements
+to help you get the most out of Prometheus.&lt;/p&gt;
+
+&lt;h2 id="using-prometheus"&gt;Using Prometheus&lt;a class="header-anchor" href="#using-prometheus" name="using-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Posts on how to use Prometheus comprise the majority of online content. Here
+are the ones we're aware of with the part of the ecosystem they cover:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Container Exporter: &lt;a href="https://5pi.de/2015/01/26/monitor-docker-containers-with-prometheus/"&gt;Monitor Docker Containers with Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;HAProxy: &lt;a href="http://www.boxever.com/haproxy-monitoring-with-prometheus"&gt;HAProxy Monitoring with Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Java Client: &lt;a href="http://www.boxever.com/easy-java-instrumentation-with-prometheus"&gt;Easy Java Instrumentation with Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Java Client and Labels: &lt;a href="http://www.boxever.com/the-power-of-multi-dimensional-labels-in-prometheus"&gt;The Power of Multi-Dimensional Labels in Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Node Exporter: &lt;a href="http://www.boxever.com/monitoring-your-machines-with-prometheus"&gt;Monitoring your Machines with Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;JMX Exporter: &lt;a href="http://www.boxever.com/cassandra-consoles-with-jmx-and-prometheus"&gt;Cassandra Consoles with JMX and Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Python Client and Node Exporter Textfile Collector: &lt;a href="http://www.boxever.com/monitoring-python-batch-jobs"&gt;Monitoring Python Batch Jobs&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Mesos Exporter: &lt;a href="http://www.antonlindstrom.com/2015/02/24/monitoring-mesos-tasks-with-prometheus.html"&gt;Monitoring Mesos tasks with Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Synapse: &lt;a href="http://matrix.org/blog/2015/04/23/monitoring-synapse-metrics-with-prometheus/"&gt;Monitoring Synapse Metrics with Prometheus&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id="articles"&gt;Articles&lt;a class="header-anchor" href="#articles" name="articles"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;These articles look at how Prometheus fits into the broader picture of keeping services up and running:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.boxever.com/prometheus-a-next-generation-monitoring-system"&gt;Prometheus: A Next-Generation Monitoring System&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://thenewstack.io/soundclouds-prometheus-monitoring-system-time-series-database-suited-containers/"&gt;SoundCloud’s Prometheus: A Monitoring System and Time Series Database Suited for Containers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://rancher.com/docker-monitoring-continued-prometheus-and-sysdig/"&gt;Docker Monitoring Continued: Prometheus and Sysdig&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id="philosophy"&gt;Philosophy&lt;a class="header-anchor" href="#philosophy" name="philosophy"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Monitoring isn't just about the technical details. How it affects the design of
+your systems, operations, and human factors are important too:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.boxever.com/push-vs-pull-for-monitoring"&gt;Push vs Pull for Monitoring&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.slideshare.net/brianbrazil/devops-ireland-systems-monitoring-with-prometheus"&gt;Systems Monitoring with Prometheus&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.slideshare.net/brianbrazil/python-ireland-monitoring-your-python-with-prometheus"&gt;Monitoring your Python with Prometheus&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The comments on the &lt;a href="https://news.ycombinator.com/item?id=8995696"&gt;Hacker News post&lt;/a&gt; about Prometheus are also insightful.&lt;/p&gt;
+
+&lt;h2 id="non-english"&gt;Non-English&lt;a class="header-anchor" href="#non-english" name="non-english"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Several posts have appeared in languages beyond English:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Japanese how-to about installing Prometheus on CentOS: &lt;a href="http://y-ken.hatenablog.com/entry/how-to-install-prometheus"&gt;データ可視化アプリの新星、PrometheusをCentOSにインストールする方法&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Japanese in-depth tutorial: &lt;a href="http://pocketstudio.jp/log3/2015/02/11/what_is_prometheus_monitoring/"&gt;【入門】PrometheusでサーバやDockerコンテナのリソース監視&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Japanese overview: &lt;a href="http://wazanova.jp/items/1672"&gt;Prometheus: Go言語で書かれたモニタリングシステム&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;Russian podcast that mentions Prometheus: &lt;a href="http://www.rwpod.com/posts/2015/02/02/podcast-03-04.html"&gt;RWPOD 04 выпуск 03 сезона&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id="closing"&gt;Closing&lt;a class="header-anchor" href="#closing" name="closing"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Finally, I'd like to share how to run &lt;a href="https://5pi.de/2015/02/10/prometheus-on-raspberry-pi/"&gt;Prometheus on a Raspberry Pi&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
+</feed>
+

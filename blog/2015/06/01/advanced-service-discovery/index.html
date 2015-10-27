@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Advanced Service Discovery in Prometheus 0.14.0 | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  
+  <div class="col-md-9 blog doc-content">
+    <h1>Advanced Service Discovery in Prometheus 0.14.0</h1>
+    <aside>Posted at: June 1, 2015 by Fabian Reinartz, Julius Volz</aside>
+    <article class="doc-content">
+      <p>This week we released Prometheus v0.14.0 — a version with many long-awaited additions
+and improvements.</p>
+
+<p>On the user side, Prometheus now supports new service discovery mechanisms. In
+addition to DNS-SRV records, it now supports <a href="https://www.consul.io">Consul</a>
+out of the box, and a file-based interface allows you to connect your own
+discovery mechanisms. Over time, we plan to add other common service discovery
+mechanisms to Prometheus.</p>
+
+<p>Aside from many smaller fixes and improvements, you can now also reload your configuration during
+runtime by sending a <code>SIGHUP</code> to the Prometheus process. For a full list of changes, check the
+<a href="https://github.com/prometheus/prometheus/blob/master/CHANGELOG.md#0140--2015-06-01">changelog for this release</a>.</p>
+
+<p>In this blog post, we will take a closer look at the built-in service discovery mechanisms and provide
+some practical examples. As an additional resource, see
+<a href="/docs/operating/configuration">Prometheus's configuration documentation</a>.</p>
+
+<h2 id="prometheus-and-targets">Prometheus and targets<a class="header-anchor" href="#prometheus-and-targets" name="prometheus-and-targets"></a>
+</h2>
+
+<p>For a proper understanding of this blog post, we first need to take a look at how
+Prometheus labels targets.</p>
+
+<p>There are various places in the configuration file where target labels may be
+set. They are applied in the following order, with later stages overwriting any
+labels set by an earlier stage:</p>
+
+<ol>
+<li>Global labels, which are assigned to every target scraped by the Prometheus instance.</li>
+<li>The <code>job</code> label, which is configured as a default value for each scrape configuration.</li>
+<li>Labels that are set per target group within a scrape configuration.</li>
+<li>Advanced label manipulation via <a href="/docs/operating/configuration/#target-relabeling-relabel_config"><em>relabeling</em></a>.</li>
+</ol>
+
+<p>Each stage overwrites any colliding labels from the earlier stages. Eventually, we have a flat
+set of labels that describe a single target. Those labels are then attached to every time series that
+is scraped from this target.</p>
+
+<p>Note: Internally, even the address of a target is stored in a special
+<code>__address__</code> label. This can be useful during advanced label manipulation
+(relabeling), as we will see later. Labels starting with <code>__</code> do not appear in
+the final time series.</p>
+
+<h2 id="scrape-configurations-and-relabeling">Scrape configurations and relabeling<a class="header-anchor" href="#scrape-configurations-and-relabeling" name="scrape-configurations-and-relabeling"></a>
+</h2>
+
+<p>Aside from moving from an ASCII protocol buffer format to YAML, a fundamental change to
+Prometheus's configuration is the change from per-job configurations to more generalized scrape
+configurations. While the two are almost equivalent for simple setups, scrape configurations
+allow for greater flexibility in more advanced use cases.</p>
+
+<p>Each scrape configuration defines a job name which serves as a default value for the
+<code>job</code> label. The <code>job</code> label can then be redefined for entire target groups or individual targets.
+For example, we can define two target groups, each of which defines targets for one job.
+To scrape them with the same parameters, we can configure them as follows:</p>
+
+<pre><code>scrape_configs:
+- job_name: 'overwritten-default'
+
+  scrape_interval: 10s
+  scrape_timeout:  5s
+
+  target_groups:
+  - targets: ['10.1.200.130:5051', '10.1.200.134:5051']
+    labels:
+      job: 'job1'
+
+  - targets: ['10.1.200.130:6220', '10.1.200.134:6221']
+    labels:
+      job: 'job2'
+</code></pre>
+
+<p>Through a mechanism named <a href="http://prometheus.io/docs/operating/configuration/#target-relabeling-relabel_config"><em>relabeling</em></a>,
+any label can be removed, created, or modified on a per-target level. This
+enables fine-grained labeling that can also take into account metadata coming
+from the service discovery. Relabeling is the last stage of label assignment
+and overwrites any labels previously set.</p>
+
+<p>Relabeling works as follows:</p>
+
+<ul>
+<li>A list of source labels is defined.</li>
+<li>For each target, the values of those labels are concatenated with a separator.</li>
+<li>A regular expression is matched against the resulting string.</li>
+<li>A new value based on those matches is assigned to another label.</li>
+</ul>
+
+<p>Mutiple relabeling rules can be defined for each scrape configuration. A simple one
+that squashes two labels into one, looks as follows:</p>
+
+<pre><code>relabel_configs:
+- source_labels: ['label_a', 'label_b']
+  separator:     ';'
+  regex:         '(.*);(.*)'
+  replacement:   '${1}-${2}'
+  target_label:  'label_c'
+</code></pre>
+
+<p>This rule transforms a target with the label set:</p>
+
+<pre><code>{
+  "job": "job1",
+  "label_a": "foo",
+  "label_b": "bar"
+}
+</code></pre>
+
+<p>...into a target with the label set:</p>
+
+<pre><code>{
+  "job": "job1",
+  "label_a": "foo",
+  "label_b": "bar",
+  "label_c": "foo-bar"
+}
+</code></pre>
+
+<p>You could then also remove the source labels in an additional relabeling step.</p>
+
+<p>You can read more about relabeling and how you can use it to filter targets in the
+<a href="/docs/operating/configuration#target-relabeling-relabel_config">configuration documentation</a>.</p>
+
+<p>Over the next sections, we will see how you can leverage relabeling when using service discovery.</p>
+
+<h2 id="discovery-with-dns-srv-records">Discovery with DNS-SRV records<a class="header-anchor" href="#discovery-with-dns-srv-records" name="discovery-with-dns-srv-records"></a>
+</h2>
+
+<p>Since the beginning, Prometheus has supported target discovery via DNS-SRV records.
+The respective configuration looked like this:</p>
+
+<pre><code>job {
+  name: "api-server"
+  sd_name: "telemetry.eu-west.api.srv.example.org"
+  metrics_path: "/metrics"
+}
+</code></pre>
+
+<p>Prometheus 0.14.0 allows you to specify multiple SRV records to be queried in a
+single scrape configuration, and also provides service-discovery-specific meta
+information that is helpful during the relabeling phase.</p>
+
+<p>When querying the the DNS-SRV records, a label named <code>__meta_dns_srv_name</code> is
+attached to each target. Its value is set to the SRV record name for which it was
+returned. If we have structured SRV record names like <code>telemetry.&lt;zone&gt;.&lt;job&gt;.srv.example.org</code>,
+we can extract relevant labels from it those names:</p>
+
+<pre><code>scrape_configs:
+- job_name: 'myjob'
+
+  dns_sd_configs:
+  - names:
+    - 'telemetry.eu-west.api.srv.example.org'
+    - 'telemetry.us-west.api.srv.example.org'
+    - 'telemetry.eu-west.auth.srv.example.org'
+    - 'telemetry.us-east.auth.srv.example.org'
+
+  relabel_configs:
+  - source_labels: ['__meta_dns_srv_name']
+    regex:         'telemetry\.(.+?)\..+?\.srv\.example\.org'
+    target_label:  'zone'
+    replacement:   '$1'
+  - source_labels: ['__meta_dns_srv_name']
+    regex:         'telemetry\..+?\.(.+?)\.srv\.example\.org'
+    target_label:  'job'
+    replacement:   '$1'
+</code></pre>
+
+<p>This will attach the <code>zone</code> and <code>job</code> label to each target based on the SRV record
+it came from.</p>
+
+<h2 id="discovery-with-consul">Discovery with Consul<a class="header-anchor" href="#discovery-with-consul" name="discovery-with-consul"></a>
+</h2>
+
+<p>Service discovery via Consul is now supported natively. It can be configured by defining
+access parameters for our Consul agent and a list of Consul services for which we want
+to query targets.</p>
+
+<p>The tags of each Consul node are concatenated by a configurable separator and exposed
+through the <code>__meta_consul_tags</code> label. Various other Consul-specific meta
+labels are also provided.</p>
+
+<p>Scraping all instances for a list of given services can be achieved with a simple
+<code>consul_sd_config</code> and relabeling rules:</p>
+
+<pre><code>scrape_configs:
+- job_name: 'overwritten-default'
+
+  consul_sd_configs:
+  - server:   '127.0.0.1:5361'
+    services: ['auth', 'api', 'load-balancer', 'postgres']
+
+  relabel_configs:
+  - source_labels: ['__meta_consul_service']
+    regex:         '(.*)'
+    target_label:  'job'
+    replacement:   '$1'
+  - source_labels: ['__meta_consul_node']
+    regex:         '(.*)'
+    target_label:  'instance'
+    replacement:   '$1'
+  - source_labels: ['__meta_consul_tags']
+    regex:         ',(production|canary),'
+    target_label:  'group'
+    replacement:   '$1'
+</code></pre>
+
+<p>This discovers the given services from the local Consul agent.
+As a result, we get metrics for four jobs (<code>auth</code>, <code>api</code>, <code>load-balancer</code>, and <code>postgres</code>). If a node
+has the <code>production</code> or <code>canary</code> Consul tag, a respective <code>group</code> label is assigned to the target.
+Each target's <code>instance</code> label is set to the node name provided by Consul.</p>
+
+<p>A full documentation of all configuration parameters for service discovery via Consul
+can be found on the <a href="/docs/operating/configuration#target-relabeling-relabel_config">Prometheus website</a>.</p>
+
+<h2 id="custom-service-discovery">Custom service discovery<a class="header-anchor" href="#custom-service-discovery" name="custom-service-discovery"></a>
+</h2>
+
+<p>Finally, we added a file-based interface to integrate your custom service discovery or other common mechanisms
+that are not yet supported out of the box.</p>
+
+<p>With this mechanism, Prometheus watches a set of directories or files which define target groups.
+Whenever any of those files changes, a list of target groups is read from the files and scrape targets
+are extracted.
+It's now our job to write a small bridge program that runs as Prometheus's side-kick.
+It retrieves changes from an arbitrary service discovery mechanism and writes the target information
+to the watched files as lists of target groups.</p>
+
+<p>These files can either be in YAML:</p>
+
+<pre><code>- targets: ['10.11.150.1:7870', '10.11.150.4:7870']
+  labels:
+    job: 'mysql'
+
+- targets: ['10.11.122.11:6001', '10.11.122.15:6002']
+  labels:
+    job: 'postgres'
+</code></pre>
+
+<p>...or in JSON format:</p>
+
+<pre><code>[
+  {
+    "targets": ["10.11.150.1:7870", "10.11.150.4:7870"],
+    "labels": {
+      "job": "mysql"
+    }
+  },
+  {
+    "targets": ["10.11.122.11:6001", "10.11.122.15:6002"],
+    "labels": {
+      "job": "postgres"
+    }
+  }
+]
+</code></pre>
+
+<p>We now configure Prometheus to watch the <code>tgroups/</code> directory in its working directory
+for all <code>.json</code> files:</p>
+
+<pre><code>scrape_configs:
+- job_name: 'overwritten-default'
+
+  file_sd_configs:
+  - names: ['tgroups/*.json']
+</code></pre>
+
+<p>What's missing now is a program that writes files to this directory. For the sake of this example,
+let's assume we have all our instances for different jobs in a single denormalized MySQL table.
+(Hint: you probably don't want to do service discovery this way.)</p>
+
+<p>Every 30 seconds, we read all instances from the MySQL table and write the
+resulting target groups into a JSON file. Note that we do not have to keep
+state whether or not any targets or their labels have changed. Prometheus will
+automatically detect changes and applies them to targets without interrupting
+their scrape cycles.</p>
+
+<pre><code>import os, time, json
+
+from itertools import groupby
+from MySQLdb import connect
+
+
+def refresh(cur):
+    # Fetch all rows.
+    cur.execute("SELECT address, job, zone FROM instances")
+
+    tgs = []
+    # Group all instances by their job and zone values.
+    for key, vals in groupby(cur.fetchall(), key=lambda r: (r[1], r[2])):
+        tgs.append({
+            'labels': dict(zip(['job', 'zone'], key)),
+            'targets': [t[0] for t in vals],
+        })
+
+    # Persist the target groups to disk as JSON file.
+    with open('tgroups/target_groups.json.new', 'w') as f:
+        json.dump(tgs, f)
+        f.flush()
+        os.fsync(f.fileno())
+
+    os.rename('tgroups/target_groups.json.new', 'tgroups/target_groups.json')
+
+
+if __name__ == '__main__':
+    while True:
+        with connect('localhost', 'root', '', 'test') as cur:
+            refresh(cur)
+        time.sleep(30)
+</code></pre>
+
+<p>While Prometheus will not apply any malformed changes to files, it is considered best practice to
+update your files atomically via renaming, as we do in our example.
+It is also recommended to split larger amounts of target groups into several files based on
+logical grouping.</p>
+
+<h2 id="conclusion">Conclusion<a class="header-anchor" href="#conclusion" name="conclusion"></a>
+</h2>
+
+<p>With DNS-SRV records and Consul, two major service discovery methods are now
+natively supported by Prometheus. We've seen that relabeling is a powerful
+approach to make use of metadata provided by service discovery mechanisms.</p>
+
+<p>Make sure to take a look at the new <a href="/docs/operating/configuration/">configuration documentation</a>
+to upgrade your Prometheus setup to the new release and find out about other configuration options,
+such as basic HTTP authentication and target filtering via relabeling.</p>
+
+<p>We provide a <a href="https://github.com/prometheus/migrate/releases">migration tool</a> that upgrades
+your existing configuration files to the new YAML format.
+For smaller configurations we recommend a manual upgrade to get familiar with the new format and
+to preserve comments.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav">
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+    </ul>
+  </ul>
+</div>
+
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+
