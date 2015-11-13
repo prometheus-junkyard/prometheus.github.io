@@ -162,7 +162,7 @@ to be URL-encoded.</p>
 
 <p>Query language expressions may be evaluated at a single instant or over a range
 of time. The sections below describe the API endpoints for each type of
-expression query.</p>
+expression query and how to filter their result.</p>
 
 <h3 id="instant-queries">Instant queries<a class="header-anchor" href="#instant-queries" name="instant-queries"></a>
 </h3>
@@ -292,6 +292,35 @@ a query resolution of 15 seconds.</p>
          }
       ]
    }
+}
+</code></pre>
+
+<h3 id="filtering-queries">Filtering queries<a class="header-anchor" href="#filtering-queries" name="filtering-queries"></a>
+</h3>
+
+<p>Queries can be filtered according to the returned metrics, to do so, just extend your query with the suitable operator.</p>
+
+<p>The following query returns the list of series associated to the "node" job which are UP.</p>
+
+<pre><code>$ curl -g 'http://localhost:9090/api/v1/query?query=(up{job="node"})>0'
+{
+  "data": {
+    "result": [
+      {
+        "value": [
+          1447414200,
+          "1"
+        ],
+        "metric": {
+          "job": "node",
+          "instance": "localhost:9100",
+          "__name__": "up"
+        }
+      }
+    ],
+    "resultType": "vector"
+  },
+  "status": "success"
 }
 </code></pre>
 
