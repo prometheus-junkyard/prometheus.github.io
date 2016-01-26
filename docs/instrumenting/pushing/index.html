@@ -112,14 +112,20 @@ time series from these components to an intermediary job which Prometheus can
 scrape. Combined with Prometheus's simple text-based exposition format, this
 makes it easy to instrument even shell scripts without a client library.</p>
 
-<p>For more information on using the Pushgateway and use from a Unix shell, see the project's
-<a href="https://github.com/prometheus/pushgateway/blob/master/README.md">README.md</a>.</p>
+<ul>
+  <li>For more information on using the Pushgateway and use from a Unix shell, see the project's
+  <a href="https://github.com/prometheus/pushgateway/blob/master/README.md">README.md</a>.</li>
 
-<p>For use from Java see the
-<a href="http://prometheus.github.io/client_java/io/prometheus/client/exporter/PushGateway.html">PushGateway</a>
-class.</p>
-
-<p>For use from Go see the <a href="http://godoc.org/github.com/prometheus/client_golang/prometheus#Push">Push</a> and <a href="http://godoc.org/github.com/prometheus/client_golang/prometheus#PushAdd">PushAdd</a> functions.</p>
+  <li>For use from Java see the
+  <a href="http://prometheus.github.io/client_java/io/prometheus/client/exporter/PushGateway.html">PushGateway</a>
+  class.</li>
+  
+  <li>For use from Go see the <a href="http://godoc.org/github.com/prometheus/client_golang/prometheus#Push">Push</a>
+  and <a href="http://godoc.org/github.com/prometheus/client_golang/prometheus#PushAdd">PushAdd</a> functions.</li>
+  
+  <li>For use from Python see
+  <a href="https://github.com/prometheus/client_python#exporting-to-a-pushgateway">Exporting to a Pushgateway</a>.</li>
+</ul>
 
 <h2 id="java-batch-job-example">Java batch job example<a class="header-anchor" href="#java-batch-job-example" name="java-batch-job-example"></a>
 </h2>
