@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prometheus monitoring system and time series database">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>HTTP API | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/docs.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/">Overview</a></li>
+            <li><a href="/docs/introduction/overview/">Documentation</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i> Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> Introduction</span><ul class="nav"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> Concepts</span><ul class="nav"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> Querying</span><ul class="nav"><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li class="active"><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> Visualization</span><ul class="nav"><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> Instrumenting</span><ul class="nav"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and third-party integrations</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> Operating</span><ul class="nav"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> Alerting</span><ul class="nav"><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> Best practices</span><ul class="nav"><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="http-api" class="page-header">HTTP API<a class="header-anchor" href="#http-api" name="http-api"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#format-overview">Format overview
+</a></li>
+<li><a href="#expression-queries">Expression queries
+</a></li>
+<ul>
+<li><a href="#instant-queries">Instant queries
+</a></li>
+<li><a href="#range-queries">Range queries
+</a></li>
+</ul>
+<li><a href="#querying-metadata">Querying metadata
+</a></li>
+<ul>
+<li><a href="#finding-series-by-label-matchers">Finding series by label matchers
+</a></li>
+<li><a href="#querying-label-values">Querying label values
+</a></li>
+</ul>
+<li><a href="#deleting-series">Deleting series
+</a></li>
+<li><a href="#expression-query-result-formats">Expression query result formats
+</a></li>
+<ul>
+<li><a href="#range-vectors">Range vectors
+</a></li>
+<li><a href="#instant-vectors">Instant vectors
+</a></li>
+<li><a href="#scalars">Scalars
+</a></li>
+<li><a href="#strings">Strings
+</a></li>
+</ul>
+</ul></div>
+
+<p>The current stable HTTP API is reachable under <code>/api/v1</code> on a Prometheus
+server. Any non-breaking additions will be added under that endpoint.</p>
+
+<h2 id="format-overview">Format overview<a class="header-anchor" href="#format-overview" name="format-overview"></a>
+</h2>
+
+<p>The API response format is JSON. Every successful API request returns a <code>2xx</code>
+status code.</p>
+
+<p>Invalid requests that reach the API handlers return a JSON error object
+and one of the following HTTP response codes:</p>
+
+<ul>
+<li>
+<code>400 Bad Request</code> when parameters are missing or incorrect.</li>
+<li>
+<code>422 Unprocessable Entity</code> when an expression can't be executed
+(<a href="http://tools.ietf.org/html/rfc4918#page-78">RFC4918</a>).</li>
+<li>
+<code>503 Service Unavailable</code> when queries time out or abort.</li>
+</ul>
+
+<p>Other non-<code>2xx</code> codes may be returned for errors occurring before the API
+endpoint is reached.</p>
+
+<p>The JSON response envelope format is as follows:</p>
+
+<pre><code>{
+  "status": "success" | "error",
+  "data": &lt;data&gt;,
+
+  // Only set if status is "error". The data field may still hold
+  // additional data.
+  "errorType": "&lt;string&gt;",
+  "error": "&lt;string&gt;"
+}
+</code></pre>
+
+<p>Input timestamps may be provided either in
+<a href="https://www.ietf.org/rfc/rfc3339.txt">RFC3339</a> format or as a Unix timestamp
+in seconds, with optional decimal places for sub-second precision. Output
+timestamps are always represented as Unix timestamps in seconds.</p>
+
+<p>Names of query parameters that may be repeated end with <code>[]</code>.</p>
+
+<p><code>&lt;series_selector&gt;</code> placeholders refer to Prometheus <a href="/docs/querying/basics/#time-series-selectors">time series
+selectors</a> like
+<code>http_requests_total</code> or <code>http_requests_total{method=~"^GET|POST$"}</code> and need
+to be URL-encoded.</p>
+
+<p><code>&lt;duration&gt;</code> placeholders refer to Prometheus duration strings of the form
+<code>[0-9]+[smhdwy]</code>. For example, <code>5m</code> refers to a duration of 5 minutes.</p>
+
+<h2 id="expression-queries">Expression queries<a class="header-anchor" href="#expression-queries" name="expression-queries"></a>
+</h2>
+
+<p>Query language expressions may be evaluated at a single instant or over a range
+of time. The sections below describe the API endpoints for each type of
+expression query.</p>
+
+<h3 id="instant-queries">Instant queries<a class="header-anchor" href="#instant-queries" name="instant-queries"></a>
+</h3>
+
+<p>The following endpoint evaluates an instant query at a single point in time:</p>
+
+<pre><code>GET /api/v1/query
+</code></pre>
+
+<p>URL query parameters:</p>
+
+<ul>
+<li>
+<code>query=&lt;string&gt;</code>: Prometheus expression query string.</li>
+<li>
+<code>time=&lt;rfc3339 | unix_timestamp&gt;</code>: Evaluation timestamp. Optional.</li>
+</ul>
+
+<p>The current server time is used if the <code>time</code> parameter is omitted.</p>
+
+<p>The <code>data</code> section of the query result has the following format:</p>
+
+<pre><code>{
+  "resultType": "matrix" | "vector" | "scalar" | "string",
+  "result": &lt;value&gt;
+}
+</code></pre>
+
+<p><code>&lt;value&gt;</code> refers to the query result data, which has varying formats
+depending on the <code>resultType</code>. See the <a href="#expression-query-result-formats">expression query result
+formats</a>.</p>
+
+<p>The following example evaluates the expression <code>up</code> at the time
+<code>2015-07-01T20:10:51.781Z</code>:</p>
+
+<pre><code>$ curl 'http://localhost:9090/api/v1/query?query=up&amp;time=2015-07-01T20:10:51.781Z'
+{
+   "status" : "success",
+   "data" : {
+      "resultType" : "vector",
+      "result" : [
+         {
+            "metric" : {
+               "__name__" : "up",
+               "job" : "prometheus",
+               "instance" : "localhost:9090"
+            },
+            "value": [ 1435781451.781, "1" ]
+         },
+         {
+            "metric" : {
+               "__name__" : "up",
+               "job" : "node",
+               "instance" : "localhost:9100"
+            },
+            "value" : [ 1435781451.781, "0" ]
+         }
+      ]
+   }
+}
+</code></pre>
+
+<h3 id="range-queries">Range queries<a class="header-anchor" href="#range-queries" name="range-queries"></a>
+</h3>
+
+<p>The following endpoint evaluates an expression query over a range of time:</p>
+
+<pre><code>GET /api/v1/query_range
+</code></pre>
+
+<p>URL query parameters:</p>
+
+<ul>
+<li>
+<code>query=&lt;string&gt;</code>: Prometheus expression query string.</li>
+<li>
+<code>start=&lt;rfc3339 | unix_timestamp&gt;</code>: Start timestamp.</li>
+<li>
+<code>end=&lt;rfc3339 | unix_timestamp&gt;</code>: End timestamp.</li>
+<li>
+<code>step=&lt;duration&gt;</code>: Query resolution step width.</li>
+</ul>
+
+<p>The <code>data</code> section of the query result has the following format:</p>
+
+<pre><code>{
+  "resultType": "matrix",
+  "result": &lt;value&gt;
+}
+</code></pre>
+
+<p>For the format of the <code>&lt;value&gt;</code> placeholder, see the <a href="#range-vectors">range-vector result
+format</a>.</p>
+
+<p>The following example evaluates the expression <code>up</code> over a 30-second range with
+a query resolution of 15 seconds.</p>
+
+<pre><code>$ curl 'http://localhost:9090/api/v1/query_range?query=up&amp;start=2015-07-01T20:10:30.781Z&amp;end=2015-07-01T20:11:00.781Z&amp;step=15s'
+{
+   "status" : "success",
+   "data" : {
+      "resultType" : "matrix",
+      "result" : [
+         {
+            "metric" : {
+               "__name__" : "up",
+               "job" : "prometheus",
+               "instance" : "localhost:9090"
+            },
+            "values" : [
+               [ 1435781430.781, "1" ],
+               [ 1435781445.781, "1" ],
+               [ 1435781460.781, "1" ]
+            ]
+         },
+         {
+            "metric" : {
+               "__name__" : "up",
+               "job" : "node",
+               "instance" : "localhost:9091"
+            },
+            "values" : [
+               [ 1435781430.781, "0" ],
+               [ 1435781445.781, "0" ],
+               [ 1435781460.781, "1" ]
+            ]
+         }
+      ]
+   }
+}
+</code></pre>
+
+<h2 id="querying-metadata">Querying metadata<a class="header-anchor" href="#querying-metadata" name="querying-metadata"></a>
+</h2>
+
+<h3 id="finding-series-by-label-matchers">Finding series by label matchers<a class="header-anchor" href="#finding-series-by-label-matchers" name="finding-series-by-label-matchers"></a>
+</h3>
+
+<p>The following endpoint returns the list of time series that match a certain label set.</p>
+
+<pre><code>GET /api/v1/series
+</code></pre>
+
+<p>URL query parameters:</p>
+
+<ul>
+<li>
+<code>match[]=&lt;series_selector&gt;</code>: Repeated series selector argument that selects the
+series to return. At least one <code>match[]</code> argument must be provided.</li>
+</ul>
+
+<p>The <code>data</code> section of the query result consists of a list of objects that
+contain the label name/value pairs which identify each series.</p>
+
+<p>The following example returns all series that match either of the selectors
+<code>up</code> or <code>process_start_time_seconds{job="prometheus"}</code>:</p>
+
+<pre><code>$ curl -g 'http://localhost:9090/api/v1/series?match[]=up&amp;match[]=process_start_time_seconds{job="prometheus"}'
+{
+   "status" : "success",
+   "data" : [
+      {
+         "__name__" : "up",
+         "job" : "prometheus",
+         "instance" : "localhost:9090"
+      },
+      {
+         "__name__" : "up",
+         "job" : "node",
+         "instance" : "localhost:9091"
+      },
+      {
+         "__name__" : "process_start_time_seconds",
+         "job" : "prometheus",
+         "instance" : "localhost:9090"
+      }
+   ]
+}
+</code></pre>
+
+<h3 id="querying-label-values">Querying label values<a class="header-anchor" href="#querying-label-values" name="querying-label-values"></a>
+</h3>
+
+<p>The following endpoint returns a list of label values for a provided label name:</p>
+
+<pre><code>GET /api/v1/label/&lt;label_name&gt;/values
+</code></pre>
+
+<p>The <code>data</code> section of the JSON response is a list of string label names.</p>
+
+<p>This example queries for all label values for the <code>job</code> label:</p>
+
+<pre><code>$ curl http://localhost:9090/api/v1/label/job/values
+{
+   "status" : "success",
+   "data" : [
+      "node",
+      "prometheus"
+   ]
+}
+</code></pre>
+
+<h2 id="deleting-series">Deleting series<a class="header-anchor" href="#deleting-series" name="deleting-series"></a>
+</h2>
+
+<p>The following endpoint deletes matched series entirely from a Prometheus server:</p>
+
+<pre><code>DELETE /api/v1/series
+</code></pre>
+
+<p>URL query parameters:</p>
+
+<ul>
+<li>
+<code>match[]=&lt;series_selector&gt;</code>: Repeated label matcher argument that selects the
+series to delete. At least one <code>match[]</code> argument must be provided.</li>
+</ul>
+
+<p>The <code>data</code> section of the JSON response has the following format:</p>
+
+<pre><code>{
+  "numDeleted": &lt;number of deleted series&gt;
+}
+</code></pre>
+
+<p>The following example deletes all series that match either of the selectors
+<code>up</code> or <code>process_start_time_seconds{job="prometheus"}</code>:</p>
+
+<pre><code>$ curl -XDELETE -g 'http://localhost:9090/api/v1/series?match[]=up&amp;match[]=process_start_time_seconds{job="prometheus"}'
+{
+   "status" : "success",
+   "data" : {
+      "numDeleted" : 3
+   }
+}
+</code></pre>
+
+<h2 id="expression-query-result-formats">Expression query result formats<a class="header-anchor" href="#expression-query-result-formats" name="expression-query-result-formats"></a>
+</h2>
+
+<p>Expression queries may return the following response values in the <code>result</code>
+property of the <code>data</code> section. <code>&lt;sample_value&gt;</code> placeholders are numeric
+sample values. JSON does not support special float values such as <code>NaN</code>, <code>Inf</code>,
+and <code>-Inf</code>, so sample values are transferred as quoted JSON strings rather than
+raw numbers.</p>
+
+<h3 id="range-vectors">Range vectors<a class="header-anchor" href="#range-vectors" name="range-vectors"></a>
+</h3>
+
+<p>Range vectors are returned as result type <code>matrix</code>. The corresponding
+<code>result</code> property has the following format:</p>
+
+<pre><code>[
+  {
+    "metric": { "&lt;label_name&gt;": "&lt;label_value&gt;", ... },
+    "values": [ [ &lt;unix_time&gt;, "&lt;sample_value&gt;" ], ... ]
+  },
+  ...
+]
+</code></pre>
+
+<h3 id="instant-vectors">Instant vectors<a class="header-anchor" href="#instant-vectors" name="instant-vectors"></a>
+</h3>
+
+<p>Instant vectors are returned as result type <code>vector</code>. The corresponding
+<code>result</code> property has the following format:</p>
+
+<pre><code>[
+  {
+    "metric": { "&lt;label_name&gt;": "&lt;label_value&gt;", ... },
+    "value": [ &lt;unix_time&gt;, "&lt;sample_value&gt;" ]
+  },
+  ...
+]
+</code></pre>
+
+<h3 id="scalars">Scalars<a class="header-anchor" href="#scalars" name="scalars"></a>
+</h3>
+
+<p>Scalar results are returned as result type <code>scalar</code>. The corresponding
+<code>result</code> property has the following format:</p>
+
+<pre><code>[ &lt;unix_time&gt;, "&lt;scalar_value&gt;" ]
+</code></pre>
+
+<h3 id="strings">Strings<a class="header-anchor" href="#strings" name="strings"></a>
+</h3>
+
+<p>String results are returned as result type <code>string</code>. The corresponding
+<code>result</code> property has the following format:</p>
+
+<pre><code>[ &lt;unix_time&gt;, "&lt;string_value&gt;" ]
+</code></pre>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2015
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
