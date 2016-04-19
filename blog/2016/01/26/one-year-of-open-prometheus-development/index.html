@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficent time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>One Year of Open Prometheus Development | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbc57917e32.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>One Year of Open Prometheus Development</h1>
+    <aside>Posted at: January 26, 2016 by Julius Volz</aside>
+    <article class="doc-content">
+      <h2 id="the-beginning">The beginning<a class="header-anchor" href="#the-beginning" name="the-beginning"></a>
+</h2>
+
+<p>A year ago today, we officially announced Prometheus to the wider world. This
+is a great opportunity for us to look back and share some of the wonderful
+things that have happened to the project since then. But first, let's start at
+the beginning.</p>
+
+<p>Although we had already started Prometheus as an open-source project on GitHub in
+2012, we didn't make noise about it at first. We wanted to give the project
+time to mature and be able to experiment without friction. Prometheus was
+gradually introduced for production monitoring at
+<a href="https://soundcloud.com/">SoundCloud</a> in 2013 and then saw more and more
+usage within the company, as well as some early adoption by our friends at
+Docker and Boexever in 2014. Over the years, Prometheus was growing more and
+more mature and although it was already solving people's monitoring problems,
+it was still unknown to the wider public.</p>
+
+<!-- more -->
+
+<h2 id="going-public">Going public<a class="header-anchor" href="#going-public" name="going-public"></a>
+</h2>
+
+<p>Everything changed for us a year ago, in January of 2015. After more than two
+years of development and internal usage, we felt that Prometheus was ready for
+a wider audience and decided to go fully public with our official <a href="https://developers.soundcloud.com/blog/prometheus-monitoring-at-soundcloud">announcement
+blog post</a>,
+a <a href="https://prometheus.io/">website</a>, and a series of
+<a href="http://www.boxever.com/tags/monitoring">related</a>
+<a href="http://5pi.de/2015/01/26/monitor-docker-containers-with-prometheus/">posts</a>.
+We already received a good deal of attention during the first week after the
+announcement, but nothing could prepare us for what happened a week later:
+someone unknown to us (hello there,
+<a href="https://news.ycombinator.com/user?id=jjwiseman">jjwiseman</a>!) had submitted
+<a href="https://prometheus.io/">the Prometheus website</a> to Hacker News and somehow their
+post had made it <a href="https://news.ycombinator.com/item?id=8995696">all the way to the top</a>.</p>
+
+<p>This is when things started going slightly crazy in a good way. We saw a sharp
+rise in contributors, mailing list questions, GitHub issues, IRC visitors,
+requests for conference and meetup talks, and increasing buzz on the net in
+general. Since the beginning, we have been very lucky about the quality of our
+newly expanded community: The kind of people who were attracted to Prometheus
+also turned out to be very competent, constructive, and high-quality
+contributors and users. The ideal open-source scenario of receiving a lot of
+value back from the community was a reality pretty much from day one.</p>
+
+<p>What does all that Hacker News buzz look like in terms of GitHub stars? Try and
+see if you can find the exact moment in this graph (ironically, a Gnuplot and
+not Prometheus graph) when we went out of "dark mode" and got hit by Hacker
+News:</p>
+
+<p><a href="/assets/prometheus_github_stars-cbcae723947.png"><img src="/assets/prometheus_github_stars-cbcae723947.png" alt="Prometheus GitHub stars"></a></p>
+
+<p>This attention also put us in the 4th place of GitHub's trending repositories
+worldwide:</p>
+
+<p><a href="/assets/prometheus_github_trending-cb1730643f7.png"><img src="/assets/prometheus_github_trending-cb1730643f7.png" alt="Prometheus trending on GitHub"></a></p>
+
+<h2 id="after-the-first-wave">After the first wave<a class="header-anchor" href="#after-the-first-wave" name="after-the-first-wave"></a>
+</h2>
+
+<p>After those first weeks, the initial onslaught of incoming communication cooled
+down a bit, but we were and still are receiving constantly growing adoption.</p>
+
+<p>To give you an idea of the ecosystem, we now have:</p>
+
+<ul>
+<li>33 repositories in our GitHub organization</li>
+<li>~4800 total GitHub stars</li>
+<li>200+ contributors</li>
+<li>2300+ pull requests (60+ open)</li>
+<li>1100+ issues (300+ open)</li>
+<li>150+ people in our IRC channel (<code>#prometheus</code> on <a href="http://freenode.net/">FreeNode</a>)</li>
+<li>250+ people on the mailing list who have created 300+ threads</li>
+<li>20+ Prometheus-related talks and workshops</li>
+<li>100+ articles and blog posts</li>
+</ul>
+
+<p>Besides countless smaller features and bug fixes to existing projects, the
+community has contributed many projects of their own to the Prometheus
+ecosystem. Most of them are exporters that translate metrics from existing
+systems into Prometheus's data model, but there have also been important
+additions to Prometheus itself, such as service discovery mechanisms for
+<a href="http://kubernetes.io/">Kubernetes</a>,
+<a href="https://mesosphere.github.io/marathon/">Marathon</a> and
+<a href="http://aws.amazon.com/ec2/">EC2</a>.</p>
+
+<p>Shortly after making more noise about Prometheus, we also found one contributor
+(<a href="https://github.com/fabxc">Fabian</a>) so outstanding that he ended up joining
+SoundCloud to work on Prometheus. He has since become the most active developer
+on the project and we have him to thank for major new features such as
+generalized service discovery support, runtime-reloadable configurations, new
+powerful query language features, a custom-built query parser, and so much
+more. He is currently working on the new beta rewrite of the
+<a href="https://github.com/prometheus/alertmanager">Alertmanager</a>.</p>
+
+<p>Finally, we have been honored to be recognized and adopted by major players in
+the industry. <a href="https://www.google.com">Google</a> is now instrumenting its open-source
+container management system <a href="http://kubernetes.io/">Kubernetes</a> natively with
+Prometheus metrics. <a href="https://coreos.com/">CoreOS</a> is picking it up for
+<a href="https://coreos.com/etcd/">etcd</a>'s monitoring as well. <a href="https://www.digitalocean.com/">DigitalOcean</a> is betting on Prometheus for their
+internal monitoring. By now, the list of companies using Prometheus in one way
+or another has become too long to mention all of them:
+<a href="https://www.google.com">Google</a>,
+<a href="https://coreos.com/">CoreOS</a>, <a href="https://docker.com">Docker</a>,
+<a href="http://www.boxever.com/">Boxever</a>,
+<a href="https://www.digitalocean.com/">DigitalOcean</a>, <a href="http://www.ft.com/">Financial Times</a>,
+<a href="http://improbable.io/">Improbable</a>, <a href="https://www.kpmg.com">KPMG</a>, and many more.
+Even the world's largest digital festival,
+<a href="https://www.dreamhack.se">DreamHack</a>, has <a href="/blog/2015/06/24/monitoring-dreamhack/">used
+Prometheus</a> to keep
+tabs on their network infrastructure in 2015, and
+<a href="https://fosdem.org/2016/">FOSDEM</a> will do so in 2016.</p>
+
+<p>The widely popular dashboard builder <a href="http://grafana.org/">Grafana</a> also added
+native Prometheus backend support in <a href="http://grafana.org/blog/2015/10/28/Grafana-2-5-Released.html">version
+2.5</a>. Since
+people all around the world are already using and loving Grafana, we are going
+to focus on improving Grafana's Prometheus integration and will invest
+less energy in our own dashboard builder
+<a href="https://github.com/prometheus/promdash">PromDash</a> in the future.</p>
+
+<p>With the Prometheus ecosystem continuing to grow, the first users have started
+asking about commercial support. While Prometheus will always remain an
+independent open source project, one of our core contributors (<a href="https://github.com/brian-brazil">Brian
+Brazil</a>) has recently founded his own company,
+<a href="http://www.robustperception.io/">Robust Perception</a>, which provides support
+and consulting services around Prometheus and monitoring in general.</p>
+
+<p>On a lighter note, 2015 has also been the year in which Brian proved Prometheus's query
+language to be Turing complete by implementing
+<a href="http://www.robustperception.io/conways-life-in-prometheus/">Conway's Game of Life in PromQL</a>.</p>
+
+<h2 id="the-road-ahead">The road ahead<a class="header-anchor" href="#the-road-ahead" name="the-road-ahead"></a>
+</h2>
+
+<p>Both personally and technically, we are really excited about what has happened
+last year in Prometheus-land. We love the opportunity to provide the world with
+a powerful new approach to monitoring, especially one that is much better
+suited towards modern cloud- and container-based infrastructures than
+traditional solutions. We are also very grateful to all contributors and
+hope to continuously improve Prometheus for everyone.</p>
+
+<p>Although Prometheus is relatively mature by now, we have a list of major goals
+we want to tackle in 2016. The highlights will be polishing the new
+Alertmanager rewrite, supporting full read and write integration for external
+long-term storage, as well as eventually releasing a stable 1.0 version of the
+Prometheus server itself.</p>
+
+<p>Stay tuned!</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+

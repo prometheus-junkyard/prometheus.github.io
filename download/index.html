@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficent time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Download | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbc57917e32.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+  <div class="col-md-12 doc-content download">
+    <h1>Download</h1>
+
+    <div class="toc toc-right">
+      <ul>
+      
+        <li><a href="#prometheus">prometheus</a></li>
+      
+        <li><a href="#alertmanager">alertmanager</a></li>
+      
+        <li><a href="#blackbox_exporter">blackbox_exporter</a></li>
+      
+        <li><a href="#haproxy_exporter">haproxy_exporter</a></li>
+      
+        <li><a href="#mysqld_exporter">mysqld_exporter</a></li>
+      
+        <li><a href="#node_exporter">node_exporter</a></li>
+      
+        <li><a href="#pushgateway">pushgateway</a></li>
+      
+        <li><a href="#statsd_exporter">statsd_exporter</a></li>
+      
+      </ul>
+    </div>
+
+    <p>
+      We provide precompiled binaries and <a href="https://hub.docker.com/r/prom/">Docker images</a>
+      for most officially maintained Prometheus components. If a component is
+      not listed here, check the respective repository on Github for further
+      instructions.
+    </p>
+    <p>
+      There is also a constantly growing number of independently maintained
+      exporters listed at <a href="/docs/instrumenting/exporters/">Exporters
+      and integrations</a>.
+    </p>
+    <p>
+      After downloading a binary release suitable for your system, please follow
+      the <a href="/docs/introduction/getting_started/">installation instructions</a>.
+    </p>
+
+    <div class="alert alert-info" role="alert">
+      <strong>Work in progress!</strong>
+      We will provide more precompiled binary versions as well as checksums soon.
+    </div>
+
+    <div class="panel panel-default download-selection">
+      <div class="panel-body">
+        Operating system <div class="btn-group os"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caption">popular</span> <span class="caret"></span></button> <ul class="dropdown-menu"><li><a href="#">all</a></li><li data-group="darwin linux windows"><a href="#">popular</a></li><li role="separator" class="divider"></li> <li><a href="#">darwin</a></li><li><a href="#">dragonfly</a></li><li><a href="#">freebsd</a></li><li><a href="#">linux</a></li><li><a href="#">netbsd</a></li><li><a href="#">openbsd</a></li><li><a href="#">windows</a></li></ul></div>
+        Architecture <div class="btn-group arch"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caption">amd64</span> <span class="caret"></span></button> <ul class="dropdown-menu"><li><a href="#">all</a></li><li role="separator" class="divider"></li> <li><a href="#">386</a></li><li><a href="#">amd64</a></li><li><a href="#">arm</a></li><li><a href="#">arm64</a></li><li><a href="#">armv5</a></li><li><a href="#">armv6</a></li><li><a href="#">armv7</a></li><li><a href="#">ppc64</a></li><li><a href="#">ppc64le</a></li></ul></div>
+      </div>
+    </div>
+
+    
+    <h2 id="prometheus">prometheus</h2>
+    <p>The Prometheus monitoring system and time series database. <a href="https://github.com/prometheus/prometheus"><i class="fa fa-github"></i> prometheus/prometheus</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.18.0 / 2016-04-18</strong>
+            
+            <small><a href="https://github.com/prometheus/prometheus/releases/tag/0.18.0">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="darwin" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.darwin-386.tar.gz">prometheus-0.18.0.darwin-386.tar.gz</a></td>
+          <td>darwin</td>
+          <td>386</td>
+          <td>8.30 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="darwin" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.darwin-amd64.tar.gz">prometheus-0.18.0.darwin-amd64.tar.gz</a></td>
+          <td>darwin</td>
+          <td>amd64</td>
+          <td>8.82 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="dragonfly" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.dragonfly-amd64.tar.gz">prometheus-0.18.0.dragonfly-amd64.tar.gz</a></td>
+          <td>dragonfly</td>
+          <td>amd64</td>
+          <td>8.86 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="freebsd" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.freebsd-386.tar.gz">prometheus-0.18.0.freebsd-386.tar.gz</a></td>
+          <td>freebsd</td>
+          <td>386</td>
+          <td>8.33 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="freebsd" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.freebsd-amd64.tar.gz">prometheus-0.18.0.freebsd-amd64.tar.gz</a></td>
+          <td>freebsd</td>
+          <td>amd64</td>
+          <td>8.87 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="freebsd" data-arch="armv5">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.freebsd-armv5.tar.gz">prometheus-0.18.0.freebsd-armv5.tar.gz</a></td>
+          <td>freebsd</td>
+          <td>armv5</td>
+          <td>8.05 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="freebsd" data-arch="armv6">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.freebsd-armv6.tar.gz">prometheus-0.18.0.freebsd-armv6.tar.gz</a></td>
+          <td>freebsd</td>
+          <td>armv6</td>
+          <td>8.01 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="freebsd" data-arch="armv7">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.freebsd-armv7.tar.gz">prometheus-0.18.0.freebsd-armv7.tar.gz</a></td>
+          <td>freebsd</td>
+          <td>armv7</td>
+          <td>8.01 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-386.tar.gz">prometheus-0.18.0.linux-386.tar.gz</a></td>
+          <td>linux</td>
+          <td>386</td>
+          <td>8.34 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-amd64.tar.gz">prometheus-0.18.0.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>8.87 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="arm64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-arm64.tar.gz">prometheus-0.18.0.linux-arm64.tar.gz</a></td>
+          <td>linux</td>
+          <td>arm64</td>
+          <td>8.22 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="armv5">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-armv5.tar.gz">prometheus-0.18.0.linux-armv5.tar.gz</a></td>
+          <td>linux</td>
+          <td>armv5</td>
+          <td>8.05 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="armv6">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-armv6.tar.gz">prometheus-0.18.0.linux-armv6.tar.gz</a></td>
+          <td>linux</td>
+          <td>armv6</td>
+          <td>8.01 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="armv7">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-armv7.tar.gz">prometheus-0.18.0.linux-armv7.tar.gz</a></td>
+          <td>linux</td>
+          <td>armv7</td>
+          <td>8.00 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="ppc64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-ppc64.tar.gz">prometheus-0.18.0.linux-ppc64.tar.gz</a></td>
+          <td>linux</td>
+          <td>ppc64</td>
+          <td>8.53 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="ppc64le">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.linux-ppc64le.tar.gz">prometheus-0.18.0.linux-ppc64le.tar.gz</a></td>
+          <td>linux</td>
+          <td>ppc64le</td>
+          <td>8.22 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="netbsd" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.netbsd-386.tar.gz">prometheus-0.18.0.netbsd-386.tar.gz</a></td>
+          <td>netbsd</td>
+          <td>386</td>
+          <td>8.32 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="netbsd" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.netbsd-amd64.tar.gz">prometheus-0.18.0.netbsd-amd64.tar.gz</a></td>
+          <td>netbsd</td>
+          <td>amd64</td>
+          <td>8.85 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="netbsd" data-arch="armv5">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.netbsd-armv5.tar.gz">prometheus-0.18.0.netbsd-armv5.tar.gz</a></td>
+          <td>netbsd</td>
+          <td>armv5</td>
+          <td>8.04 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="netbsd" data-arch="armv6">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.netbsd-armv6.tar.gz">prometheus-0.18.0.netbsd-armv6.tar.gz</a></td>
+          <td>netbsd</td>
+          <td>armv6</td>
+          <td>8.00 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="netbsd" data-arch="armv7">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.netbsd-armv7.tar.gz">prometheus-0.18.0.netbsd-armv7.tar.gz</a></td>
+          <td>netbsd</td>
+          <td>armv7</td>
+          <td>8.00 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="openbsd" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.openbsd-386.tar.gz">prometheus-0.18.0.openbsd-386.tar.gz</a></td>
+          <td>openbsd</td>
+          <td>386</td>
+          <td>8.33 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="openbsd" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.openbsd-amd64.tar.gz">prometheus-0.18.0.openbsd-amd64.tar.gz</a></td>
+          <td>openbsd</td>
+          <td>amd64</td>
+          <td>8.86 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="openbsd" data-arch="armv5">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.openbsd-armv5.tar.gz">prometheus-0.18.0.openbsd-armv5.tar.gz</a></td>
+          <td>openbsd</td>
+          <td>armv5</td>
+          <td>8.05 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="openbsd" data-arch="armv6">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.openbsd-armv6.tar.gz">prometheus-0.18.0.openbsd-armv6.tar.gz</a></td>
+          <td>openbsd</td>
+          <td>armv6</td>
+          <td>8.00 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="openbsd" data-arch="armv7">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.openbsd-armv7.tar.gz">prometheus-0.18.0.openbsd-armv7.tar.gz</a></td>
+          <td>openbsd</td>
+          <td>armv7</td>
+          <td>8.00 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="windows" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.windows-386.tar.gz">prometheus-0.18.0.windows-386.tar.gz</a></td>
+          <td>windows</td>
+          <td>386</td>
+          <td>8.28 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="windows" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/prometheus/releases/download/0.18.0/prometheus-0.18.0.windows-amd64.tar.gz">prometheus-0.18.0.windows-amd64.tar.gz</a></td>
+          <td>windows</td>
+          <td>amd64</td>
+          <td>8.82 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="alertmanager">alertmanager</h2>
+    <p>Prometheus Alertmanager <a href="https://github.com/prometheus/alertmanager"><i class="fa fa-github"></i> prometheus/alertmanager</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.1.1 / 2016-03-23</strong>
+            
+            <small><a href="https://github.com/prometheus/alertmanager/releases/tag/0.1.1">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="darwin" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.darwin-386.tar.gz">alertmanager-0.1.1.darwin-386.tar.gz</a></td>
+          <td>darwin</td>
+          <td>386</td>
+          <td>3.00 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="darwin" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.darwin-amd64.tar.gz">alertmanager-0.1.1.darwin-amd64.tar.gz</a></td>
+          <td>darwin</td>
+          <td>amd64</td>
+          <td>3.21 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.linux-386.tar.gz">alertmanager-0.1.1.linux-386.tar.gz</a></td>
+          <td>linux</td>
+          <td>386</td>
+          <td>3.23 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.linux-amd64.tar.gz">alertmanager-0.1.1.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>3.41 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="arm64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.linux-arm64.tar.gz">alertmanager-0.1.1.linux-arm64.tar.gz</a></td>
+          <td>linux</td>
+          <td>arm64</td>
+          <td>3.11 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="armv5">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.linux-armv5.tar.gz">alertmanager-0.1.1.linux-armv5.tar.gz</a></td>
+          <td>linux</td>
+          <td>armv5</td>
+          <td>3.05 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="armv6">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.linux-armv6.tar.gz">alertmanager-0.1.1.linux-armv6.tar.gz</a></td>
+          <td>linux</td>
+          <td>armv6</td>
+          <td>3.04 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="armv7">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.linux-armv7.tar.gz">alertmanager-0.1.1.linux-armv7.tar.gz</a></td>
+          <td>linux</td>
+          <td>armv7</td>
+          <td>3.01 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="windows" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.windows-386.tar.gz">alertmanager-0.1.1.windows-386.tar.gz</a></td>
+          <td>windows</td>
+          <td>386</td>
+          <td>2.81 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="windows" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/alertmanager/releases/download/0.1.1/alertmanager-0.1.1.windows-amd64.tar.gz">alertmanager-0.1.1.windows-amd64.tar.gz</a></td>
+          <td>windows</td>
+          <td>amd64</td>
+          <td>3.04 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="blackbox_exporter">blackbox_exporter</h2>
+    <p>Blackbox prober exporter <a href="https://github.com/prometheus/blackbox_exporter"><i class="fa fa-github"></i> prometheus/blackbox_exporter</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.1.0 / 2016-04-08</strong>
+            
+            <small><a href="https://github.com/prometheus/blackbox_exporter/releases/tag/0.1.0">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="darwin" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/blackbox_exporter/releases/download/0.1.0/blackbox_exporter-0.1.0.darwin-amd64.tar.gz">blackbox_exporter-0.1.0.darwin-amd64.tar.gz</a></td>
+          <td>darwin</td>
+          <td>amd64</td>
+          <td>2.76 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/blackbox_exporter/releases/download/0.1.0/blackbox_exporter-0.1.0.linux-386.tar.gz">blackbox_exporter-0.1.0.linux-386.tar.gz</a></td>
+          <td>linux</td>
+          <td>386</td>
+          <td>2.56 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/blackbox_exporter/releases/download/0.1.0/blackbox_exporter-0.1.0.linux-amd64.tar.gz">blackbox_exporter-0.1.0.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>2.75 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="arm">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/blackbox_exporter/releases/download/0.1.0/blackbox_exporter-0.1.0.linux-arm.tar.gz">blackbox_exporter-0.1.0.linux-arm.tar.gz</a></td>
+          <td>linux</td>
+          <td>arm</td>
+          <td>2.47 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="haproxy_exporter">haproxy_exporter</h2>
+    <p>Simple server that scrapes HAProxy stats and exports them via HTTP for Prometheus consumption <a href="https://github.com/prometheus/haproxy_exporter"><i class="fa fa-github"></i> prometheus/haproxy_exporter</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.5.2</strong>
+            
+            <small><a href="https://github.com/prometheus/haproxy_exporter/releases/tag/0.5.2">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="darwin" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/haproxy_exporter/releases/download/0.5.2/haproxy_exporter-0.5.2.darwin-386.tar.gz">haproxy_exporter-0.5.2.darwin-386.tar.gz</a></td>
+          <td>darwin</td>
+          <td>386</td>
+          <td>2.68 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="darwin" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/haproxy_exporter/releases/download/0.5.2/haproxy_exporter-0.5.2.darwin-amd64.tar.gz">haproxy_exporter-0.5.2.darwin-amd64.tar.gz</a></td>
+          <td>darwin</td>
+          <td>amd64</td>
+          <td>2.86 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/haproxy_exporter/releases/download/0.5.2/haproxy_exporter-0.5.2.linux-386.tar.gz">haproxy_exporter-0.5.2.linux-386.tar.gz</a></td>
+          <td>linux</td>
+          <td>386</td>
+          <td>2.66 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/haproxy_exporter/releases/download/0.5.2/haproxy_exporter-0.5.2.linux-amd64.tar.gz">haproxy_exporter-0.5.2.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>2.86 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="arm">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/haproxy_exporter/releases/download/0.5.2/haproxy_exporter-0.5.2.linux-arm.tar.gz">haproxy_exporter-0.5.2.linux-arm.tar.gz</a></td>
+          <td>linux</td>
+          <td>arm</td>
+          <td>2.57 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="ppc64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/haproxy_exporter/releases/download/0.5.2/haproxy_exporter-0.5.2.linux-ppc64.tar.gz">haproxy_exporter-0.5.2.linux-ppc64.tar.gz</a></td>
+          <td>linux</td>
+          <td>ppc64</td>
+          <td>2.73 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="mysqld_exporter">mysqld_exporter</h2>
+    <p>Exporter for MySQL server metrics <a href="https://github.com/prometheus/mysqld_exporter"><i class="fa fa-github"></i> prometheus/mysqld_exporter</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.7.1</strong>
+            
+            <small><a href="https://github.com/prometheus/mysqld_exporter/releases/tag/0.7.1">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/mysqld_exporter/releases/download/0.7.1/mysqld_exporter-0.7.1.linux-amd64.tar.gz">mysqld_exporter-0.7.1.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>2.72 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="node_exporter">node_exporter</h2>
+    <p>Exporter for machine metrics <a href="https://github.com/prometheus/node_exporter"><i class="fa fa-github"></i> prometheus/node_exporter</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.12.0rc3</strong>
+            <span class="label label-primary">Pre-release</span>
+            <small><a href="https://github.com/prometheus/node_exporter/releases/tag/0.12.0rc3">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/node_exporter/releases/download/0.12.0rc3/node_exporter-0.12.0rc3.linux-amd64.tar.gz">node_exporter-0.12.0rc3.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>3.52 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.11.0 / 2015-07-27</strong>
+            
+            <small><a href="https://github.com/prometheus/node_exporter/releases/tag/0.11.0">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="linux" data-arch="386">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/node_exporter/releases/download/0.11.0/node_exporter-0.11.0.linux-386.tar.gz">node_exporter-0.11.0.linux-386.tar.gz</a></td>
+          <td>linux</td>
+          <td>386</td>
+          <td>2.55 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/node_exporter/releases/download/0.11.0/node_exporter-0.11.0.linux-amd64.tar.gz">node_exporter-0.11.0.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>2.71 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="pushgateway">pushgateway</h2>
+    <p>push acceptor for ephemeral and batch jobs <a href="https://github.com/prometheus/pushgateway"><i class="fa fa-github"></i> prometheus/pushgateway</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.2.0 / 2015-06-25</strong>
+            
+            <small><a href="https://github.com/prometheus/pushgateway/releases/tag/0.2.0">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/pushgateway/releases/download/0.2.0/pushgateway-0.2.0.linux-amd64.tar.gz">pushgateway-0.2.0.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>2.86 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+    <h2 id="statsd_exporter">statsd_exporter</h2>
+    <p>StatsD to Prometheus metrics exporter <a href="https://github.com/prometheus/statsd_exporter"><i class="fa fa-github"></i> prometheus/statsd_exporter</a></p>
+
+    <table class="table table-bordered downloads">
+    
+      <thead>
+        <tr>
+          <td colspan="5">
+            <strong>0.2.0</strong>
+            
+            <small><a href="https://github.com/prometheus/statsd_exporter/releases/tag/0.2.0">Release notes</a></small>
+          </td>
+        </tr>
+        <tr class="first">
+          <th>File name</th>
+          <th>OS</th>
+          <th>Arch</th>
+          <th>Size</th>
+          <th>SHA256 Checksum</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        <tr data-os="linux" data-arch="amd64">
+          <td class="filename"><a class="download" href="https://github.com/prometheus/statsd_exporter/releases/download/0.2.0/statsd_exporter-0.2.0.linux-amd64.tar.gz">statsd_exporter-0.2.0.linux-amd64.tar.gz</a></td>
+          <td>linux</td>
+          <td>amd64</td>
+          <td>2.53 MiB</td>
+          <td class="checksum">not available yet</td>
+        </tr>
+      
+      </tbody>
+    
+    </table>
+    
+  </div>
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

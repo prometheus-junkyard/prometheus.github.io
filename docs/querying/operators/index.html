@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficent time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Operators | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbc57917e32.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav active"><li><a href="/docs/querying/basics/">Basics</a></li><li class="active"><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="operators" class="page-header">Operators<a class="header-anchor" href="#operators" name="operators"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#binary-operators">Binary operators
+</a></li>
+<ul>
+<li><a href="#arithmetic-binary-operators">Arithmetic binary operators
+</a></li>
+<li><a href="#comparison-binary-operators">Comparison binary operators
+</a></li>
+<li><a href="#logical/set-binary-operators">Logical/set binary operators
+</a></li>
+</ul>
+<li><a href="#vector-matching">Vector matching
+</a></li>
+<li><a href="#aggregation-operators">Aggregation operators
+</a></li>
+<li><a href="#binary-operator-precedence">Binary operator precedence
+</a></li>
+</ul></div>
+
+<h2 id="binary-operators">Binary operators<a class="header-anchor" href="#binary-operators" name="binary-operators"></a>
+</h2>
+
+<p>Prometheus's query language supports basic logical and arithmetic operators.
+For operations between two instant vectors, the <a href="#vector-matching">matching behavior</a>
+can be modified.</p>
+
+<h3 id="arithmetic-binary-operators">Arithmetic binary operators<a class="header-anchor" href="#arithmetic-binary-operators" name="arithmetic-binary-operators"></a>
+</h3>
+
+<p>The following binary arithmetic operators exist in Prometheus:</p>
+
+<ul>
+<li>
+<code>+</code> (addition)</li>
+<li>
+<code>-</code> (subtraction)</li>
+<li>
+<code>*</code> (multiplication)</li>
+<li>
+<code>/</code> (division)</li>
+<li>
+<code>%</code> (modulo)</li>
+</ul>
+
+<p>Binary arithmetic operators are defined between scalar/scalar, vector/scalar,
+and vector/vector value pairs.</p>
+
+<p><strong>Between two scalars</strong>, the behavior is obvious: they evaluate to another
+scalar that is the result of the operator applied to both scalar operands.</p>
+
+<p><strong>Between an instant vector and a scalar</strong>, the operator is applied to the
+value of every data sample in the vector. E.g. if a time series instant vector
+is multiplied by 2, the result is another vector in which every sample value of
+the original vector is multiplied by 2.</p>
+
+<p><strong>Between two instant vectors</strong>, a binary arithmetic operator is applied to
+each entry in the left-hand-side vector and its <a href="#vector-matching">matching element</a>
+in the right hand vector. The result is propagated into the result vector and the metric
+name is dropped. Entries for which no matching entry in the right-hand vector can be
+found are not part of the result.</p>
+
+<h3 id="comparison-binary-operators">Comparison binary operators<a class="header-anchor" href="#comparison-binary-operators" name="comparison-binary-operators"></a>
+</h3>
+
+<p>The following binary comparison operators exist in Prometheus:</p>
+
+<ul>
+<li>
+<code>==</code> (equal)</li>
+<li>
+<code>!=</code> (not-equal)</li>
+<li>
+<code>&gt;</code> (greater-than)</li>
+<li>
+<code>&lt;</code> (less-than)</li>
+<li>
+<code>&gt;=</code> (greater-or-equal)</li>
+<li>
+<code>&lt;=</code> (less-or-equal)</li>
+</ul>
+
+<p>Comparison operators are defined between scalar/scalar, vector/scalar,
+and vector/vector value pairs. By default they filter. Their behaviour can be
+modified by providing <code>bool</code> after the operator, which will return <code>0</code> or <code>1</code>
+for the value rather than filtering.</p>
+
+<p><strong>Between two scalars</strong>, the <code>bool</code> modifier must be provided and these
+operators result in another scalar that is either <code>0</code> (<code>false</code>) or <code>1</code>
+(<code>true</code>), depending on the comparison result.</p>
+
+<p><strong>Between an instant vector and a scalar</strong>, these operators are applied to the
+value of every data sample in the vector, and vector elements between which the
+comparison result is <code>false</code> get dropped from the result vector. If the <code>bool</code>
+modifier is provided, vector elements that would be dropped instead have the value
+<code>0</code> and vector elements that would be kept have the value <code>1</code>.</p>
+
+<p><strong>Between two instant vectors</strong>, these operators behave as a filter by default,
+applied to matching entries. Vector elements for which the expression is not
+true or which do not find a match on the other side of the expression get
+dropped from the result, while the others are propagated into a result vector
+with their original (left-hand-side) metric names and label values.
+If the <code>bool</code> modifier is provided, vector elements that would have been
+dropped instead have the value <code>0</code> and vector elements that would be kept have
+the value <code>1</code> with the left-hand-side metric names and label values.</p>
+
+<h3 id="logical/set-binary-operators">Logical/set binary operators<a class="header-anchor" href="#logical-set-binary-operators" name="logical-set-binary-operators"></a>
+</h3>
+
+<p>These logical/set binary operators are only defined between instant vectors:</p>
+
+<ul>
+<li>
+<code>and</code> (intersection)</li>
+<li>
+<code>or</code> (union)</li>
+</ul>
+
+<p><code>vector1 and vector2</code> results in a vector consisting of the elements of
+<code>vector1</code> for which there are elements in <code>vector2</code> with exactly matching
+label sets. Other elements are dropped. The metric name and values are carried
+over from the left-hand-side vector.</p>
+
+<p><code>vector1 or vector2</code> results in a vector that contains all original elements
+(label sets + values) of <code>vector1</code> and additionally all elements of <code>vector2</code>
+which do not have matching label sets in <code>vector1</code>.</p>
+
+<h2 id="vector-matching">Vector matching<a class="header-anchor" href="#vector-matching" name="vector-matching"></a>
+</h2>
+
+<p>Operations between vectors attempt to find a matching element in the right-hand-side
+vector for each entry in the left-hand side. There are two basic types of
+matching behavior:</p>
+
+<p><strong>One-to-one</strong> finds a unique pair of entries from each side of the operation.
+In the default case, that is an operation following the format <code>vector1 &lt;operator&gt; vector2</code>.
+Two entries match if they have the exact same set of labels and corresponding values.
+The <code>on</code> keyword allows reducing the set of considered labels to a provided list:</p>
+
+<pre><code>&lt;vector expr&gt; &lt;bin-op&gt; on(&lt;label list&gt;) &lt;vector expr&gt;
+</code></pre>
+
+<p>Example input:</p>
+
+<pre><code>method:http_errors:rate5m{source="internal", method="get", code="500"}  24
+method:http_errors:rate5m{source="external", method="get", code="404"}  30
+method:http_errors:rate5m{source="internal", method="put", code="501"}  3
+method:http_errors:rate5m{source="internal", method="post", code="500"} 6
+method:http_errors:rate5m{source="external", method="post", code="404"} 21
+
+method:http_requests:rate5m{method="get"}  600
+method:http_requests:rate5m{method="del"}  34
+method:http_requests:rate5m{method="post"} 120
+</code></pre>
+
+<p>Example query:</p>
+
+<pre><code>method:http_errors:rate5m{code="500"} / on(method) method:http_requests:rate5m
+</code></pre>
+
+<p>This returns a result vector containing the fraction of HTTP requests with status code
+of 500 for each method, as measured over the last 5 minutes. Without <code>on(method)</code> there
+would have been no match as the metrics do not share the same set of labels.
+The entries with methods <code>put</code> and <code>del</code> have no match and will not show up in the result:</p>
+
+<pre><code>{method="get"}  0.04            //  24 / 600
+{method="post"} 0.1             //  12 / 120
+</code></pre>
+
+<p><strong>Many-to-one</strong> and <strong>one-to-many</strong> matchings refer to the case where each vector element on
+the "one"-side can match with multiple elements on the "many"-side. This has to
+be explicitly requested using the <code>group_left</code> or <code>group_right</code> modifier, where
+left/right determines which vector has the higher cardinality.</p>
+
+<pre><code>&lt;vector expr&gt; &lt;bin-op&gt; on(&lt;label list&gt;) group_left(&lt;label list&gt;) &lt;vector expr&gt;
+&lt;vector expr&gt; &lt;bin-op&gt; on(&lt;label list&gt;) group_right(&lt;label list&gt;) &lt;vector expr&gt;
+</code></pre>
+
+<p>The label list provided with the group modifier contains additional labels from the "many"-side
+to be included in the result metrics. A label can only appear in one of the lists. Every time
+series of the result vector must be uniquely identifiable by the labels from both lists combined.</p>
+
+<p><em>Grouping modifiers can only be used for <a href="#comparison-binary-operators">comparison</a>
+and <a href="#arithmetic-binary-operators">arithmetic</a> operations as <code>and</code> and <code>or</code> operations
+match with all possible entries in the right vector by default.</em></p>
+
+<p>Example query:</p>
+
+<pre><code>method:http_errors:rate5m / on(method) group_left(code,source) method:http_requests:rate5m
+</code></pre>
+
+<p>In this case the left vector contains more than one entry per <code>method</code> label value. Thus,
+we indicate this using <code>group_left</code>. To ensure that the result vector entries are unique, additional
+labels have to be provided. Either <code>code</code> or <code>source</code> satisfy this requirement, but both
+can be added for a more detailed result. The elements from the right side
+are now matched with multiple elements with the same <code>method</code> label on the left:</p>
+
+<pre><code>{source="internal", method="get", code="500"}  0.04            //  24 / 600
+{source="external", method="get", code="404"}  0.05            //  30 / 600
+{source="internal", method="post", code="500"} 0.1             //  12 / 120
+{source="external", method="post", code="404"} 0.175           //  21 / 120
+</code></pre>
+
+<p><em>Many-to-one and one-to-many matching are advanced use cases that should be carefully considered.
+Often a proper use of <code>on(&lt;labels&gt;)</code> provides the desired outcome.</em></p>
+
+<h2 id="aggregation-operators">Aggregation operators<a class="header-anchor" href="#aggregation-operators" name="aggregation-operators"></a>
+</h2>
+
+<p>Prometheus supports the following built-in aggregation operators that can be
+used to aggregate the elements of a single instant vector, resulting in a new
+vector of fewer elements with aggregated values:</p>
+
+<ul>
+<li>
+<code>sum</code> (calculate sum over dimensions)</li>
+<li>
+<code>min</code> (select minimum over dimensions)</li>
+<li>
+<code>max</code> (select maximum over dimensions)</li>
+<li>
+<code>avg</code> (calculate the average over dimensions)</li>
+<li>
+<code>stddev</code> (calculate population standard deviation over dimensions)</li>
+<li>
+<code>stdvar</code> (calculate population standard variance over dimensions)</li>
+<li>
+<code>count</code> (count number of elements in the vector)</li>
+</ul>
+
+<p>These operators can either be used to aggregate over <strong>all</strong> label dimensions
+or preserve distinct dimensions by including a <code>without</code> or <code>by</code> clause.</p>
+
+<pre><code>&lt;aggr-op&gt;(&lt;vector expression&gt;) [without|by (&lt;label list&gt;)] [keep_common]
+</code></pre>
+
+<p><code>without</code> removes the listed labels from the result vector, while all other
+labels are preserved the output. <code>by</code> does the opposite and drops labels that
+are not listed in the <code>by</code> clause, even if their label values are identical
+between all elements of the vector. The <code>keep_common</code> clause allows to keep
+those extra labels (labels that are identical between elements, but not in the
+<code>by</code> clause).</p>
+
+<p>Until Prometheus 0.14.0, the <code>keep_common</code> keyword was called <code>keeping_extra</code>.
+The latter is still supported, but is deprecated and will be removed at some
+point.</p>
+
+<p>Example:</p>
+
+<p>If the metric <code>http_requests_total</code> had time series that fan out by
+<code>application</code>, <code>instance</code>, and <code>group</code> labels, we could calculate the total
+number of seen HTTP requests per application and group over all instances via:</p>
+
+<pre><code>sum(http_requests_total) without (instance)
+</code></pre>
+
+<p>If we are just interested in the total of HTTP requests we have seen in <strong>all</strong>
+applications, we could simply write:</p>
+
+<pre><code>sum(http_requests_total)
+</code></pre>
+
+<h2 id="binary-operator-precedence">Binary operator precedence<a class="header-anchor" href="#binary-operator-precedence" name="binary-operator-precedence"></a>
+</h2>
+
+<p>The following list shows the precedence of binary operators in Prometheus, from
+highest to lowest.</p>
+
+<ol>
+<li>
+<code>*</code>, <code>/</code>, <code>%</code>
+</li>
+<li>
+<code>+</code>, <code>-</code>
+</li>
+<li>
+<code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&gt;</code>
+</li>
+<li><code>AND</code></li>
+<li><code>OR</code></li>
+</ol>
+
+<p>Operators on the same precedence level are left-associative. For example,
+<code>2 * 3 % 2</code> is equivalent to <code>(2 * 3) % 2</code>.</p>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

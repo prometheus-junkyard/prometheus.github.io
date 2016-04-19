@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficent time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Writing exporters | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbc57917e32.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav active"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li class="active"><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="writing-exporters" class="page-header">Writing exporters<a class="header-anchor" href="#writing-exporters" name="writing-exporters"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#maintainability-and-purity">Maintainability and purity
+</a></li>
+<li><a href="#configuration">Configuration
+</a></li>
+<li><a href="#metrics">Metrics
+</a></li>
+<ul>
+<li><a href="#naming">Naming
+</a></li>
+<li><a href="#labels">Labels
+</a></li>
+<li><a href="#target-labels,-not-static-scraped-labels">Target labels, not static scraped labels
+</a></li>
+<li><a href="#types">Types
+</a></li>
+<li><a href="#help-strings">Help strings
+</a></li>
+<li><a href="#drop-less-useful-statistics">Drop less useful statistics
+</a></li>
+<li><a href="#dotted-strings">Dotted strings
+</a></li>
+</ul>
+<li><a href="#collectors">Collectors
+</a></li>
+<ul>
+<li><a href="#metrics-about-the-scrape-itself">Metrics about the scrape itself
+</a></li>
+<li><a href="#machine-and-process-metrics">Machine and process metrics
+</a></li>
+</ul>
+<li><a href="#deployment">Deployment
+</a></li>
+<ul>
+<li><a href="#scheduling">Scheduling
+</a></li>
+<li><a href="#pushes">Pushes
+</a></li>
+<li><a href="#failed-scrapes">Failed scrapes
+</a></li>
+<li><a href="#landing-page">Landing page
+</a></li>
+<li><a href="#port-numbers">Port numbers
+</a></li>
+</ul>
+<li><a href="#announcing">Announcing
+</a></li>
+</ul></div>
+
+<p>When directly instrumenting your own code, the general rules of how to
+instrument code with a Prometheus client library can be followed quite
+directly. When taking metrics from another monitoring or instrumentation
+system, things tend not to be so black and white.</p>
+
+<p>This document contains things you should consider when writing an exporter or
+custom collector. The theory covered will also be of interest to those doing
+direct instrumentation.</p>
+
+<p>If you are writing an exporter and are unclear on anything here, contact us on
+IRC (#prometheus on Freenode) or the <a href="/community">mailing list</a>.</p>
+
+<h2 id="maintainability-and-purity">Maintainability and purity<a class="header-anchor" href="#maintainability-and-purity" name="maintainability-and-purity"></a>
+</h2>
+
+<p>The main decision you need to make when writing an exporter is how much work
+you’re willing to put in to get perfect metrics out of it.</p>
+
+<p>If the system in question has only a handful of metrics that rarely change,
+then getting everything perfect is an easy choice (e.g. the <a href="https://github.com/prometheus/haproxy_exporter">haproxy
+exporter</a>).</p>
+
+<p>If on the other hand the system has hundreds of metrics that change
+continuously with new versions, if you try to get things perfect then you’ve
+signed yourself up for a lot of ongoing work. The <a href="https://github.com/prometheus/mysqld_exporter">mysql
+exporter</a> is on this end of the
+spectrum.</p>
+
+<p>The <a href="https://github.com/prometheus/node_exporter">node exporter</a> is a mix,
+varying by module. For mdadm we have to hand-parse a file and come up with our
+own metrics, so we may as well get the metrics right while we’re at it. For
+meminfo on the other hand, the results vary across kernel versions so we end up
+doing just enough of a transform to create valid metrics.</p>
+
+<h2 id="configuration">Configuration<a class="header-anchor" href="#configuration" name="configuration"></a>
+</h2>
+
+<p>When working with applications, you should aim for an exporter that requires no
+custom configuration by the user beyond telling it where the application is.
+You may also need to offer the ability to filter out certain metrics if they
+may be too granular and expensive on large setups (e.g. the haproxy exporter
+allows filtering of per-server stats). Similarly there may be expensive metrics
+that are disabled by default.</p>
+
+<p>When working with monitoring systems, frameworks and protocols things are not
+so simple.</p>
+
+<p>In the best case the system in question has a similar enough data model to
+Prometheus that you can automatically determine how to transform metrics. This
+is the case for Cloudwatch, SNMP and Collectd. At most we need the ability to
+let the user select which metrics they want to pull out.</p>
+
+<p>In the more common case metrics from the system are completely non-standard,
+depending on how the user is using it and what the underlying application is.
+In that case the user has to tell us how to transform the metrics. The JMX
+exporter is the worst offender here, with the graphite and statsd exporters
+also requiring configuration to extract labels.</p>
+
+<p>Providing something that produces some output out of the box and a selection of
+example configurations is advised. When writing configurations for such
+exporters, this document should be kept in mind.</p>
+
+<p>YAML is the standard Prometheus configuration format.</p>
+
+<h2 id="metrics">Metrics<a class="header-anchor" href="#metrics" name="metrics"></a>
+</h2>
+
+<h3 id="naming">Naming<a class="header-anchor" href="#naming" name="naming"></a>
+</h3>
+
+<p>Follow the <a href="/docs/practices/naming">best practices on metric naming</a>.</p>
+
+<p>Generally metric names should allow someone who’s familiar with Prometheus but
+not a particular system to make a good guess as to what a metric means.  A
+metric named <code>http_requests_total</code> is not extremely useful - are these being
+measured as they come in, in some filter or when they get to the user’s code?
+And <code>requests_total</code> is even worse, what type of requests?</p>
+
+<p>To put it another way with direct instrumentation, a given metric should exist
+within exactly one file. Accordingly within exporters and collectors, a metric
+should apply to exactly one subsystem and be named accordingly.</p>
+
+<p>Metric names should never be procedurally generated, except when writing a
+custom collector or exporter.</p>
+
+<p>Metric names for applications should generally be prefixed by the exporter
+name, e.g. <code>haproxy_up</code>.</p>
+
+<p>Metrics must use base units (e.g. seconds, bytes) and leave converting them to
+something more readable to the graphing software. No matter what units you end
+up using, the units in the metric name must match the units in use. Similarly
+expose ratios, not percentages (though a counter for each of the two components
+of the ratio is better).</p>
+
+<p>Metric names should not include the labels that they’re exported with (e.g.
+<code>by_type</code>) as that won’t make sense if the label is aggregated away.</p>
+
+<p>The one exception is when you’re exporting the same data with different labels
+via multiple metrics, in which case that’s usually the sanest way to
+distinguish them. For direct instrumentation this should only come up when
+exporting a single metric with all the labels would have too high a
+cardinality.</p>
+
+<p>Prometheus metrics and label names are written in <code>snake_case</code>. Converting
+<code>camelCase</code> to <code>snake_case</code> is desirable, though it doing so automatically
+doesn’t always produce nice results for things like <code>myTCPExample</code> or <code>isNaN</code>
+so sometimes it’s best to leave them as-is.</p>
+
+<p>Exposed metrics should not contain colons, these are for users to use when
+aggregating.</p>
+
+<p>Only <code>[a-zA-Z0-9:_]</code> are valid in metric names, any other characters should be
+sanitized to an underscore.</p>
+
+<p>The <code>_sum</code>, <code>_count</code>, <code>_bucket</code> and <code>_total</code> suffixes are used by Summaries,
+Histograms and Counters. Unless you’re producing one of those, avoid these
+suffixes.</p>
+
+<p><code>_total</code> is a convention for counters, you should use it if you’re using the
+COUNTER type.</p>
+
+<p>The <code>process_</code> and <code>scrape_</code> prefixes are reserved. It’s okay to add your own
+prefix on to these if they follow the <a href="https://docs.google.com/document/d/1Q0MXWdwp1mdXCzNRak6bW5LLVylVRXhdi7_21Sg15xQ/edit">matching
+semantics</a>.
+E.g. Prometheus has <code>scrape_duration_seconds</code> for how long a scrape took, it’s
+good practice to have e.g. <code>jmx_scrape_duration_seconds</code> saying how long the
+JMX collector took to do it’s thing. For process stats where you have access to
+the pid, both Go and Python offer collectors that’ll handle this for you (see
+the <a href="https://github.com/prometheus/haproxy_exporter">haproxy exporter</a> for an
+example).</p>
+
+<p>When you have a successful request count and a failed request count, the best
+way to expose this is as one metric for total requests and another metric for
+failed requests. This makes it easy to calculate the failure ratio. Do not use
+one metric with a failed/success label. Similarly with hit/miss for caches,
+it’s better to have one metric for total and another for hits.</p>
+
+<p>Consider the likelihood that someone using monitoring will do a code or web
+search for the metric name. If the names are very well established and unlikely
+to be used outside of the realm of people used to those names (e.g. SNMP and
+network engineers) then leaving them as-is may be a good idea. This logic
+doesn’t apply for e.g. MySQL as non-DBAs can be expected to be poking around
+the metrics. A <code>HELP</code> string with the original name can provide most of the
+same benefits as using the original names.</p>
+
+<h3 id="labels">Labels<a class="header-anchor" href="#labels" name="labels"></a>
+</h3>
+
+<p>Read the <a href="/docs/practices/instrumentation/#things-to-watch-out-for">general
+advice</a> on labels.</p>
+
+<p>Avoid <code>type</code> as a label name, it’s too generic and meaningless. You should also
+try where possible to avoid names that are likely to clash with target labels,
+such as <code>region</code>, <code>zone</code>, <code>cluster</code>, <code>availability_zone</code>, <code>az</code>, <code>datacenter</code>,
+<code>dc</code>, <code>owner</code>, <code>customer</code>, <code>stage</code>, <code>environment</code> and <code>env</code> - though if that’s
+what the application calls something it’s best not to cause confusion by
+renaming it.</p>
+
+<p>Avoid the temptation to put things into one metric just because they share a
+prefix. Unless you’re sure something makes sense as one metric, multiple
+metrics is safer.</p>
+
+<p>The label <code>le</code> has special meaning for Histograms, and <code>quantile</code> for
+Summaries. Avoid these labels generally.</p>
+
+<p>Read/write and send/receive are best as separate metrics, rather than as a
+label. This is usually because you care about only one of them at a time, and
+it’s easier to use them that way.</p>
+
+<p>The rule of thumb is that one metric should make sense when summed or averaged.
+There is one other case that comes up with exporters, and that’s where the data
+is fundamentally tabular and doing otherwise would require users to do regexes
+on metric names to be useable. Consider the voltage sensors on your
+motherboard, while doing math across them is meaningless, it makes sense to
+have them in one metric rather than having one metric per sensor. All values
+within a metrics should (almost) always have the same unit (consider if fan
+speeds were mixed in with the voltages, and you had no way to automatically
+separate them).</p>
+
+<p>Don’t do this:</p>
+
+<pre>
+my_metric{label=a} 1
+my_metric{label=b} 6
+<b>my_metric{label=total} 7</b>
+</pre>
+
+<p>or this:</p>
+
+<pre>
+my_metric{label=a} 1
+my_metric{label=b} 6
+<b>my_metric{} 7</b>
+</pre>
+
+<p>The former breaks people who do a <code>sum()</code> over your metric, and the latter
+breaks sum and also is quite difficult to work with. Some client libraries
+(e.g. Go) will actively try to stop you doing the latter in a custom collector,
+and all client libraries should stop you from doing the former with direct
+instrumentation. Never do either of these, rely on Prometheus aggregation
+instead.</p>
+
+<p>If your monitoring exposes a total like this, drop the total. If you have to
+keep it around for some reason (e.g. the total includes things not counted
+individually), use different metric names.</p>
+
+<h3 id="target-labels,-not-static-scraped-labels">Target labels, not static scraped labels<a class="header-anchor" href="#target-labels-not-static-scraped-labels" name="target-labels-not-static-scraped-labels"></a>
+</h3>
+
+<p>If you ever find yourself wanting to apply the same label to all of your
+metrics, stop.</p>
+
+<p>There’s generally two cases where this comes up.</p>
+
+<p>The first is some label it’d be useful to have on the metrics that are about,
+such as the version number of the software. Use the approach described at
+<a href="http://www.robustperception.io/how-to-have-labels-for-machine-roles/">http://www.robustperception.io/how-to-have-labels-for-machine-roles/</a>
+instead.</p>
+
+<p>The other case are what are really target labels. These are things like region,
+cluster names, and so on, that come from your infrastructure setup rather than
+the application itself. It’s not for an application to say where it fits in
+your label taxonomy, that’s for the person running the Prometheus server to
+configure and different people monitoring the same application may give it
+different names.</p>
+
+<p>Accordingly these labels belong up in the scrape configs of Prometheus via
+whatever service discovery you’re using. It’s okay to apply the concept of
+machine roles here as well, as it’s likely useful information for at least some
+of the people scraping it.</p>
+
+<h3 id="types">Types<a class="header-anchor" href="#types" name="types"></a>
+</h3>
+
+<p>You should try to match up the types of your metrics to Prometheus types. This
+usually means counters and gauges. The <code>_count</code> and <code>_sum</code> of summaries are
+also relatively common, and on occasion you’ll see quantiles. Histograms are
+rare, if you come across one remember that the exposition format exposes
+cumulative values.</p>
+
+<p>Often it won’t be obvious what the type of a metric is (especially if you’re
+automatically processing a set of metrics), use <code>UNTYPED</code> in that case. In
+general <code>UNTYPED</code> is a safe default.</p>
+
+<p>Counters can’t go down, so if you’ve a counter type coming from another
+instrumentation system that has a way to decrement it (e.g. Dropwizard metrics)
+that’s not a counter - it’s a gauge. <code>UNTYPED</code> is probably the best type to use
+there, as <code>GAUGE</code> would be misleading if it were being used as a counter.</p>
+
+<h3 id="help-strings">Help strings<a class="header-anchor" href="#help-strings" name="help-strings"></a>
+</h3>
+
+<p>When you’re transforming metrics it’s useful for users to be able to track back
+to what the original was, and what rules were in play that caused that
+transform. Putting in the name of the collector/exporter, the id of any rule
+that was applied and the name/details of the original metric into the help
+string will greatly aid users.</p>
+
+<p>Prometheus doesn’t like one metric having different help strings. If you’re
+making one metric from many others, choose one of them to put in the help
+string.</p>
+
+<p>For examples of this, the SNMP exporter uses the OID and the JMX exporter puts
+in a sample mBean name. The <a href="https://github.com/prometheus/haproxy_exporter">haproxy
+exporter</a> has hand-written
+strings. The <a href="https://github.com/prometheus/node_exporter">node exporter</a> has a
+wide variety of examples.</p>
+
+<h3 id="drop-less-useful-statistics">Drop less useful statistics<a class="header-anchor" href="#drop-less-useful-statistics" name="drop-less-useful-statistics"></a>
+</h3>
+
+<p>Some instrumentation systems expose 1m/5m/15m rates, average rates since
+application start (called <code>mean</code> in dropwizard metrics for example), minimums,
+maximums and standard deviations.</p>
+
+<p>These should all be dropped, as they’re not very useful and add clutter.
+Prometheus can calculate rates itself, and usually more accurately (these are
+usually exponentially decaying averages). You don’t know what time the min/max
+were calculated over, and the stddev is statistically useless (expose sum of
+squares, <code>_sum</code> and <code>_count</code> if you ever need to calculate it).</p>
+
+<p>Quantiles have related issues, you may choose to drop them or put them in a
+Summary.</p>
+
+<h3 id="dotted-strings">Dotted strings<a class="header-anchor" href="#dotted-strings" name="dotted-strings"></a>
+</h3>
+
+<p>Many monitoring systems don’t have labels, instead doing things like
+<code>my.class.path.mymetric.labelvalue1.labelvalue2.labelvalue3</code>.</p>
+
+<p>The graphite and statsd exporters share a way of doing this with a small
+configuration language. Other exporters should implement the same. It’s
+currently implemented only in Go, and would benefit from begin factored out
+into a separate library.</p>
+
+<h2 id="collectors">Collectors<a class="header-anchor" href="#collectors" name="collectors"></a>
+</h2>
+
+<p>When implementing the collector for your exporter, you should never use the
+usual direct instrumentation approach and then update the metrics on each
+scrape.</p>
+
+<p>Rather create new metrics each time. In Go this is done with
+<a href="https://godoc.org/github.com/prometheus/client_golang/prometheus#MustNewConstMetric">MustNewConstMetric</a>
+in your <code>Update()</code> method. For Python see
+<a href="https://github.com/prometheus/client_python#custom-collectors">https://github.com/prometheus/client_python#custom-collectors</a>
+and for Java generate a <code>List&lt;MetricFamilySamples&gt;</code> in your collect method -
+see
+<a href="https://github.com/prometheus/client_java/blob/master/simpleclient_hotspot/src/main/java/io/prometheus/client/hotspot/StandardExports.java">StandardExports.java</a>
+for an example.</p>
+
+<p>The reason for this is firstly that two scrapes could happen at the same time,
+and direct instrumentation uses what are effectively (file-level) global
+variables so you’ll get race conditions. The second reason is that if a label
+value disappears, it’ll still be exported.</p>
+
+<p>Instrumenting your exporter itself via direct instrumentation is fine, e.g.
+total bytes transferred or calls performed by the exporter across all scrapes.
+For exporters such as the blackbox exporter and snmp exporter which aren’t tied
+to a single target, these should only be exposed on a vanilla <code>/metrics</code> call -
+not on a scrape of a particular target.</p>
+
+<h3 id="metrics-about-the-scrape-itself">Metrics about the scrape itself<a class="header-anchor" href="#metrics-about-the-scrape-itself" name="metrics-about-the-scrape-itself"></a>
+</h3>
+
+<p>Sometimes you’d like to export metrics that are about the scrape, like how long
+it took or how many records you processed.</p>
+
+<p>These should be exposed as gauges (as they’re about an event, the scrape) and
+the metric name prefixed by the exporter name e.g.
+<code>jmx_scrape_duration_seconds</code>. Usually the <code>_exporter</code> is excluded (and if the
+exporter also makes sense to use as just a collector, definitely exclude it).</p>
+
+<h3 id="machine-and-process-metrics">Machine and process metrics<a class="header-anchor" href="#machine-and-process-metrics" name="machine-and-process-metrics"></a>
+</h3>
+
+<p>Many systems (e.g. elasticsearch) expose machine metrics such a CPU, memory and
+filesystem information. As the node exporter provides these in the Prometheus
+ecosystem, such metrics should be dropped.</p>
+
+<p>In the Java world, many instrumentation frameworks expose process-level and
+JVM-level stats such as CPU and GC. The Java client and JMX exporter already
+include these in the preferred form via
+<a href="https://github.com/prometheus/client_java/blob/master/simpleclient_hotspot/src/main/java/io/prometheus/client/hotspot/DefaultExports.java">DefaultExports.java</a>,
+so these should be dropped.</p>
+
+<p>Similarly with other languages.</p>
+
+<h2 id="deployment">Deployment<a class="header-anchor" href="#deployment" name="deployment"></a>
+</h2>
+
+<p>Each exporter should monitor exactly one instance application, preferably
+sitting right beside it on the same machine. That means for every haproxy you
+run, you run a <code>haproxy_exporter</code> process. For every machine with a mesos
+slave, you run the mesos exporter on it (and another one for the master if a
+machine has both).</p>
+
+<p>The theory behind this is that for direct instrumentation this is what you’d be
+doing, and we’re trying to get as close to that as we can in other layouts.
+This means that all service discovery is done in Prometheus, not in exporters.
+This also has the benefit that Prometheus has the target information it needs
+to allow users probe your service with the blackbox exporter.</p>
+
+<p>There are two exceptions:</p>
+
+<p>The first is where running beside the application your monitoring is completely
+nonsensical. SNMP, blackbox and IPMI are the main examples of this. IPMI and
+SNMP as the devices are effectively black boxes that it’s impossible to run
+code on (though if you could run a node exporter on them instead that’d be
+better), and blackbox as if you’re monitoring something like a DNS name there’s
+nothing to run on. In this case Prometheus should still do service discovery,
+and pass on the target to be scraped. See the blackbox and SNMP exporters for
+examples.</p>
+
+<p>Note that it is only currently possible to write this type of exporter with the
+Python and Java client libraries (the blackbox exporter which is written in Go
+is doing the text format by hand, don’t do this).</p>
+
+<p>The other is where you’re pulling some stats out of a random instance of a
+system and don’t care which one you’re talking to. Consider a set of MySQL
+slaves you wanted to run some business queries against the data to then export.
+Having an exporter that uses your usual load balancing approach to talk to one
+slave is the sanest approach.</p>
+
+<p>This doesn’t apply when you’re monitoring a system with master-election, in
+that case you should monitor each instance individually and deal with the
+masterness in Prometheus.  This is as there isn’t always exactly one master,
+and changing what a target is underneath Prometheus’s feet will cause oddities.</p>
+
+<h3 id="scheduling">Scheduling<a class="header-anchor" href="#scheduling" name="scheduling"></a>
+</h3>
+
+<p>Metrics should only be pulled from the application when Prometheus scrapes
+them, exporters should not perform scrapes based on their own timers. That is,
+all scrapes should be synchronous.</p>
+
+<p>Accordingly you should not set timestamps on the metric you expose, let
+Prometheus take care of that. If you think you need timestamps, then you
+probably need the pushgateway (without timestamps) instead.</p>
+
+<p>If a metric is particularly expensive to retrieve (i.e. takes more than a
+minute), it is acceptable to cache it. This should be noted in the <code>HELP</code>
+string.</p>
+
+<p>The default scrape timeout for Prometheus is 10 seconds. If your exporter can
+be expected to exceed this, you should explicitly call this out in your user
+docs.</p>
+
+<h3 id="pushes">Pushes<a class="header-anchor" href="#pushes" name="pushes"></a>
+</h3>
+
+<p>Some applications and monitoring systems only push metrics e.g. statsd,
+graphite and collectd.</p>
+
+<p>There’s two considerations here.</p>
+
+<p>Firstly, when do you expire metrics? Collected and things talking to Graphite
+both export regularly, and when they stop we want to stop exposing the metrics.
+Collected includes an expiry time so we use that, Graphite doesn’t so it’s a
+flag on the exporter.</p>
+
+<p>Statsd is a bit different, as it’s dealing with events rather than metrics. The
+best model is to run one exporter beside each application and restart them when
+the application restarts so that state is cleared.</p>
+
+<p>The second is that these sort of systems tend to allow your users to send
+either deltas or raw counters. You should rely on the raw counters as far as
+possible, as that’s the general Prometheus model.</p>
+
+<p>For service-level metrics (e.g. service-level batch jobs) you should have your
+exporter push into the push gateway and exit after the event rather than
+handling the state yourself. For instance-level batch metrics, there is no
+clear pattern yet - options are either to abuse the node exporter’s textfile
+collector, rely on in-memory state (probably best if you don’t need to persist
+over a reboot) or implement similar functionality to the textfile collector.</p>
+
+<h3 id="failed-scrapes">Failed scrapes<a class="header-anchor" href="#failed-scrapes" name="failed-scrapes"></a>
+</h3>
+
+<p>There are currently two patterns for failed scrapes where the application
+you’re talking to doesn’t respond or has other problems.</p>
+
+<p>The first is to return a 5xx error.</p>
+
+<p>The seconds is to have an <code>myexporter_up</code> (e.g. <code>haproxy_up</code>) variable that’s
+0/1 depending on whether the scrape worked.</p>
+
+<p>The latter is better where there’s still some useful metrics you can get even
+with a failed scrape, such as the haproxy exporter providing process stats. The
+former is a tad easier for users to deal with, as <code>up</code> works in the usual way
+(though you can’t distinguish between the exporter being down and the
+application being down).</p>
+
+<h3 id="landing-page">Landing page<a class="header-anchor" href="#landing-page" name="landing-page"></a>
+</h3>
+
+<p>It’s nicer for users if visiting <code>http://yourexporter/</code> has a simple html page
+with the name of the exporter, and a link to the <code>/metrics</code>.</p>
+
+<h3 id="port-numbers">Port numbers<a class="header-anchor" href="#port-numbers" name="port-numbers"></a>
+</h3>
+
+<p>A user may have many exporters and Prometheus components on the same machine,
+so to make that easier each has a unique port number.</p>
+
+<p><a href="https://github.com/prometheus/prometheus/wiki/Default-port-allocations">https://github.com/prometheus/prometheus/wiki/Default-port-allocations</a>
+is where we track them, this is publically editable.</p>
+
+<p>Feel free to grab the next free port number when developing your exporter,
+preferably before publicly announcing it. If you’re not ready to release yet,
+putting your username and WIP is fine.</p>
+
+<p>This is a registry to make our users’ lives a little easier, not a commitment
+to develop particular exporters.</p>
+
+<h2 id="announcing">Announcing<a class="header-anchor" href="#announcing" name="announcing"></a>
+</h2>
+
+<p>Once you’re ready to announce your exporter to the world, send an email to the
+mailing list and send a PR to add it to <a href="https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md">the list of available
+exporters</a>.</p>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

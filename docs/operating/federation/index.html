@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficent time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Federation | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbc57917e32.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav active"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li class="active"><a href="/docs/operating/federation/">Federation</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="federation" class="page-header">Federation<a class="header-anchor" href="#federation" name="federation"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#use-cases">Use cases
+</a></li>
+<ul>
+<li><a href="#hierarchical-federation">Hierarchical federation
+</a></li>
+<li><a href="#cross-service-federation">Cross-service federation
+</a></li>
+</ul>
+<li><a href="#configuring-federation">Configuring federation
+</a></li>
+</ul></div>
+
+<p>Federation allows a Prometheus server to scrape selected time series from
+another Prometheus server.</p>
+
+<h2 id="use-cases">Use cases<a class="header-anchor" href="#use-cases" name="use-cases"></a>
+</h2>
+
+<p>There are different use cases for federation. Commonly, it is used to either
+achieve scalable Prometheus monitoring setups or to pull related metrics from
+one service's Prometheus into another.</p>
+
+<h3 id="hierarchical-federation">Hierarchical federation<a class="header-anchor" href="#hierarchical-federation" name="hierarchical-federation"></a>
+</h3>
+
+<p>Hierarchical federation allows Prometheus to scale to environments with tens of
+data centers and millions of nodes. In this use case, the federation topology
+resembles a tree, with higher-level Prometheus servers collecting aggregated
+time series data from a larger number of subordinated servers.</p>
+
+<p>For example, a setup might consist of many per-datacenter Prometheus servers
+that collect data in high detail (instance-level drill-down), and a set of
+global Prometheus servers which collect and store only aggregated data
+(job-level drill-down) from those local servers. This provides an aggregate
+global view and detailed local views.</p>
+
+<h3 id="cross-service-federation">Cross-service federation<a class="header-anchor" href="#cross-service-federation" name="cross-service-federation"></a>
+</h3>
+
+<p>In cross-service federation, a Prometheus server of one service is configured
+to scrape selected data from another service's Prometheus server to enable
+alerting and queries against both datasets within a single server.</p>
+
+<p>For example, a cluster scheduler running multiple services might expose
+resource usage information (like memory and CPU usage) about service instances
+running on the cluster. On the other hand, a service running on that cluster
+will only expose application-specific service metrics. Often, these two sets of
+metrics are scraped by separate Prometheus servers. Using federation, the
+Prometheus server containing service-level metrics may pull in the cluster
+resource usage metrics about its specific service from the cluster Prometheus,
+so that both sets of metrics can be used within that server.</p>
+
+<h2 id="configuring-federation">Configuring federation<a class="header-anchor" href="#configuring-federation" name="configuring-federation"></a>
+</h2>
+
+<p>On any given Prometheus server, the <code>/federate</code> endpoint allows retrieving the
+current value for a selected set of time series in that server. At least one
+<code>match[]</code> URL parameter must be specified to select the series to expose. Each
+<code>match[]</code> argument needs to specify an
+<a href="/docs/querying/basics/#instant-vector-selectors">instant vector selector</a> like
+<code>up</code> or <code>{job="api-server"}</code>. If multiple <code>match[]</code> parameters are provided,
+the union of all matched series is selected.</p>
+
+<p>To federate metrics from one server to another, configure your destination
+Prometheus server to scrape from the <code>/federate</code> endpoint of a source server,
+while also enabling the <code>honor_labels</code> scrape option (to not overwrite any
+labels exposed by the source server) and passing in the desired <code>match[]</code>
+parameters. For example, the following <code>scrape_config</code> federates any series
+with the label <code>job="prometheus"</code> or a metric name starting with <code>job:</code> from
+the Prometheus servers at <code>source-prometheus-{1,2,3}:9090</code> into the scraping
+Prometheus:</p>
+
+<pre><code>- job_name: 'federate'
+  scrape_interval: 15s
+
+  honor_labels: true
+  metrics_path: '/federate'
+
+  params:
+    'match[]':
+      - '{job="prometheus"}'
+      - '{__name__=~"^job:"}'
+
+  target_groups:
+    - targets:
+      - 'source-prometheus-1:9090'
+      - 'source-prometheus-2:9090'
+      - 'source-prometheus-3:9090'
+</code></pre>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
