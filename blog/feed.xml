@@ -1,0 +1,1650 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://prometheus.io/</id>
+  <title>Prometheus Blog</title>
+  <updated>2016-07-23T00:00:00Z</updated>
+  <link rel="alternate" href="https://prometheus.io/"/>
+  <link rel="self" href="https://prometheus.io/blog/feed.xml"/>
+  <author>
+    <name>© Prometheus Authors 2015</name>
+    <uri>https://prometheus.io/blog/</uri>
+  </author>
+  <icon>https://prometheus.io/assets/favicons/favicon.ico</icon>
+  <logo>https://prometheus.io/assets/prometheus_logo.png</logo>
+  <entry>
+    <id>tag:prometheus.io,2016-07-23:/blog/2016/07/23/pull-does-not-scale-or-does-it/</id>
+    <title type="html">Pull doesn't scale - or does it?</title>
+    <published>2016-07-23T00:00:00Z</published>
+    <updated>2016-07-23T00:00:00Z</updated>
+    <author>
+      <name>Julius Volz</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/07/23/pull-does-not-scale-or-does-it/"/>
+    <content type="html">&lt;p&gt;Let's talk about a particularly persistent myth. Whenever there is a discussion
+about monitoring systems and Prometheus's pull-based metrics collection
+approach comes up, someone inevitably chimes in about how a pull-based approach
+just “fundamentally doesn't scale”. The given reasons are often vague or only
+apply to systems that are fundamentally different from Prometheus. In fact,
+having worked with pull-based monitoring at the largest scales, this claim runs
+counter to our own operational experience.&lt;/p&gt;
+
+&lt;p&gt;We already have an FAQ entry about
+&lt;a href="/docs/introduction/faq/#why-do-you-pull-rather-than-push?"&gt;why Prometheus chooses pull over push&lt;/a&gt;,
+but it does not focus specifically on scaling aspects. Let's have a closer look
+at the usual misconceptions around this claim and analyze whether and how they
+would apply to Prometheus.&lt;/p&gt;
+
+&lt;h2 id="prometheus-is-not-nagios"&gt;Prometheus is not Nagios&lt;a class="header-anchor" href="#prometheus-is-not-nagios" name="prometheus-is-not-nagios"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;When people think of a monitoring system that actively pulls, they often think
+of Nagios. Nagios has a reputation of not scaling well, in part due to spawning
+subprocesses for active checks that can run arbitrary actions on the Nagios
+host in order to determine the health of a certain host or service. This sort
+of check architecture indeed does not scale well, as the central Nagios host
+quickly gets overwhelmed. As a result, people usually configure checks to only
+be executed every couple of minutes, or they run into more serious problems.&lt;/p&gt;
+
+&lt;p&gt;However, Prometheus takes a fundamentally different approach altogether.
+Instead of executing check scripts, it only collects time series data from a
+set of instrumented targets over the network. For each target, the Prometheus
+server simply fetches the current state of all metrics of that target over HTTP
+(in a highly parallel way, using goroutines) and has no other execution
+overhead that would be pull-related. This brings us to the next point:&lt;/p&gt;
+
+&lt;h2 id="it-doesn't-matter-who-initiates-the-connection"&gt;It doesn't matter who initiates the connection&lt;a class="header-anchor" href="#it-doesn-t-matter-who-initiates-the-connection" name="it-doesn-t-matter-who-initiates-the-connection"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;For scaling purposes, it doesn't matter who initiates the TCP connection over
+which metrics are then transferred. Either way you do it, the effort for
+establishing a connection is small compared to the metrics payload and other
+required work.&lt;/p&gt;
+
+&lt;p&gt;But a push-based approach could use UDP and avoid connection establishment
+altogether, you say! True, but the TCP/HTTP overhead in Prometheus is still
+negligible compared to the other work that the Prometheus server has to do to
+ingest data (especially persisting time series data on disk). To put some
+numbers behind this: a single big Prometheus server can easily store millions
+of time series, with a record of 800,000 incoming samples per second (as
+measured with real production metrics data at SoundCloud). Given a 10-seconds
+scrape interval and 700 time series per host, this allows you to monitor over
+10,000 machines from a single Prometheus server. The scaling bottleneck here
+has never been related to pulling metrics, but usually to the speed at which
+the Prometheus server can ingest the data into memory and then sustainably
+persist and expire data on disk/SSD.&lt;/p&gt;
+
+&lt;p&gt;Also, although networks are pretty reliable these days, using a TCP-based pull
+approach makes sure that metrics data arrives reliably, or that the monitoring
+system at least knows immediately when the metrics transfer fails due to a
+broken network.&lt;/p&gt;
+
+&lt;h2 id="prometheus-is-not-an-event-based-system"&gt;Prometheus is not an event-based system&lt;a class="header-anchor" href="#prometheus-is-not-an-event-based-system" name="prometheus-is-not-an-event-based-system"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Some monitoring systems are event-based. That is, they report each individual
+event (an HTTP request, an exception, you name it) to a central monitoring
+system immediately as it happens. This central system then either aggregates
+the events into metrics (StatsD is the prime example of this) or stores events
+individually for later processing (the ELK stack is an example of that). In
+such a system, pulling would be problematic indeed: the instrumented service
+would have to buffer events between pulls, and the pulls would have to happen
+incredibly frequently in order to simulate the same “liveness” of the
+push-based approach and not overwhelm event buffers.&lt;/p&gt;
+
+&lt;p&gt;However, again, Prometheus is not an event-based monitoring system. You do not
+send raw events to Prometheus, nor can it store them. Prometheus is in the
+business of collecting aggregated time series data. That means that it's only
+interested in regularly collecting the current &lt;em&gt;state&lt;/em&gt; of a given set of
+metrics, not the underlying events that led to the generation of those metrics.
+For example, an instrumented service would not send a message about each HTTP
+request to Prometheus as it is handled, but would simply count up those
+requests in memory.  This can happen hundreds of thousands of times per second
+without causing any monitoring traffic. Prometheus then simply asks the service
+instance every 15 or 30 seconds (or whatever you configure) about the current
+counter value and stores that value together with the scrape timestamp as a
+sample. Other metric types, such as gauges, histograms, and summaries, are
+handled similarly. The resulting monitoring traffic is low, and the pull-based
+approach also does not create problems in this case.&lt;/p&gt;
+
+&lt;h2 id="but-now-my-monitoring-needs-to-know-about-my-service-instances!"&gt;But now my monitoring needs to know about my service instances!&lt;a class="header-anchor" href="#but-now-my-monitoring-needs-to-know-about-my-service-instances" name="but-now-my-monitoring-needs-to-know-about-my-service-instances"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;With a pull-based approach, your monitoring system needs to know which service
+instances exist and how to connect to them. Some people are worried about the
+extra configuration this requires on the part of the monitoring system and see
+this as an operational scalability problem.&lt;/p&gt;
+
+&lt;p&gt;We would argue that you cannot escape this configuration effort for
+serious monitoring setups in any case: if your monitoring system doesn't know
+what the world &lt;em&gt;should&lt;/em&gt; look like and which monitored service instances
+&lt;em&gt;should&lt;/em&gt; be there, how would it be able to tell when an instance just never
+reports in, is down due to an outage, or really is no longer meant to exist?
+This is only acceptable if you never care about the health of individual
+instances at all, like when you only run ephemeral workers where it is
+sufficient for a large-enough number of them to report in some result. Most
+environments are not exclusively like that.&lt;/p&gt;
+
+&lt;p&gt;If the monitoring system needs to know the desired state of the world anyway,
+then a push-based approach actually requires &lt;em&gt;more&lt;/em&gt; configuration in total. Not
+only does your monitoring system need to know what service instances should
+exist, but your service instances now also need to know how to reach your
+monitoring system. A pull approach not only requires less configuration,
+it also makes your monitoring setup more flexible. With pull, you can just run
+a copy of production monitoring on your laptop to experiment with it. It also
+allows you just fetch metrics with some other tool or inspect metrics endpoints
+manually. To get high availability, pull allows you to just run two identically
+configured Prometheus servers in parallel. And lastly, if you have to move the
+endpoint under which your monitoring is reachable, a pull approach does not
+require you to reconfigure all of your metrics sources.&lt;/p&gt;
+
+&lt;p&gt;On a practical front, Prometheus makes it easy to configure the desired state
+of the world with its built-in support for a wide variety of service discovery
+mechanisms for cloud providers and container-scheduling systems: Consul,
+Marathon, Kubernetes, EC2, DNS-based SD, Azure, Zookeeper Serversets, and more.
+Prometheus also allows you to plug in your own custom mechanism if needed.
+In a microservice world or any multi-tiered architecture, it is also
+fundamentally an advantage if your monitoring system uses the same method to
+discover targets to monitor as your service instances use to discover their
+backends. This way you can be sure that you are monitoring the same targets
+that are serving production traffic and you have only one discovery mechanism
+to maintain.&lt;/p&gt;
+
+&lt;h2 id="accidentally-ddos-ing-your-monitoring"&gt;Accidentally DDoS-ing your monitoring&lt;a class="header-anchor" href="#accidentally-ddos-ing-your-monitoring" name="accidentally-ddos-ing-your-monitoring"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Whether you pull or push, any time-series database will fall over if you send
+it more samples than it can handle. However, in our experience it's slightly
+more likely for a push-based approach to accidentally bring down your
+monitoring. If the control over what metrics get ingested from which instances
+is not centralized (in your monitoring system), then you run into the danger of
+experimental or rogue jobs suddenly pushing lots of garbage data into your
+production monitoring and bringing it down.  There are still plenty of ways how
+this can happen with a pull-based approach (which only controls where to pull
+metrics from, but not the size and nature of the metrics payloads), but the
+risk is lower. More importantly, such incidents can be mitigated at a central
+point.&lt;/p&gt;
+
+&lt;h2 id="real-world-proof"&gt;Real-world proof&lt;a class="header-anchor" href="#real-world-proof" name="real-world-proof"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Besides the fact that Prometheus is already being used to monitor very large
+setups in the real world (like using it to &lt;a href="http://promcon.io/talks/scaling_to_a_million_machines_with_prometheus/"&gt;monitor millions of machines at
+DigitalOcean&lt;/a&gt;),
+there are other prominent examples of pull-based monitoring being used
+successfully in the largest possible environments. Prometheus was inspired by
+Google's Borgmon, which was (and partially still is) used within Google to
+monitor all its critical production services using a pull-based approach. Any
+scaling issues we encountered with Borgmon at Google were not due its pull
+approach either. If a pull-based approach scales to a global environment with
+many tens of datacenters and millions of machines, you can hardly say that pull
+doesn't scale.&lt;/p&gt;
+
+&lt;h2 id="but-there-are-other-problems-with-pull!"&gt;But there are other problems with pull!&lt;a class="header-anchor" href="#but-there-are-other-problems-with-pull" name="but-there-are-other-problems-with-pull"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;There are indeed setups that are hard to monitor with a pull-based approach.
+A prominent example is when you have many endpoints scattered around the
+world which are not directly reachable due to firewalls or complicated
+networking setups, and where it's infeasible to run a Prometheus server
+directly in each of the network segments. This is not quite the environment for
+which Prometheus was built, although workarounds are often possible (&lt;a href="/docs/practices/pushing/"&gt;via the
+Pushgateway or restructuring your setup&lt;/a&gt;). In any
+case, these remaining concerns about pull-based monitoring are usually not
+scaling-related, but due to network operation difficulties around opening TCP
+connections.&lt;/p&gt;
+
+&lt;h2 id="all-good-then?"&gt;All good then?&lt;a class="header-anchor" href="#all-good-then" name="all-good-then"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;This article addresses the most common scalability concerns around a pull-based
+monitoring approach. With Prometheus and other pull-based systems being used
+successfully in very large environments and the pull aspect not posing a
+bottleneck in reality, the result should be clear: the “pull doesn't scale”
+argument is not a real concern. We hope that future debates will focus on
+aspects that matter more than this red herring.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-07-18:/blog/2016/07/18/prometheus-1-0-released/</id>
+    <title type="html">Prometheus reaches 1.0</title>
+    <published>2016-07-18T00:00:00Z</published>
+    <updated>2016-07-18T00:00:00Z</updated>
+    <author>
+      <name>Fabian Reinartz on behalf of the Prometheus team</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/07/18/prometheus-1-0-released/"/>
+    <content type="html">&lt;p&gt;In January, we published a blog post on &lt;a href="https://prometheus.io/blog/2016/01/26/one-year-of-open-prometheus-development/"&gt;Prometheus’s first year of public existence&lt;/a&gt;, summarizing what has been an amazing journey for us, and hopefully an innovative and useful monitoring solution for you.
+Since then, &lt;a href="https://prometheus.io/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/"&gt;Prometheus has also joined the Cloud Native Computing Foundation&lt;/a&gt;, where we are in good company, as the second charter project after &lt;a href="http://kubernetes.io/"&gt;Kubernetes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Our recent work has focused on delivering a stable API and user interface, marked by version 1.0 of Prometheus.
+We’re thrilled to announce that we’ve reached this goal, and &lt;a href="https://github.com/prometheus/prometheus/releases/tag/v1.0.0"&gt;Prometheus 1.0 is available today&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="what-does-1.0-mean-for-you?"&gt;What does 1.0 mean for you?&lt;a class="header-anchor" href="#what-does-1-0-mean-for-you" name="what-does-1-0-mean-for-you"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;If you have been using Prometheus for a while, you may have noticed that the rate and impact of breaking changes significantly decreased over the past year.
+In the same spirit, reaching 1.0 means that subsequent 1.x releases will remain API stable. Upgrades won’t break programs built atop the Prometheus API, and updates won’t require storage re-initialization or deployment changes. Custom dashboards and alerts will remain intact across 1.x version updates as well.
+We’re confident Prometheus 1.0 is a solid monitoring solution. Now that the Prometheus server has reached a stable API state, other modules will follow it to their own stable version 1.0 releases over time.&lt;/p&gt;
+
+&lt;h3 id="fine-print"&gt;Fine print&lt;a class="header-anchor" href="#fine-print" name="fine-print"&gt;&lt;/a&gt;
+&lt;/h3&gt;
+
+&lt;p&gt;So what does API stability mean? Prometheus has a large surface area and some parts are certainly more mature than others.
+There are two simple categories, &lt;em&gt;stable&lt;/em&gt; and &lt;em&gt;unstable&lt;/em&gt;:&lt;/p&gt;
+
+&lt;p&gt;Stable as of v1.0 and throughout the 1.x series:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The query language and data model&lt;/li&gt;
+&lt;li&gt;Alerting and recording rules&lt;/li&gt;
+&lt;li&gt;The ingestion exposition formats&lt;/li&gt;
+&lt;li&gt;Configuration flag names&lt;/li&gt;
+&lt;li&gt;HTTP API (used by dashboards and UIs)&lt;/li&gt;
+&lt;li&gt;Configuration file format (minus the non-stable service discovery integrations, see below)&lt;/li&gt;
+&lt;li&gt;Alerting integration with Alertmanager 0.1+ for the foreseeable future&lt;/li&gt;
+&lt;li&gt;Console template syntax and semantics&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Unstable and may change within 1.x:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The remote storage integrations (InfluxDB, OpenTSDB, Graphite) are still experimental and will at some point be removed in favor of a generic, more sophisticated API that allows storing samples in arbitrary storage systems.&lt;/li&gt;
+&lt;li&gt;Several service discovery integrations are new and need to keep up with fast evolving systems. Hence, integrations with Kubernetes, Marathon, Azure, and EC2 remain in beta status and are subject to change. However, changes will be clearly announced.&lt;/li&gt;
+&lt;li&gt;Exact flag meanings may change as necessary. However, changes will never cause the server to not start with previous flag configurations.&lt;/li&gt;
+&lt;li&gt;Go APIs of packages that are part of the server.&lt;/li&gt;
+&lt;li&gt;HTML generated by the web UI.&lt;/li&gt;
+&lt;li&gt;The metrics in the &lt;code&gt;/metrics&lt;/code&gt; endpoint of Prometheus itself.&lt;/li&gt;
+&lt;li&gt;Exact on-disk format. Potential changes however, will be forward compatible and transparently handled by Prometheus.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id="so-prometheus-is-complete-now?"&gt;So Prometheus is complete now?&lt;a class="header-anchor" href="#so-prometheus-is-complete-now" name="so-prometheus-is-complete-now"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Absolutely not. We have a long roadmap ahead of us, full of great features to implement. Prometheus will not stay in 1.x for years to come. The infrastructure space is evolving rapidly and we fully intend for Prometheus to evolve with it.
+This means that we will remain willing to question what we did in the past and are open to leave behind things that have lost relevance. There will be new major versions of Prometheus to facilitate future plans like persistent long-term storage, newer iterations of Alertmanager, internal storage improvements, and many things we don’t even know about yet.&lt;/p&gt;
+
+&lt;h2 id="closing-thoughts"&gt;Closing thoughts&lt;a class="header-anchor" href="#closing-thoughts" name="closing-thoughts"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We want to thank our fantastic community for field testing new versions, filing bug reports, contributing code, helping out other community members, and shaping Prometheus by participating in countless productive discussions.
+In the end, you are the ones who make Prometheus successful.&lt;/p&gt;
+
+&lt;p&gt;Thank you, and keep up the great work!&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-05-09:/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/</id>
+    <title type="html">Prometheus to Join the Cloud Native Computing Foundation</title>
+    <published>2016-05-09T00:00:00Z</published>
+    <updated>2016-05-09T00:00:00Z</updated>
+    <author>
+      <name>Julius Volz on behalf of the Prometheus core developers</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/"/>
+    <content type="html">&lt;p&gt;Since the inception of Prometheus, we have been looking for a sustainable
+governance model for the project that is independent of any single company.
+Recently, we have been in discussions with the newly formed &lt;a href="https://cncf.io/"&gt;Cloud Native
+Computing Foundation&lt;/a&gt; (CNCF), which is backed by Google,
+CoreOS, Docker, Weaveworks, Mesosphere, and &lt;a href="https://cncf.io/about/members"&gt;other leading infrastructure
+companies&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Today, we are excited to announce that the CNCF's Technical Oversight Committee
+&lt;a href="http://lists.cncf.io/pipermail/cncf-toc/2016-May/000198.html"&gt;voted unanimously&lt;/a&gt; to
+accept Prometheus as a second hosted project after Kubernetes! You can find
+more information about these plans in the
+&lt;a href="https://cncf.io/news/news/2016/05/cloud-native-computing-foundation-accepts-prometheus-second-hosted-project"&gt;official press release by the CNCF&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;By joining the CNCF, we hope to establish a clear and sustainable project
+governance model, as well as benefit from the resources, infrastructure, and
+advice that the independent foundation provides to its members.&lt;/p&gt;
+
+&lt;p&gt;We think that the CNCF and Prometheus are an ideal thematic match, as both
+focus on bringing about a modern vision of the cloud.&lt;/p&gt;
+
+&lt;p&gt;In the following months, we will be working with the CNCF on finalizing the
+project governance structure. We will report back when there are more details
+to announce.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-05-08:/blog/2016/05/08/when-to-use-varbit-chunks/</id>
+    <title type="html">When (not) to use varbit chunks</title>
+    <published>2016-05-08T00:00:00Z</published>
+    <updated>2016-05-08T00:00:00Z</updated>
+    <author>
+      <name>Björn “Beorn” Rabenstein</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/05/08/when-to-use-varbit-chunks/"/>
+    <content type="html">&lt;p&gt;The embedded time serie database (TSDB) of the Prometheus server organizes the
+raw sample data of each time series in chunks of constant 1024 bytes size. In
+addition to the raw sample data, a chunk contains some meta-data, which allows
+the selection of a different encoding for each chunk. The most fundamental
+distinction is the encoding version. You select the version for newly created
+chunks via the command line flag &lt;code&gt;-storage.local.chunk-encoding-version&lt;/code&gt;. Up to
+now, there were only two supported versions: 0 for the original delta encoding,
+and 1 for the improved double-delta encoding. With release
+&lt;a href="https://github.com/prometheus/prometheus/releases/tag/0.18.0"&gt;0.18.0&lt;/a&gt;, we
+added version 2, which is another variety of double-delta encoding. We call it
+&lt;em&gt;varbit encoding&lt;/em&gt; because it involves a variable bit-width per sample within
+the chunk. While version 1 is superior to version 0 in almost every aspect,
+there is a real trade-off between version 1 and 2. This blog post will help you
+to make that decision. Version 1 remains the default encoding, so if you want
+to try out version 2 after reading this article, you have to select it
+explicitly via the command line flag. There is no harm in switching back and
+forth, but note that existing chunks will not change their encoding version
+once they have been created. However, these chunks will gradually be phased out
+according to the configured retention time and will thus be replaced by chunks
+with the encoding specified in the command-line flag.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="what-is-varbit-encoding?"&gt;What is varbit encoding?&lt;a class="header-anchor" href="#what-is-varbit-encoding" name="what-is-varbit-encoding"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;From the beginning, we designed the chunked sample storage for easy addition of
+new encodings. When Facebook published a
+&lt;a href="http://www.vldb.org/pvldb/vol8/p1816-teller.pdf"&gt;paper on their in-memory TSDB Gorilla&lt;/a&gt;,
+we were intrigued by a number of similarities between the independently
+developed approaches of Gorilla and Prometheus. However, there were also many
+fundamental differences, which we studied in detail, wondering if we could get
+some inspiration from Gorilla to improve Prometheus.&lt;/p&gt;
+
+&lt;p&gt;On the rare occasion of a free weekend ahead of me, I decided to give it a
+try. In a coding spree, I implemented what would later (after a considerable
+amount of testing and debugging) become the varbit encoding.&lt;/p&gt;
+
+&lt;p&gt;In a future blog post, I will describe the technical details of the
+encoding. For now, you only need to know a few characteristics for your
+decision between the new varbit encoding and the traditional double-delta
+encoding. (I will call the latter just “double-delta encoding” from now on but
+note that the varbit encoding also uses double deltas, just in a different
+way.)&lt;/p&gt;
+
+&lt;h2 id="what-are-the-advantages-of-varbit-encoding?"&gt;What are the advantages of varbit encoding?&lt;a class="header-anchor" href="#what-are-the-advantages-of-varbit-encoding" name="what-are-the-advantages-of-varbit-encoding"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;In short: It offers a way better compression ratio. While the double-delta
+encoding needs about 3.3 bytes per sample for real-life data sets, the varbit
+encoding went as far down as 1.28 bytes per sample on a typical large
+production server at SoundCloud. That's almost three times more space efficient
+(and even slightly better than the 1.37 bytes per sample reported for Gorilla –
+but take that with a grain of salt as the typical data set at SoundCloud might
+look different from the typical data set at Facebook).&lt;/p&gt;
+
+&lt;p&gt;Now think of the implications: Three times more samples in RAM, three times
+more samples on disk, only a third of disk ops, and since disk ops are
+currently the bottleneck for ingestion speed, it will also allow ingestion to
+be three times faster. In fact, the recently reported new ingestion record of
+800,000 samples per second was only possible with varbit chunks – and with an
+SSD, obviously. With spinning disks, the bottleneck is reached far earlier, and
+thus the 3x gain matters even more.&lt;/p&gt;
+
+&lt;p&gt;All of this sounds too good to be true…&lt;/p&gt;
+
+&lt;h2 id="so-where-is-the-catch?"&gt;So where is the catch?&lt;a class="header-anchor" href="#so-where-is-the-catch" name="so-where-is-the-catch"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;For one, the varbit encoding is more complex. The computational cost to encode
+and decode values is therefore somewhat increased, which fundamentally affects
+everything that writes or reads sample data. Luckily, it is only a proportional
+increase of something that usually contributes only a small part to the total
+cost of an operation.&lt;/p&gt;
+
+&lt;p&gt;Another property of the varbit encoding is potentially way more relevant:
+samples in varbit chunks can only be accessed sequentially, while samples in
+double-delta encoded chunks are randomly accessible by index. Since writes in
+Prometheus are append-only, the different access patterns only affect reading
+of sample data. The practical impact depends heavily on the nature of the
+originating PromQL query.&lt;/p&gt;
+
+&lt;p&gt;A pretty harmless case is the retrieval of all samples within a time
+interval. This happens when evaluating a range selector or rendering a
+dashboard with a resolution similar to the scrape frequency. The Prometheus
+storage engine needs to find the starting point of the interval. With
+double-delta chunks, it can perform a binary search, while it has to scan
+sequentially through a varbit chunk. However, once the starting point is found,
+all remaining samples in the interval need to be decoded sequentially anyway,
+which is only slightly more expensive with the varbit encoding.&lt;/p&gt;
+
+&lt;p&gt;The trade-off is different for retrieving a small number of non-adjacent
+samples from a chunk, or for plainly retrieving a single sample in a so-called
+instant query. Potentially, the storage engine has to iterate through a lot of
+samples to find the few samples to be returned. Fortunately, the most common
+source of instant queries are rule evaluations referring to the latest sample
+in each involved time series. Not completely by coincidence, I recently
+improved the retrieval of the latest sample of a time series. Essentially, the
+last sample added to a time series is cached now. A query that needs only the
+most recent sample of a time series doesn't even hit the chunk layer anymore,
+and the chunk encoding is irrelevant in that case.&lt;/p&gt;
+
+&lt;p&gt;Even if an instant query refers to a sample in the past and therefore has to
+hit the chunk layer, most likely other parts of the query, like the index
+lookup, will dominate the total query time. But there are real-life queries
+where the sequential access pattern required by varbit chunks will start to
+matter a lot.&lt;/p&gt;
+
+&lt;h2 id="what-is-the-worst-case-query-for-varbit-chunks?"&gt;What is the worst-case query for varbit chunks?&lt;a class="header-anchor" href="#what-is-the-worst-case-query-for-varbit-chunks" name="what-is-the-worst-case-query-for-varbit-chunks"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The worst case for varbit chunks is if you need just one sample from somewhere
+in the middle of &lt;em&gt;each&lt;/em&gt; chunk of a very long time series. Unfortunately, there
+is a real use-case for that. Let's assume a time series compresses nicely
+enough to make each chunk last for about eight hours. That's about three chunks
+a day, or about 100 chunks a month. If you have a dashboard that displays the
+time series in question for the last month with a resolution of 100 data
+points, the dashboard will execute a query that retrieves a single sample from
+100 different chunks. Even then, the differences between chunk encodings will
+be dominated by other parts of the query execution time. Depending on
+circumstances, my guess would be that the query might take 50ms with
+double-delta encoding and 100ms with varbit encoding.&lt;/p&gt;
+
+&lt;p&gt;However, if your dashboard query doesn't only touch a single time series but
+aggregates over thousands of time series, the number of chunks to access
+multiplies accordingly, and the overhead of the sequential scan will become
+dominant. (Such queries are frowned upon, and we usually recommend to use a
+&lt;a href="https://prometheus.io/docs/querying/rules/#recording-rules"&gt;recording rule&lt;/a&gt;
+for queries of that kind that are used frequently, e.g. in a dashboard.)  But
+with the double-delta encoding, the query time might still have been
+acceptable, let's say around one second. After the switch to varbit encoding,
+the same query might last tens of seconds, which is clearly not what you want
+for a dashboard.&lt;/p&gt;
+
+&lt;h2 id="what-are-the-rules-of-thumb?"&gt;What are the rules of thumb?&lt;a class="header-anchor" href="#what-are-the-rules-of-thumb" name="what-are-the-rules-of-thumb"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;To put it as simply as possible: If you are neither limited on disk capacity
+nor on disk ops, don't worry and stick with the default of the classical
+double-delta encoding.&lt;/p&gt;
+
+&lt;p&gt;However, if you would like a longer retention time or if you are currently
+bottle-necked on disk ops, I invite you to play with the new varbit
+encoding. Start your Prometheus server with
+&lt;code&gt;-storage.local.chunk-encoding-version=2&lt;/code&gt; and wait for a while until you have
+enough new chunks with varbit encoding to vet the effects. If you see queries
+that are becoming unacceptably slow, check if you can use
+&lt;a href="https://prometheus.io/docs/querying/rules/#recording-rules"&gt;recording rules&lt;/a&gt;
+to speed them up. Most likely, those queries will gain a lot from that even
+with the old double-delta encoding.&lt;/p&gt;
+
+&lt;p&gt;If you are interested in how the varbit encoding works behind the scenes, stay
+tuned for another blog post in the not too distant future.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-05-01:/blog/2016/05/01/interview-with-showmax/</id>
+    <title type="html">Interview with ShowMax</title>
+    <published>2016-05-01T00:00:00Z</published>
+    <updated>2016-05-01T00:00:00Z</updated>
+    <author>
+      <name>Brian Brazil</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/05/01/interview-with-showmax/"/>
+    <content type="html">&lt;p&gt;&lt;em&gt;This is the second in a series of interviews with users of Prometheus, allowing
+them to share their experiences of evaluating and using Prometheus.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id="can-you-tell-us-about-yourself-and-what-showmax-does?"&gt;Can you tell us about yourself and what ShowMax does?&lt;a class="header-anchor" href="#can-you-tell-us-about-yourself-and-what-showmax-does" name="can-you-tell-us-about-yourself-and-what-showmax-does"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;I’m Antonin Kral, and I’m leading research and architecture for
+&lt;a href="http://www.showmax.com"&gt;ShowMax&lt;/a&gt;. Before that, I’ve held architectural and CTO
+roles for the past 12 years.&lt;/p&gt;
+
+&lt;p&gt;ShowMax is a subscription video on demand service that launched in South Africa
+in 2015. We’ve got an extensive content catalogue with more than 20,000
+episodes of TV shows and movies. Our service is currently available in 65
+countries worldwide. While better known rivals are skirmishing in America and
+Europe, ShowMax is battling a more difficult problem: how do you binge-watch
+in a barely connected village in sub-Saharan Africa? Already 35% of video
+around the world is streamed, but there are still so many places the revolution
+has left untouched.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/assets/blog/2016-05-01/showmax-logo.png" alt="ShowMax logo"&gt;&lt;/p&gt;
+
+&lt;p&gt;We are managing about 50 services running mostly on private clusters built
+around CoreOS. They are primarily handling API requests from our clients
+(Android, iOS, AppleTV, JavaScript, Samsung TV, LG TV etc), while some of them
+are used internally. One of the biggest internal pipelines is video encoding
+which can occupy 400+ physical servers when handling large ingestion batches.&lt;/p&gt;
+
+&lt;p&gt;The majority of our back-end services are written in Ruby, Go or Python. We use
+EventMachine when writing apps in Ruby (Goliath on MRI, Puma on JRuby). Go is
+typically used in apps that require large throughput and don’t have so much
+business logic. We’re very happy with Falcon for services written in Python.
+Data is stored in PostgreSQL and ElasticSearch clusters. We use etcd and custom
+tooling for configuring Varnishes for routing requests.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="what-was-your-pre-prometheus-monitoring-experience?"&gt;What was your pre-Prometheus monitoring experience?&lt;a class="header-anchor" href="#what-was-your-pre-prometheus-monitoring-experience" name="what-was-your-pre-prometheus-monitoring-experience"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The primary use-cases for monitoring systems are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Active monitoring and probing (via Icinga)&lt;/li&gt;
+&lt;li&gt;Metrics acquisition and creation of alerts based on these metrics (now Prometheus)&lt;/li&gt;
+&lt;li&gt;Log acquisition from backend services&lt;/li&gt;
+&lt;li&gt;Event and log acquisition from apps&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The last two use-cases are handled via our logging infrastructure. It consists
+of a collector running in the service container, which is listening on local
+Unix socket. The socket is used by apps to send messages to the outside world.
+Messages are transferred via RabbitMQ servers to consumers. Consumers are
+custom written or hekad based. One of the main message flows is going towards
+the service ElasticSearch cluster, which makes logs accessible for Kibana and
+ad-hoc searches. We also save all processed events to GlusterFS for archival
+purposes and/or further processing.&lt;/p&gt;
+
+&lt;p&gt;We used to run two metric acquisition pipelines in parallel. The first is based
+on Collectd + StatsD + Graphite + Grafana and the other using Collectd +
+OpenTSDB. We have struggled considerably with both pipelines. We had to deal
+with either the I/O hungriness of Graphite, or the complexity and inadequate
+tooling around OpenTSDB.&lt;/p&gt;
+
+&lt;h2 id="why-did-you-decide-to-look-at-prometheus?"&gt;Why did you decide to look at Prometheus?&lt;a class="header-anchor" href="#why-did-you-decide-to-look-at-prometheus" name="why-did-you-decide-to-look-at-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;After learning from our problems with the previous monitoring system, we looked
+for a replacement. Only a few solutions made it to our shortlist. Prometheus
+was one of the first, as Jiri Brunclik, our head of Operations at the time, had
+received a personal recommendation about the system from former colleagues at
+Google.&lt;/p&gt;
+
+&lt;p&gt;The proof of concept went great. We got a working system very quickly. We also
+evaluated InfluxDB as a main system as well as a long-term storage for
+Prometheus. But due to recent developments, this may no longer be a viable
+option for us.&lt;/p&gt;
+
+&lt;h2 id="how-did-you-transition?"&gt;How did you transition?&lt;a class="header-anchor" href="#how-did-you-transition" name="how-did-you-transition"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We initially started with LXC containers on one of our service servers, but
+quickly moved towards a dedicated server from Hetzner, where we host the
+majority of our services. We’re using PX70-SSD, which is Intel® Xeon® E3-1270
+v3 Quad-Core Haswell with 32GB RAM, so we have plenty of power to run
+Prometheus. SSDs allow us to have retention set to 120 days. Our logging
+infrastructure is built around getting logs locally (receiving them on Unix
+socket) and then pushing them towards the various workers.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/assets/blog/2016-05-01/Loggin_infrastructure.png" alt="Diagram of ShowMax logging infrastructure. Shows flow of log messages from the source via processors to various consumers."&gt;&lt;/p&gt;
+
+&lt;p&gt;Having this infrastructure available made pushing metrics a logical choice
+(especially in pre-Prometheus times). On the other side, Prometheus is
+primarily designed around the paradigm of scraping metrics. We wanted to stay
+consistent and push all metrics towards Prometheus initially. We have created a
+Go daemon called prometheus-pusher. It’s responsible for scraping metrics from
+local exporters and pushing them towards the Pushgateway. Pushing metrics has
+some positive aspects (e.g. simplified service discovery) but also quite a few
+drawbacks (e.g. making it hard to distinguish between a network partition vs. a
+crashed service). We made Prometheus-pusher available on
+&lt;a href="https://github.com/ShowMax/prometheus-pusher"&gt;GitHub&lt;/a&gt;, so you can try it
+yourself.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/assets/blog/2016-05-01/log_processors.png" alt="Grafana dashboard showing April 5th 2016 log processors traffic."&gt;&lt;/p&gt;
+
+&lt;p&gt;The next step was for us to figure out what to use for managing dashboards and
+graphs. We liked the Grafana integration, but didn’t really like how Grafana
+manages dashboard configurations. We are running Grafana in a Docker
+container, so any changes should be kept out of the container. Another problem
+was the lack of change tracking in Grafana.&lt;/p&gt;
+
+&lt;p&gt;We have thus decided to write a generator which takes YAML maintained within
+git and generates JSON configs for Grafana dashboards. It is furthemore able to
+deploy dashboards to Grafana started in a fresh container without the need for
+persisting changes made into the container. This provides you with automation,
+repeatability, and auditing.&lt;/p&gt;
+
+&lt;p&gt;We are pleased to announce that this tool is also now available under an Apache
+2.0 license on &lt;a href="https://github.com/ShowMax/grafana-dashboards-generator"&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="what-improvements-have-you-seen-since-switching?"&gt;What improvements have you seen since switching?&lt;a class="header-anchor" href="#what-improvements-have-you-seen-since-switching" name="what-improvements-have-you-seen-since-switching"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;An improvement which we saw immediately was the stability of Prometheus. We
+were fighting with stability and scalability of Graphite prior to this, so
+getting that sorted was a great win for us. Furthemore the speed and stability
+of Prometheus made access to metrics very easy for developers. Prometheus is
+really helping us to embrace the DevOps culture.&lt;/p&gt;
+
+&lt;p&gt;Tomas Cerevka, one of our backend developers, was testing a new version of the
+service using JRuby. He needed a quick peek into the heap consumption of that
+particular service. He was able to get that information in a snap. For us,
+this speed is essential.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/assets/blog/2016-05-01/ui_fragments-heap-zoom.png" alt="Heap size consumed by JRuby worker during troubleshooting memory issues on JVM."&gt;&lt;/p&gt;
+
+&lt;h2 id="what-do-you-think-the-future-holds-for-showmax-and-prometheus?"&gt;What do you think the future holds for ShowMax and Prometheus?&lt;a class="header-anchor" href="#what-do-you-think-the-future-holds-for-showmax-and-prometheus" name="what-do-you-think-the-future-holds-for-showmax-and-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Prometheus has become an integral part of monitoring in ShowMax and it is going
+to be with us for the foreseeable future. We have replaced our whole metric
+storage with Prometheus, but the ingestion chain remains push based. We are
+thus thinking about following Prometheus best practices and switching to a pull
+model.&lt;/p&gt;
+
+&lt;p&gt;We’ve also already played with alerts. We want to spend more time on this topic
+and come up with increasingly sophisticated alert rules.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-03-23:/blog/2016/03/23/interview-with-life360/</id>
+    <title type="html">Interview with Life360</title>
+    <published>2016-03-23T00:00:00Z</published>
+    <updated>2016-03-23T00:00:00Z</updated>
+    <author>
+      <name>Brian Brazil</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/03/23/interview-with-life360/"/>
+    <content type="html">&lt;p&gt;&lt;em&gt;This is the first in a series of interviews with users of Prometheus, allowing
+them to share their experiences of evaluating and using Prometheus. Our first
+interview is with Daniel from Life360.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id="can-you-tell-us-about-yourself-and-what-life360-does?"&gt;Can you tell us about yourself and what Life360 does?&lt;a class="header-anchor" href="#can-you-tell-us-about-yourself-and-what-life360-does" name="can-you-tell-us-about-yourself-and-what-life360-does"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;I’m Daniel Ben Yosef, a.k.a, dby, and I’m an Infrastructure Engineer for
+&lt;a href="https://www.life360.com/"&gt;Life360&lt;/a&gt;, and before that, I’ve held systems
+engineering roles for the past 9 years.&lt;/p&gt;
+
+&lt;p&gt;Life360 creates technology that helps families stay connected, we’re the Family
+Network app for families. We’re quite busy handling these families - at peak
+we serve 700k requests per minute for 70 million registered families.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://www.life360.com/"&gt;&lt;img src="/assets/blog/2016-03-23/life360_horizontal_logo_gradient_rgb.png" style="width: 444px; height:177px"&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We manage around 20 services in production, mostly handling location requests
+from mobile clients (Android, iOS, and Windows Phone), spanning over 150+
+instances at peak. Redundancy and high-availability are our goals and we strive
+to maintain 100% uptime whenever possible because families trust us to be
+available.&lt;/p&gt;
+
+&lt;p&gt;We hold user data in both our MySQL multi-master cluster and in our 12-node
+Cassandra ring which holds around 4TB of data at any given time. We have
+services written in Go, Python, PHP, as well as plans to introduce Java to our
+stack. We use Consul for service discovery, and of course our Prometheus setup
+is integrated with it.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="what-was-your-pre-prometheus-monitoring-experience?"&gt;What was your pre-Prometheus monitoring experience?&lt;a class="header-anchor" href="#what-was-your-pre-prometheus-monitoring-experience" name="what-was-your-pre-prometheus-monitoring-experience"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Our monitoring setup, before we switched to Prometheus, included many
+components such as:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Copperegg (now Idera)&lt;/li&gt;
+&lt;li&gt;Graphite + Statsd + Grafana&lt;/li&gt;
+&lt;li&gt;Sensu&lt;/li&gt;
+&lt;li&gt;AWS Cloudwatch&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We primarily use MySQL, NSQ and HAProxy and we found that all of the monitoring
+solutions mentioned above were very partial, and required a lot of
+customization to actually get all working together.&lt;/p&gt;
+
+&lt;h2 id="why-did-you-decide-to-look-at-prometheus?"&gt;Why did you decide to look at Prometheus?&lt;a class="header-anchor" href="#why-did-you-decide-to-look-at-prometheus" name="why-did-you-decide-to-look-at-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We had a few reasons for switching to Prometheus, one of which is that we
+simply needed better monitoring.&lt;/p&gt;
+
+&lt;p&gt;Prometheus has been known to us for a while, and we have been tracking it and
+reading about the active development, and at a point (a few months back) we
+decided to start evaluating it for production use.&lt;/p&gt;
+
+&lt;p&gt;The PoC results were incredible. The monitoring coverage of MySQL was amazing,
+and we also loved the JMX monitoring for Cassandra, which had been sorely
+lacking in the past.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/blog/2016-03-23/cx_client.png"&gt;&lt;img src="/assets/blog/2016-03-23/cx_client.png" alt="Cassandra Client Dashboard"&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id="how-did-you-transition?"&gt;How did you transition?&lt;a class="header-anchor" href="#how-did-you-transition" name="how-did-you-transition"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We started with a relatively small box (4GB of memory) as an initial point. It
+was effective for a small number of services, but not for our full monitoring
+needs.&lt;/p&gt;
+
+&lt;p&gt;We also initially deployed with Docker, but slowly transitioned to its own box
+on an r3.2xl instance (60GB ram), and that holds all of our service monitoring
+needs with 30 days of in-memory data.&lt;/p&gt;
+
+&lt;p&gt;We slowly started introducing all of our hosts with the Node Exporter and built
+Grafana graphs, up to the point where we had total service coverage.&lt;/p&gt;
+
+&lt;p&gt;We were also currently looking at InfluxDB for long term storage, but due to
+&lt;a href="https://influxdata.com/blog/update-on-influxdb-clustering-high-availability-and-monetization/"&gt;recent developments&lt;/a&gt;,
+this may no longer be a viable option. &lt;/p&gt;
+
+&lt;p&gt;We then added exporters for MySQL, Node, Cloudwatch, HAProxy, JMX, NSQ (with a
+bit of our own code), Redis and Blackbox (with our own contribution to add
+authentication headers).&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/blog/2016-03-23/nsq_overview.png"&gt;&lt;img src="/assets/blog/2016-03-23/nsq_overview.png" alt="NSQ Overview Dashboard"&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id="what-improvements-have-you-seen-since-switching?"&gt;What improvements have you seen since switching?&lt;a class="header-anchor" href="#what-improvements-have-you-seen-since-switching" name="what-improvements-have-you-seen-since-switching"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The visibility and instrumentation gain was the first thing we saw. Right
+before switching, we started experiencing Graphite’s scalability issues, and
+having an in-place replacement for Graphite so stakeholders can continue to use
+Grafana as a monitoring tool was extremely valuable to us. Nowadays, we are
+focusing on taking all that data and use it to detect anomalies, which will
+eventually become alerts in the Alert Manager.&lt;/p&gt;
+
+&lt;h2 id="what-do-you-think-the-future-holds-for-life360-and-prometheus?"&gt;What do you think the future holds for Life360 and Prometheus?&lt;a class="header-anchor" href="#what-do-you-think-the-future-holds-for-life360-and-prometheus" name="what-do-you-think-the-future-holds-for-life360-and-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We currently have one of our projects instrumented directly with a Prometheus
+client, a Python-based service. As we build out new services, Prometheus is
+becoming our go-to for instrumentation, and will help us gain extremely
+meaningful alerts and stats about our infrastructure.&lt;/p&gt;
+
+&lt;p&gt;We look forward to growing with the project and keep contributing.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Thank you Daniel! The source for Life360's dashboards is shared on &lt;a href="https://github.com/life360/prometheus-grafana-dashboards"&gt;Github&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-03-03:/blog/2016/03/03/custom-alertmanager-templates/</id>
+    <title type="html">Custom Alertmanager Templates</title>
+    <published>2016-03-03T00:00:00Z</published>
+    <updated>2016-03-03T00:00:00Z</updated>
+    <author>
+      <name>Fabian Reinartz</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/03/03/custom-alertmanager-templates/"/>
+    <content type="html">&lt;p&gt;The Alertmanager handles alerts sent by Prometheus servers and sends
+notifications about them to different receivers based on their labels.&lt;/p&gt;
+
+&lt;p&gt;A receiver can be one of many different integrations such as PagerDuty, Slack,
+email, or a custom integration via the generic webhook interface (for example &lt;a href="https://github.com/fabxc/jiralerts"&gt;JIRA&lt;/a&gt;).&lt;/p&gt;
+
+&lt;h2 id="templates"&gt;Templates&lt;a class="header-anchor" href="#templates" name="templates"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The messages sent to receivers are constructed via templates.
+Alertmanager comes with default templates but also allows defining custom
+ones.&lt;/p&gt;
+
+&lt;p&gt;In this blog post, we will walk through a simple customization of Slack
+notifications.&lt;/p&gt;
+
+&lt;p&gt;We use this simple Alertmanager configuartion that sends all alerts to Slack:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="yaml"&gt;global:
+  slack_api_url: '&amp;lt;slack_webhook_url&amp;gt;'
+
+route:
+  receiver: 'slack-notifications'
+  # All alerts in a notification have the same value for these labels.
+  group_by: [alertname, datacenter, app]
+
+receivers:
+- name: 'slack-notifications'
+  slack_configs:
+  - channel: '#alerts'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;By default, a Slack message sent by Alertmanager looks like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/assets/blog/2016-03-03/slack_alert_before.png" alt=""&gt;&lt;/p&gt;
+
+&lt;p&gt;It shows us that there is one firing alert, followed by the label values of
+the alert grouping (alertname, datacenter, app) and further label values the
+alerts have in common (critical).&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="customize"&gt;Customize&lt;a class="header-anchor" href="#customize" name="customize"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;If you have alerts, you should also have documentation on how to handle them –
+a runbook. A good approach to that is having a wiki that has a section for
+each app you are running with a page for each alert.&lt;/p&gt;
+
+&lt;p&gt;Suppose we have such a wiki running at &lt;code&gt;https://internal.myorg.net/wiki/alerts&lt;/code&gt;.
+Now we want links to these runbooks shown in our Slack messages.&lt;/p&gt;
+
+&lt;p&gt;In our template, we need access to the "alertname" and the "app" label. Since
+these are labels we group alerts by, they are available in the &lt;code&gt;GroupLabels&lt;/code&gt;
+map of our templating data.&lt;/p&gt;
+
+&lt;p&gt;We can directly add custom templating to our Alertmanager's &lt;a href="/docs/alerting/configuration/#slack-receiver-slack_config"&gt;Slack configuration&lt;/a&gt;
+that is used for the &lt;code&gt;text&lt;/code&gt; section of our Slack message.
+The &lt;a href="https://godoc.org/text/template"&gt;templating language&lt;/a&gt; is the one provided
+by the Go programming language.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="yaml"&gt;global:
+  slack_api_url: '&amp;lt;slack_webhook_url&amp;gt;'
+
+route:
+- receiver: 'slack-notifications'
+  group_by: [alertname, datacenter, app]
+
+receivers:
+- name: 'slack-notifications'
+  slack_configs:
+  - channel: '#alerts'
+    # Template for the text field in Slack messages.
+    text: 'https://internal.myorg.net/wiki/alerts/{{ .GroupLabels.app }}/{{ .GroupLabels.alertname }}'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We reload our Alertmanager by sending a &lt;code&gt;SIGHUP&lt;/code&gt; or restart it to load the
+changed configuration. Done.&lt;/p&gt;
+
+&lt;p&gt;Our Slack notifications now look like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/assets/blog/2016-03-03/slack_alert_after.png" alt=""&gt;&lt;/p&gt;
+
+&lt;h3 id="template-files"&gt;Template files&lt;a class="header-anchor" href="#template-files" name="template-files"&gt;&lt;/a&gt;
+&lt;/h3&gt;
+
+&lt;p&gt;Alternatively, we can also provide a file containing named templates, which
+are then loaded by Alertmanager. This is especially helpful for more complex
+templates that span many lines.&lt;/p&gt;
+
+&lt;p&gt;We create a file &lt;code&gt;/etc/alertmanager/templates/myorg.tmpl&lt;/code&gt; and create a
+template in it named "slack.myorg.text":&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{{ define "slack.myorg.text" }}https://internal.myorg.net/wiki/alerts/{{ .GroupLabels.app }}/{{ .GroupLabels.alertname }}{{ end}}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our configuration now loads the template with the given name for the "text"
+field and we provide a path to our custom template file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="yaml"&gt;global:
+  slack_api_url: '&amp;lt;slack_webhook_url&amp;gt;'
+
+route:
+- receiver: 'slack-notifications'
+  group_by: [alertname, datacenter, app]
+
+receivers:
+- name: 'slack-notifications'
+  slack_configs:
+  - channel: '#alerts'
+    text: '{{ template "slack.myorg.text" . }}'
+
+templates:
+- '/etc/alertmanager/templates/myorg.tmpl'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We reload our Alertmanager by sending a &lt;code&gt;SIGHUP&lt;/code&gt; or restart it to load the
+changed configuration and the new template file. Done.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2016-01-26:/blog/2016/01/26/one-year-of-open-prometheus-development/</id>
+    <title type="html">One Year of Open Prometheus Development</title>
+    <published>2016-01-26T00:00:00Z</published>
+    <updated>2016-01-26T00:00:00Z</updated>
+    <author>
+      <name>Julius Volz</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2016/01/26/one-year-of-open-prometheus-development/"/>
+    <content type="html">&lt;h2 id="the-beginning"&gt;The beginning&lt;a class="header-anchor" href="#the-beginning" name="the-beginning"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;A year ago today, we officially announced Prometheus to the wider world. This
+is a great opportunity for us to look back and share some of the wonderful
+things that have happened to the project since then. But first, let's start at
+the beginning.&lt;/p&gt;
+
+&lt;p&gt;Although we had already started Prometheus as an open-source project on GitHub in
+2012, we didn't make noise about it at first. We wanted to give the project
+time to mature and be able to experiment without friction. Prometheus was
+gradually introduced for production monitoring at
+&lt;a href="https://soundcloud.com/"&gt;SoundCloud&lt;/a&gt; in 2013 and then saw more and more
+usage within the company, as well as some early adoption by our friends at
+Docker and Boexever in 2014. Over the years, Prometheus was growing more and
+more mature and although it was already solving people's monitoring problems,
+it was still unknown to the wider public.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="going-public"&gt;Going public&lt;a class="header-anchor" href="#going-public" name="going-public"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Everything changed for us a year ago, in January of 2015. After more than two
+years of development and internal usage, we felt that Prometheus was ready for
+a wider audience and decided to go fully public with our official &lt;a href="https://developers.soundcloud.com/blog/prometheus-monitoring-at-soundcloud"&gt;announcement
+blog post&lt;/a&gt;,
+a &lt;a href="https://prometheus.io/"&gt;website&lt;/a&gt;, and a series of
+&lt;a href="http://www.boxever.com/tags/monitoring"&gt;related&lt;/a&gt;
+&lt;a href="http://5pi.de/2015/01/26/monitor-docker-containers-with-prometheus/"&gt;posts&lt;/a&gt;.
+We already received a good deal of attention during the first week after the
+announcement, but nothing could prepare us for what happened a week later:
+someone unknown to us (hello there,
+&lt;a href="https://news.ycombinator.com/user?id=jjwiseman"&gt;jjwiseman&lt;/a&gt;!) had submitted
+&lt;a href="https://prometheus.io/"&gt;the Prometheus website&lt;/a&gt; to Hacker News and somehow their
+post had made it &lt;a href="https://news.ycombinator.com/item?id=8995696"&gt;all the way to the top&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;This is when things started going slightly crazy in a good way. We saw a sharp
+rise in contributors, mailing list questions, GitHub issues, IRC visitors,
+requests for conference and meetup talks, and increasing buzz on the net in
+general. Since the beginning, we have been very lucky about the quality of our
+newly expanded community: The kind of people who were attracted to Prometheus
+also turned out to be very competent, constructive, and high-quality
+contributors and users. The ideal open-source scenario of receiving a lot of
+value back from the community was a reality pretty much from day one.&lt;/p&gt;
+
+&lt;p&gt;What does all that Hacker News buzz look like in terms of GitHub stars? Try and
+see if you can find the exact moment in this graph (ironically, a Gnuplot and
+not Prometheus graph) when we went out of "dark mode" and got hit by Hacker
+News:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/prometheus_github_stars.png"&gt;&lt;img src="/assets/prometheus_github_stars.png" alt="Prometheus GitHub stars"&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This attention also put us in the 4th place of GitHub's trending repositories
+worldwide:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/prometheus_github_trending.png"&gt;&lt;img src="/assets/prometheus_github_trending.png" alt="Prometheus trending on GitHub"&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id="after-the-first-wave"&gt;After the first wave&lt;a class="header-anchor" href="#after-the-first-wave" name="after-the-first-wave"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;After those first weeks, the initial onslaught of incoming communication cooled
+down a bit, but we were and still are receiving constantly growing adoption.&lt;/p&gt;
+
+&lt;p&gt;To give you an idea of the ecosystem, we now have:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;33 repositories in our GitHub organization&lt;/li&gt;
+&lt;li&gt;~4800 total GitHub stars&lt;/li&gt;
+&lt;li&gt;200+ contributors&lt;/li&gt;
+&lt;li&gt;2300+ pull requests (60+ open)&lt;/li&gt;
+&lt;li&gt;1100+ issues (300+ open)&lt;/li&gt;
+&lt;li&gt;150+ people in our IRC channel (&lt;code&gt;#prometheus&lt;/code&gt; on &lt;a href="http://freenode.net/"&gt;FreeNode&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;250+ people on the mailing list who have created 300+ threads&lt;/li&gt;
+&lt;li&gt;20+ Prometheus-related talks and workshops&lt;/li&gt;
+&lt;li&gt;100+ articles and blog posts&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Besides countless smaller features and bug fixes to existing projects, the
+community has contributed many projects of their own to the Prometheus
+ecosystem. Most of them are exporters that translate metrics from existing
+systems into Prometheus's data model, but there have also been important
+additions to Prometheus itself, such as service discovery mechanisms for
+&lt;a href="http://kubernetes.io/"&gt;Kubernetes&lt;/a&gt;,
+&lt;a href="https://mesosphere.github.io/marathon/"&gt;Marathon&lt;/a&gt; and
+&lt;a href="http://aws.amazon.com/ec2/"&gt;EC2&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Shortly after making more noise about Prometheus, we also found one contributor
+(&lt;a href="https://github.com/fabxc"&gt;Fabian&lt;/a&gt;) so outstanding that he ended up joining
+SoundCloud to work on Prometheus. He has since become the most active developer
+on the project and we have him to thank for major new features such as
+generalized service discovery support, runtime-reloadable configurations, new
+powerful query language features, a custom-built query parser, and so much
+more. He is currently working on the new beta rewrite of the
+&lt;a href="https://github.com/prometheus/alertmanager"&gt;Alertmanager&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Finally, we have been honored to be recognized and adopted by major players in
+the industry. &lt;a href="https://www.google.com"&gt;Google&lt;/a&gt; is now instrumenting its open-source
+container management system &lt;a href="http://kubernetes.io/"&gt;Kubernetes&lt;/a&gt; natively with
+Prometheus metrics. &lt;a href="https://coreos.com/"&gt;CoreOS&lt;/a&gt; is picking it up for
+&lt;a href="https://coreos.com/etcd/"&gt;etcd&lt;/a&gt;'s monitoring as well. &lt;a href="https://www.digitalocean.com/"&gt;DigitalOcean&lt;/a&gt; is betting on Prometheus for their
+internal monitoring. By now, the list of companies using Prometheus in one way
+or another has become too long to mention all of them:
+&lt;a href="https://www.google.com"&gt;Google&lt;/a&gt;,
+&lt;a href="https://coreos.com/"&gt;CoreOS&lt;/a&gt;, &lt;a href="https://docker.com"&gt;Docker&lt;/a&gt;,
+&lt;a href="http://www.boxever.com/"&gt;Boxever&lt;/a&gt;,
+&lt;a href="https://www.digitalocean.com/"&gt;DigitalOcean&lt;/a&gt;, &lt;a href="http://www.ft.com/"&gt;Financial Times&lt;/a&gt;,
+&lt;a href="http://improbable.io/"&gt;Improbable&lt;/a&gt;, &lt;a href="https://www.kpmg.com"&gt;KPMG&lt;/a&gt;, and many more.
+Even the world's largest digital festival,
+&lt;a href="https://www.dreamhack.se"&gt;DreamHack&lt;/a&gt;, has &lt;a href="/blog/2015/06/24/monitoring-dreamhack/"&gt;used
+Prometheus&lt;/a&gt; to keep
+tabs on their network infrastructure in 2015, and
+&lt;a href="https://fosdem.org/2016/"&gt;FOSDEM&lt;/a&gt; will do so in 2016.&lt;/p&gt;
+
+&lt;p&gt;The widely popular dashboard builder &lt;a href="http://grafana.org/"&gt;Grafana&lt;/a&gt; also added
+native Prometheus backend support in &lt;a href="http://grafana.org/blog/2015/10/28/Grafana-2-5-Released.html"&gt;version
+2.5&lt;/a&gt;. Since
+people all around the world are already using and loving Grafana, we are going
+to focus on improving Grafana's Prometheus integration and will invest
+less energy in our own dashboard builder
+&lt;a href="https://github.com/prometheus/promdash"&gt;PromDash&lt;/a&gt; in the future.&lt;/p&gt;
+
+&lt;p&gt;With the Prometheus ecosystem continuing to grow, the first users have started
+asking about commercial support. While Prometheus will always remain an
+independent open source project, one of our core contributors (&lt;a href="https://github.com/brian-brazil"&gt;Brian
+Brazil&lt;/a&gt;) has recently founded his own company,
+&lt;a href="http://www.robustperception.io/"&gt;Robust Perception&lt;/a&gt;, which provides support
+and consulting services around Prometheus and monitoring in general.&lt;/p&gt;
+
+&lt;p&gt;On a lighter note, 2015 has also been the year in which Brian proved Prometheus's query
+language to be Turing complete by implementing
+&lt;a href="http://www.robustperception.io/conways-life-in-prometheus/"&gt;Conway's Game of Life in PromQL&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="the-road-ahead"&gt;The road ahead&lt;a class="header-anchor" href="#the-road-ahead" name="the-road-ahead"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Both personally and technically, we are really excited about what has happened
+last year in Prometheus-land. We love the opportunity to provide the world with
+a powerful new approach to monitoring, especially one that is much better
+suited towards modern cloud- and container-based infrastructures than
+traditional solutions. We are also very grateful to all contributors and
+hope to continuously improve Prometheus for everyone.&lt;/p&gt;
+
+&lt;p&gt;Although Prometheus is relatively mature by now, we have a list of major goals
+we want to tackle in 2016. The highlights will be polishing the new
+Alertmanager rewrite, supporting full read and write integration for external
+long-term storage, as well as eventually releasing a stable 1.0 version of the
+Prometheus server itself.&lt;/p&gt;
+
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2015-08-17:/blog/2015/08/17/service-discovery-with-etcd/</id>
+    <title type="html">Custom service discovery with etcd</title>
+    <published>2015-08-17T00:00:00Z</published>
+    <updated>2015-08-17T00:00:00Z</updated>
+    <author>
+      <name>Fabian Reinartz</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2015/08/17/service-discovery-with-etcd/"/>
+    <content type="html">&lt;p&gt;In a &lt;a href="/blog/2015/06/01/advanced-service-discovery/"&gt;previous post&lt;/a&gt; we
+introduced numerous new ways of doing service discovery in Prometheus.
+Since then a lot has happened. We improved the internal implementation and
+received fantastic contributions from our community, adding support for
+service discovery with Kubernetes and Marathon. They will become available
+with the release of version 0.16.&lt;/p&gt;
+
+&lt;p&gt;We also touched on the topic of &lt;a href="/blog/2015/06/01/advanced-service-discovery/#custom-service-discovery"&gt;custom service discovery&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Not every type of service discovery is generic enough to be directly included
+in Prometheus. Chances are your organisation has a proprietary
+system in place and you just have to make it work with Prometheus.
+This does not mean that you cannot enjoy the benefits of automatically
+discovering new monitoring targets.&lt;/p&gt;
+
+&lt;p&gt;In this post we will implement a small utility program that connects a custom
+service discovery approach based on &lt;a href="https://coreos.com/etcd/"&gt;etcd&lt;/a&gt;, the
+highly consistent distributed key-value store, to Prometheus.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="targets-in-etcd-and-prometheus"&gt;Targets in etcd and Prometheus&lt;a class="header-anchor" href="#targets-in-etcd-and-prometheus" name="targets-in-etcd-and-prometheus"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Our fictional service discovery system stores services and their
+instances under a well-defined key schema:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/services/&amp;lt;service_name&amp;gt;/&amp;lt;instance_id&amp;gt; = &amp;lt;instance_address&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Prometheus should now automatically add and remove targets for all existing
+services as they come and go.
+We can integrate with Prometheus's file-based service discovery, which
+monitors a set of files that describe targets as lists of target groups in
+JSON format.&lt;/p&gt;
+
+&lt;p&gt;A single target group consists of a list of addresses associated with a set of
+labels. Those labels are attached to all time series retrieved from those
+targets.
+One example target group extracted from our service discovery in etcd could
+look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  "targets": ["10.0.33.1:54423", "10.0.34.12:32535"],
+  "labels": {
+    "job": "node_exporter"
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="the-program"&gt;The program&lt;a class="header-anchor" href="#the-program" name="the-program"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;What we need is a small program that connects to the etcd cluster and performs
+a lookup of all services found in the &lt;code&gt;/services&lt;/code&gt; path and writes them out into
+a file of target groups.&lt;/p&gt;
+
+&lt;p&gt;Let's get started with some plumbing. Our tool has two flags: the etcd server
+to connect to and the file to which the target groups are written. Internally,
+the services are represented as a map from service names to instances.
+Instances are a map from the instance identifier in the etcd path to its
+address.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;const servicesPrefix = "/services"
+
+type (
+  instances map[string]string
+  services  map[string]instances
+)
+
+var (
+  etcdServer = flag.String("server", "http://127.0.0.1:4001", "etcd server to connect to")
+  targetFile = flag.String("target-file", "tgroups.json", "the file that contains the target groups")
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our &lt;code&gt;main&lt;/code&gt; function parses the flags and initializes our object holding the
+current services. We then connect to the etcd server and do a recursive read
+of the &lt;code&gt;/services&lt;/code&gt; path.
+We receive the subtree for the given path as a result and call &lt;code&gt;srvs.handle&lt;/code&gt;,
+which recursively performs the &lt;code&gt;srvs.update&lt;/code&gt; method for each node in the
+subtree. The &lt;code&gt;update&lt;/code&gt; method modifies the state of our &lt;code&gt;srvs&lt;/code&gt; object to be
+aligned with the state of our subtree in etcd.
+Finally, we call &lt;code&gt;srvs.persist&lt;/code&gt; which transforms the &lt;code&gt;srvs&lt;/code&gt; object into a list
+of target groups and writes them out to the file specified by the
+&lt;code&gt;-target-file&lt;/code&gt; flag.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func main() {
+  flag.Parse()
+
+  var (
+    client  = etcd.NewClient([]string{*etcdServer})
+    srvs    = services{}
+  )
+
+  // Retrieve the subtree of the /services path.
+  res, err := client.Get(servicesPrefix, false, true)
+  if err != nil {
+    log.Fatalf("Error on initial retrieval: %s", err)
+  }
+  srvs.handle(res.Node, srvs.update)
+  srvs.persist()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let's assume we have this as a working implementation. We could now run this
+tool every 30 seconds to have a mostly accurate view of the current targets in
+our service discovery.&lt;/p&gt;
+
+&lt;p&gt;But can we do better?&lt;/p&gt;
+
+&lt;p&gt;The answer is &lt;em&gt;yes&lt;/em&gt;. etcd provides watches, which let us listen for updates on
+any path and its sub-paths. With that, we are informed about changes
+immediately and can apply them immediately. We also don't have to work through
+the whole &lt;code&gt;/services&lt;/code&gt; subtree again and again, which can become important for
+a large number of services and instances.&lt;/p&gt;
+
+&lt;p&gt;We extend our &lt;code&gt;main&lt;/code&gt; function as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func main() {
+  // ...
+
+  updates := make(chan *etcd.Response)
+
+  // Start recursively watching for updates.
+  go func() {
+    _, err := client.Watch(servicesPrefix, 0, true, updates, nil)
+    if err != nil {
+      log.Errorln(err)
+    }
+  }()
+
+  // Apply updates sent on the channel.
+  for res := range updates {
+    log.Infoln(res.Action, res.Node.Key, res.Node.Value)
+
+    handler := srvs.update
+    if res.Action == "delete" {
+      handler = srvs.delete
+    }
+    srvs.handle(res.Node, handler)
+    srvs.persist()
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We start a goroutine that recursively watches for changes to entries in
+&lt;code&gt;/services&lt;/code&gt;. It blocks forever and sends all changes to the &lt;code&gt;updates&lt;/code&gt; channel.
+We then read the updates from the channel and apply it as before. In case an
+instance or entire service disappears however, we call &lt;code&gt;srvs.handle&lt;/code&gt; using the
+&lt;code&gt;srvs.delete&lt;/code&gt; method instead.&lt;/p&gt;
+
+&lt;p&gt;We finish each update by another call to &lt;code&gt;srvs.persist&lt;/code&gt; to write out the
+changes to the file Promtheus is watching.&lt;/p&gt;
+
+&lt;h3 id="modification-methods"&gt;Modification methods&lt;a class="header-anchor" href="#modification-methods" name="modification-methods"&gt;&lt;/a&gt;
+&lt;/h3&gt;
+
+&lt;p&gt;So far so good – conceptually this works. What remains are the &lt;code&gt;update&lt;/code&gt; and
+&lt;code&gt;delete&lt;/code&gt; handler methods as well as the &lt;code&gt;persist&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;update&lt;/code&gt; and &lt;code&gt;delete&lt;/code&gt; are invoked by the &lt;code&gt;handle&lt;/code&gt; method which simply calls
+them for each node in a subtree, given that the path is valid:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var pathPat = regexp.MustCompile(`/services/([^/]+)(?:/(\d+))?`)
+
+func (srvs services) handle(node *etcd.Node, handler func(*etcd.Node)) {
+  if pathPat.MatchString(node.Key) {
+    handler(node)
+  } else {
+    log.Warnf("unhandled key %q", node.Key)
+  }
+
+  if node.Dir {
+    for _, n := range node.Nodes {
+      srvs.handle(n, handler)
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id="update"&gt;
+&lt;code&gt;update&lt;/code&gt;&lt;a class="header-anchor" href="#update" name="update"&gt;&lt;/a&gt;
+&lt;/h4&gt;
+
+&lt;p&gt;The update methods alters the state of our &lt;code&gt;services&lt;/code&gt; object
+based on the node which was updated in etcd.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (srvs services) update(node *etcd.Node) {
+  match := pathPat.FindStringSubmatch(node.Key)
+  // Creating a new job directory does not require any action.
+  if match[2] == "" {
+    return
+  }
+  srv := match[1]
+  instanceID := match[2]
+
+  // We received an update for an instance.
+  insts, ok := srvs[srv]
+  if !ok {
+    insts = instances{}
+    srvs[srv] = insts
+  }
+  insts[instanceID] = node.Value
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id="delete"&gt;
+&lt;code&gt;delete&lt;/code&gt;&lt;a class="header-anchor" href="#delete" name="delete"&gt;&lt;/a&gt;
+&lt;/h4&gt;
+
+&lt;p&gt;The delete methods removes instances or entire jobs from our &lt;code&gt;services&lt;/code&gt;
+object depending on which node was deleted from etcd.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (srvs services) delete(node *etcd.Node) {
+  match := pathPat.FindStringSubmatch(node.Key)
+  srv := match[1]
+  instanceID := match[2]
+
+  // Deletion of an entire service.
+  if instanceID == "" {
+    delete(srvs, srv)
+    return
+  }
+
+  // Delete a single instance from the service.
+  delete(srvs[srv], instanceID)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id="persist"&gt;
+&lt;code&gt;persist&lt;/code&gt;&lt;a class="header-anchor" href="#persist" name="persist"&gt;&lt;/a&gt;
+&lt;/h4&gt;
+
+&lt;p&gt;The persist method transforms the state of our &lt;code&gt;services&lt;/code&gt; object into a list of &lt;code&gt;TargetGroup&lt;/code&gt;s. It then writes this list into the &lt;code&gt;-target-file&lt;/code&gt; in JSON
+format.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type TargetGroup struct {
+  Targets []string          `json:"targets,omitempty"`
+  Labels  map[string]string `json:"labels,omitempty"`
+}
+
+func (srvs services) persist() {
+  var tgroups []*TargetGroup
+  // Write files for current services.
+  for job, instances := range srvs {
+    var targets []string
+    for _, addr := range instances {
+      targets = append(targets, addr)
+    }
+
+    tgroups = append(tgroups, &amp;amp;TargetGroup{
+      Targets: targets,
+      Labels:  map[string]string{"job": job},
+    })
+  }
+
+  content, err := json.Marshal(tgroups)
+  if err != nil {
+    log.Errorln(err)
+    return
+  }
+
+  f, err := create(*targetFile)
+  if err != nil {
+    log.Errorln(err)
+    return
+  }
+  defer f.Close()
+
+  if _, err := f.Write(content); err != nil {
+    log.Errorln(err)
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="taking-it-live"&gt;Taking it live&lt;a class="header-anchor" href="#taking-it-live" name="taking-it-live"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;All done, so how do we run this?&lt;/p&gt;
+
+&lt;p&gt;We simply start our tool with a configured output file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./etcd_sd -target-file /etc/prometheus/tgroups.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we configure Prometheus with file based service discovery
+using the same file. The simplest possible configuration looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;scrape_configs:
+- job_name: 'default' # Will be overwritten by job label of target groups.
+  file_sd_configs:
+  - names: ['/etc/prometheus/tgroups.json']
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And that's it. Now our Prometheus stays in sync with services and their
+instances entering and leaving our service discovery with etcd.&lt;/p&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;a class="header-anchor" href="#conclusion" name="conclusion"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;If Prometheus does not ship with native support for the service discovery of
+your organisation, don't despair. Using a small utility program you can easily
+bridge the gap and profit from seamless updates to the monitored targets.
+Thus, you can remove changes to the monitoring configuration from your
+deployment equation.&lt;/p&gt;
+
+&lt;p&gt;A big thanks to our contributors &lt;a href="https://twitter.com/jimmidyson"&gt;Jimmy Dyson&lt;/a&gt;
+and &lt;a href="https://twitter.com/xperimental"&gt;Robert Jacob&lt;/a&gt; for adding native support
+for &lt;a href="http://kubernetes.io/"&gt;Kubernetes&lt;/a&gt; and &lt;a href="https://mesosphere.github.io/marathon/"&gt;Marathon&lt;/a&gt;.
+Also check out &lt;a href="https://twitter.com/keegan_csmith"&gt;Keegan C Smith's&lt;/a&gt; take on &lt;a href="https://github.com/keegancsmith/prometheus-ec2-discovery"&gt;EC2 service discovery&lt;/a&gt; based on files.&lt;/p&gt;
+
+&lt;p&gt;You can find the &lt;a href="https://github.com/fabxc/prom_sd_example/tree/master/etcd_simple"&gt;full source of this blog post on GitHub&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:prometheus.io,2015-06-24:/blog/2015/06/24/monitoring-dreamhack/</id>
+    <title type="html">Monitoring DreamHack - the World's Largest Digital Festival</title>
+    <published>2015-06-24T00:00:00Z</published>
+    <updated>2015-06-24T00:00:00Z</updated>
+    <author>
+      <name>Christian Svensson (DreamHack Network Team)</name>
+      <uri>https://prometheus.io/blog/</uri>
+    </author>
+    <link rel="alternate" href="https://prometheus.io/blog/2015/06/24/monitoring-dreamhack/"/>
+    <content type="html">&lt;p&gt;&lt;em&gt;Editor's note: This article is a guest post written by a Prometheus user.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;If you are operating the network for 10,000's of demanding gamers, you need to
+really know what is going on inside your network. Oh, and everything needs to be
+built from scratch in just five days.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;If you have never heard about &lt;a href="http://www.dreamhack.se/"&gt;DreamHack&lt;/a&gt; before, here
+is the pitch: Bring 20,000 people together and have the majority of them bring
+their own computer.  Mix in professional gaming (eSports), programming contests,
+and live music concerts. The result is the world's largest festival dedicated
+solely to everything digital.&lt;/p&gt;
+
+&lt;p&gt;To make such an event possible, there needs to be a lot of infrastructure in
+place. Ordinary infrastructures of this size take months to build, but the crew
+at DreamHack builds everything from scratch in just five days. This of course
+includes stuff like configuring network switches, but also building the
+electricity distribution, setting up stores for food and drinks, and even
+building the actual tables.&lt;/p&gt;
+
+&lt;p&gt;The team that builds and operates everything related to the network is
+officially called the Network team, but we usually refer to ourselves as &lt;em&gt;tech&lt;/em&gt;
+or &lt;em&gt;dhtech&lt;/em&gt;. This post is going to focus on the work of dhtech and how we used
+Prometheus during DreamHack Summer 2015 to try to kick our monitoring up another
+notch.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h2 id="the-equipment"&gt;The equipment&lt;a class="header-anchor" href="#the-equipment" name="the-equipment"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Turns out that to build a highly performant network for 10,000+
+computers, you need at least the same number of network ports. In our case these
+come in the form of ~400 Cisco 2950 switches. We call these the access switches.
+These are everywhere in the venue where participants will be seated with their
+computers.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://www.flickr.com/photos/dreamhack/8206439882"&gt;&lt;img src="https://c1.staticflickr.com/9/8487/8206439882_4739d39a9c_c.jpg" alt="Access switches"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;Dutifully standing in line, the access switches are ready to greet the
+DreamHackers with high-speed connectivity.&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;Obviously just connecting all these computers to a switch is not enough. That
+switch needs to be connected to the other switches as well. This is where the
+distribution switches (or dist switches) come into play. These are switches that
+take the hundreds of links from all access switches and aggregate them into
+more manageable 10-Gbit/s high-capacity fibre. The dist switches are then
+further aggregated into our core, where the traffic is routed to its
+destination.&lt;/p&gt;
+
+&lt;p&gt;On top of all of this, we operate our own WiFi networks, DNS/DHCP servers, and
+other infrastructure. When completed, our core looks something like the image
+below.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/dh_network_planning_map.png"&gt;&lt;img src="/assets/dh_network_planning_map.png" alt="Network planning map"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The planning map for the distribution and core layers. The core is
+clearly visible in "Hall D"&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;All in all this is becoming a lengthy list of stuff to monitor, so let's get to
+the reason you're here: How do we make sure we know what's going on?&lt;/p&gt;
+
+&lt;h2 id="introducing:-dhmon"&gt;Introducing: dhmon&lt;a class="header-anchor" href="#introducing-dhmon" name="introducing-dhmon"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;dhmon is the collective name of the systems that not only
+monitor the network, but also allow other teams to collect metrics on whatever
+they want.&lt;/p&gt;
+
+&lt;p&gt;Since the network needs to be built in five days, it's essential that the
+monitoring systems are easy to set up and keep in sync if we need to do last
+minute infrastructural changes (like adding or removing devices). When we start
+to build the network, we need monitoring as soon as possible to be able to
+discover any problems with the equipment or other issues we hadn't foreseen.&lt;/p&gt;
+
+&lt;p&gt;In the past we have tried to use a mix of commonly available software such as
+Cacti, SNMPc, and Opsview among others. While these have worked they have focused on
+being closed systems and only provided the bare minimum. A few years back a few
+people from the team said "Enough, we can do better ourselves!" and started
+writing a custom monitoring solution.&lt;/p&gt;
+
+&lt;p&gt;At the time the options were limited. Over the years the system went from using
+Graphite (scalability issues), a custom Cassandra store (high complexity), and
+InfluxDB (immature software) to finally land on using Prometheus. I first
+learned about Prometheus back in 2014 when I met Julius Volz and I had been
+eager to try it ever since. This summer we finally replaced the custom
+InfluxDB-based metrics store that we had written with Prometheus. Spoiler: We're
+not going back.&lt;/p&gt;
+
+&lt;h2 id="the-architecture"&gt;The architecture&lt;a class="header-anchor" href="#the-architecture" name="the-architecture"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The monitoring solution consists of three layers:
+collection, storage, presentation. Our most critical collectors are
+snmpcollector (SNMP) and ipplan-pinger (ICMP), closely followed by dhcpinfo
+(DHCP lease stats). We also have some scripts that dump stats about other
+systems into &lt;a href="https://github.com/prometheus/node_exporter"&gt;node_exporter&lt;/a&gt;'s
+textfile collector.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/dh_dhmon_architecture.png"&gt;&lt;img src="/assets/dh_dhmon_architecture.png" alt="dhmon Architecture"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The current architecture plan of dhmon as of Summer 2015&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;We use Prometheus as a central timeseries storage and querying engine, but we
+also use Redis and memcached to export snapshot views of binary information that
+we collect but cannot store in Prometheus in any sensible way, or when we need
+to access very fresh data.&lt;/p&gt;
+
+&lt;p&gt;One such case is in our presentation layer. We use our dhmap web application to
+get an overview of the overall health of the access switches. In order to be
+effective at resolving errors, we need a latency of ~10 seconds from data
+collection to presentation. Our goal is to have fixed the problem before the
+customer notices, or at least before they have walked over to the support people
+to report an issue. For this reason, we have been using memcached since the
+beginning to access the latest snapshot of the network.&lt;/p&gt;
+
+&lt;p&gt;We continued to use memcached this year for our low-latency data, while using
+Prometheus for everything that's historical or not as latency-sensitive. This
+decision was made simply because we were unsure how Prometheus would perform at
+very short sampling intervals. In the end, we found no reason for why we can't
+use Prometheus for this data as well - we will definitely try to replace our
+memcached with Prometheus at the next DreamHack.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/dh_dhmon_visualization.png"&gt;&lt;img src="/assets/dh_dhmon_visualization.png" alt="dhmon Visualization"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The overview of our access layer visualized by dhmon&lt;/em&gt;&lt;/center&gt;
+
+&lt;h2 id="prometheus-setup"&gt;Prometheus setup&lt;a class="header-anchor" href="#prometheus-setup" name="prometheus-setup"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;The block that so far has been referred to as &lt;em&gt;Prometheus&lt;/em&gt;
+really consists of three products:
+&lt;a href="https://github.com/prometheus/prometheus"&gt;Prometheus&lt;/a&gt;,
+&lt;a href="https://github.com/prometheus/promdash"&gt;PromDash&lt;/a&gt;, and
+&lt;a href="https://github.com/prometheus/alertmanager"&gt;Alertmanager&lt;/a&gt;. The setup is fairly
+basic and all three components are running on the same host. Everything is
+served by an Apache web server that just acts as a reverse proxy.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ProxyPass /prometheus http://localhost:9090/prometheus
+ProxyPass /alertmanager http://localhost:9093/alertmanager
+ProxyPass /dash http://localhost:3000/dash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="exploring-the-network"&gt;Exploring the network&lt;a class="header-anchor" href="#exploring-the-network" name="exploring-the-network"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;Prometheus has a powerful querying engine that allows
+you to do pretty cool things with the streaming information collected from all
+over your network. However, sometimes the queries need to process too much data
+to finish within a reasonable amount of time. This happened to us when we wanted
+to graph the top 5 utilized links out of ~18,000 in total. While the query
+worked, it would take roughly the amount of time we set our timeout limit to,
+meaning it was both slow and flaky. We decided to use Prometheus' &lt;a href="/docs/querying/rules/"&gt;recording
+rules&lt;/a&gt; for precomputing heavy queries.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;precomputed_link_utilization_percent = rate(ifHCOutOctets{layer!='access'}[10m])*8/1000/1000
+                                         / on (device,interface,alias)
+                                       ifHighSpeed{layer!='access'}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After this, running &lt;code&gt;topk(5, precomputed_link_utilization_percent)&lt;/code&gt; was
+blazingly fast.&lt;/p&gt;
+
+&lt;h2 id="being-reactive:-alerting"&gt;Being reactive: alerting&lt;a class="header-anchor" href="#being-reactive-alerting" name="being-reactive-alerting"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;So at this stage we had something we could query for
+the state of the network. Since we are humans, we don't want to spend our time
+running queries all the time to see if things are still running as they should,
+so obviously we need alerting.&lt;/p&gt;
+
+&lt;p&gt;For example: we know that all our access switches use GigabitEthernet0/2 as an
+uplink. Sometimes when the network cables have been in storage for too long they
+oxidize and are not able to negotiate the full 1000 Mbps that we want.&lt;/p&gt;
+
+&lt;p&gt;The negotiated speed of a network port can be found in the SNMP OID
+&lt;code&gt;IF-MIB::ifHighSpeed&lt;/code&gt;. People familiar with SNMP will however recognize that
+this OID is indexed by an arbitrary interface index. To make any sense of this
+index, we need to cross-reference it with data from SNMP OID &lt;code&gt;IF-MIB::ifDescr&lt;/code&gt;
+to retrieve the actual interface name.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, our snmpcollector supports this kind of cross-referencing while
+generating Prometheus metrics. This allows us in a simple way to not only query
+data, but also define useful alerts. In our setup we configured the SNMP
+collection to annotate any metric under the &lt;code&gt;IF-MIB::ifTable&lt;/code&gt; and
+&lt;code&gt;IF-MIB::ifXTable&lt;/code&gt; OIDs with &lt;code&gt;ifDescr&lt;/code&gt;. This will come in handy now when we need
+to specify that we are only interested in the &lt;code&gt;GigabitEthernet0/2&lt;/code&gt; port and no
+other interface.&lt;/p&gt;
+
+&lt;p&gt;Let's have a look at what such an alert definition looks like.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ALERT BadUplinkOnAccessSwitch
+  IF ifHighSpeed{layer='access', interface='GigabitEthernet0/2'} &amp;lt; 1000 FOR 2m
+  SUMMARY "Interface linking at {{$value}} Mbps"
+  DESCRIPTION "Interface {{$labels.interface}} on {{$labels.device}} linking at {{$value}} Mbps"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Done! Now we will get an alert if a switch's uplink suddenly links at a
+non-optimal speed.&lt;/p&gt;
+
+&lt;p&gt;Let's also look at how an alert for an almost full DHCP scope looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ALERT DhcpScopeAlmostFull
+  IF ceil((dhcp_leases_current_count / dhcp_leases_max_count)*100) &amp;gt; 90 FOR 2m
+  SUMMARY "DHCP scope {{$labels.network}} is almost full"
+  DESCRIPTION "DHCP scope {{$labels.network}} is {{$value}}% full"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We found the syntax to define alerts easy to read and understand even if you had
+no previous experience with Prometheus or time series databases.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/dh_prometheus_alerts.png"&gt;&lt;img src="/assets/dh_prometheus_alerts.png" alt="Prometheus alerts for DreamHack"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;Oops! Turns out we have some bad uplinks, better run out and fix
+it!&lt;/em&gt;&lt;/center&gt;
+
+&lt;h2 id="being-proactive:-dashboards"&gt;Being proactive: dashboards&lt;a class="header-anchor" href="#being-proactive-dashboards" name="being-proactive-dashboards"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;While alerting is an essential part of
+monitoring, sometimes you just want to have a good overview of the health of
+your network. To achieve this we used &lt;a href="/docs/visualization/promdash/"&gt;PromDash&lt;/a&gt;.
+Every time someone asked us something about the network, we crafted a query to
+get the answer and saved it as a dashboard widget. The most interesting ones
+were then added to an overview dashboard that we proudly displayed.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="/assets/dh_dhmon_dashboard.png"&gt;&lt;img src="/assets/dh_dhmon_dashboard.png" alt="dhmon Dashboard"&gt;&lt;/a&gt;
+&lt;/p&gt;&lt;center&gt;&lt;em&gt;The DreamHack Overview dashboard powered by PromDash&lt;/em&gt;&lt;/center&gt;
+
+&lt;h2 id="the-future"&gt;The future&lt;a class="header-anchor" href="#the-future" name="the-future"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;While changing an integral part of any system is a complex job and
+we're happy that we managed to integrate Prometheus in just one event, there are
+without a doubt a lot of areas to improve. Some areas are pretty basic: using
+more precomputed metrics to improve performance, adding more alerts, and tuning
+the ones we have. Another area is to make it easier for operators: creating an
+alert dashboard suitable for our network operations center (NOC), figuring out
+if we want to page the people on-call, or just let the NOC escalate alerts.&lt;/p&gt;
+
+&lt;p&gt;Some bigger features we're planning on adding: syslog analysis (we have a lot of
+syslog!), alerts from our intrusion detection systems, integrating with our
+Puppet setup, and also integrating more across the different teams at DreamHack.
+We managed to create a proof-of-concept where we got data from one of the
+electrical current sensors into our monitoring, making it easy to see if a
+device is faulty or if it simply doesn't have any electricity anymore. We're
+also working on integrating with the point-of-sale systems that are used in the
+stores at the event. Who doesn't want to graph the sales of ice cream?&lt;/p&gt;
+
+&lt;p&gt;Finally, not all services that the team operates are on-site, and some even run
+24/7 after the event. We want to monitor these services with Prometheus as well,
+and in the long run when Prometheus gets support for federation, utilize the
+off-site Prometheus to replicate the metrics from the event Prometheus.&lt;/p&gt;
+
+&lt;h2 id="closing-words"&gt;Closing words&lt;a class="header-anchor" href="#closing-words" name="closing-words"&gt;&lt;/a&gt;
+&lt;/h2&gt;
+
+&lt;p&gt;We're really excited about Prometheus and how easy it makes
+setting up scalable monitoring and alerting from scratch.&lt;/p&gt;
+
+&lt;p&gt;A huge shout-out to everyone that helped us in &lt;code&gt;#prometheus&lt;/code&gt; on
+&lt;a href="https://freenode.net/"&gt;FreeNode&lt;/a&gt; during the event. Special thanks to Brian
+Brazil, Fabian Reinartz and Julius Volz. Thanks for helping us even in the cases
+where it was obvious that we hadn't read the documentation thoroughly enough.&lt;/p&gt;
+
+&lt;p&gt;Finally, dhmon is all open-source, so head over to &lt;a href="https://github.com/dhtech/"&gt;https://github.com/dhtech/&lt;/a&gt;
+and have a look if you're interested. If you feel like you would like to be a
+part of this, just head over to &lt;code&gt;#dreamhack&lt;/code&gt; on
+&lt;a href="https://www.quakenet.org/"&gt;QuakeNet&lt;/a&gt; and have a chat with us. Who knows, maybe
+you will help us build the next DreamHack?&lt;/p&gt;
+</content>
+  </entry>
+</feed>
+

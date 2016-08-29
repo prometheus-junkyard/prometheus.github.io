@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Prometheus - Monitoring system &amp; time series database</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb49171dbcf.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="navbar-jumbotron">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>From metrics to insight</h1>
+    <p class="subtitle">Power your metrics and alerting with a leading<br>open-source monitoring solution.</p>
+    <p>
+      <a class="btn btn-default btn-lg" href="/docs/introduction/getting_started/" role="button">Get Started</a>
+      <a class="btn btn-default btn-lg" href="/download" role="button">Download</a>
+    </p>
+  </div>
+</div>
+
+<div class="newsbar">
+  Prometheus 1.0 is out!&nbsp;&nbsp;—&nbsp;&nbsp;<a href="/blog/2016/07/18/prometheus-1-0-released/">Learn more</a>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/concepts/data_model/">
+        <h2><i class="fa fa-flask"></i> Dimensional data</h2>
+        <p>Prometheus implements a highly dimensional data model. Time series are identified by a metric name and a set of key-value pairs.</p>
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/querying/basics/">
+        <h2><i class="fa fa-search"></i> Powerful queries</h2>
+        <p>A flexible query language allows slicing and dicing of collected time series data in order to generate ad-hoc graphs, tables, and alerts.</p>
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/visualization/grafana/">
+        <h2><i class="fa fa-line-chart"></i> Great visualization</h2>
+        <p>Prometheus has multiple modes for visualizing data: a built-in expression browser, Grafana integration, and a console template language.</p>
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/operating/storage/">
+        <h2><i class="fa fa-database"></i> Efficient storage</h2>
+        <p>Prometheus stores time series in memory and on local disk in an efficient custom format. Scaling is achieved by functional sharding and federation.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/operating/configuration/">
+        <h2><i class="fa fa-cog"></i> Simple operation</h2>
+        <p>Each server is independent for reliability, relying only on local storage. Written in Go, all binaries are statically linked and easy to deploy.</p>
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/alerting/rules/">
+        <h2><i class="fa fa-warning"></i> Precise alerting</h2>
+        <p>Alerts are defined based on Prometheus's flexible query language and maintain dimensional information. An alertmanager handles notifications and silencing.</p>
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/instrumenting/clientlibs/">
+        <h2><i class="fa fa-code"></i> Many client libraries</h2>
+        <p>Client libraries allow easy instrumentation of services. Over ten languages are supported already and custom libraries are easy to implement.</p>
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12 feature-item">
+      <a href="/docs/instrumenting/exporters/">
+        <h2><i class="fa fa-cloud-upload"></i> Many integrations</h2>
+        <p>Existing exporters allow bridging of third-party data into Prometheus. Examples: system statistics, as well as Docker, HAProxy, StatsD, and JMX metrics. </p>
+      </a>
+    </div>
+  </div>
+
+  <div class="row top-hr">
+    <div class="col-md-12">
+      <hr>
+    </div>
+  </div>
+
+  <div class="row quote">
+    <div class="col-md-12">
+      <p class="quote-text">
+        «Even though Borgmon remains internal to Google, the idea of treating time-series data as a data source for generating alerts is now accessible to everyone through those open source tools like Prometheus [...]»
+      </p>
+      <p class="quote-source">
+      — <a href="http://shop.oreilly.com/product/0636920041528.do"><b>Site Reliability Engineering:</b> How Google Runs Production Systems</a> (O'Reilly Media)
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <hr>
+    </div>
+  </div>
+
+  <div class="row open-source">
+    <div class="col-md-12">
+      <h1><i class="fa fa-github"></i> Open Source</h1>
+      <p>Prometheus is 100% open source and community-driven. All components are available under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a> on <a href="https://github.com/prometheus">GitHub</a>.</p>
+      <iframe src="https://ghbtns.com/github-btn.html?user=prometheus&repo=prometheus&type=star&count=true&size=large" frameborder="0" scrolling="0" class="github-stars"></iframe>
+      <br><br>
+      <p>We are a <a href="https://cncf.io/">Cloud Native Computing Foundation</a> member project.</p>
+      <br>
+      <p><a href="https://cncf.io/"><img src="assets/cncf_logo-cb3c9191656.png"></a></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <hr>
+    </div>
+  </div>
+
+  <div class="container text-center">
+    <div class="row">
+      <div class="col-md-12 trusted-by">Some of our users include:</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://argus-sec.com/"><img src="assets/company-logos/Argus-cb15a1118df.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.boxever.com/"><img src="assets/company-logos/Boxever-cbdc91b62a0.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.cesanta.com/"><img src="assets/company-logos/cesanta-cb1ef881785.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.coreos.com/"><img src="assets/company-logos/CoreOS-cbdf5ea8e2c.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.crononauta.com/"><img src="assets/company-logos/crononauta-cb606918eda.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.digitalocean.com/"><img src="assets/company-logos/digitalocean-cb79d068cc1.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.docker.com/"><img src="assets/company-logos/Docker-cb6b72b7cf0.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.ericsson.com/"><img src="assets/company-logos/Ericsson-cb3915eabce.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.eurotech.com/"><img src="assets/company-logos/Eurotech-cbf63ab1958.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://giantswarm.io/"><img src="assets/company-logos/giantswarm-cb068faac98.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://improbable.io/"><img src="assets/company-logos/Improbable-cb453291372.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.jodel-app.com/"><img src="assets/company-logos/Jodel-cba0489f1a8.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.mavensecurities.com/"><img src="assets/company-logos/MavenSecurities-cb01592d822.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.outbrain.com/"><img src="assets/company-logos/Outbrain-cb2ea68b2b9.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.percona.com/"><img src="assets/company-logos/Percona-cb1750bc3af.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.quobyte.com/"><img src="assets/company-logos/quobyte-cb09311c73f.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.robustperception.io/"><img src="assets/company-logos/RobustPerception-cbb72553cf0.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="http://www.showmax.com/"><img src="assets/company-logos/ShowMax-cbd2154d720.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.shuttlecloud.com/"><img src="assets/company-logos/shuttlecloud-cb1ed2c4408.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.soundcloud.com/"><img src="assets/company-logos/soundcloud-cbade947185.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.uda100.com/"><img src="assets/company-logos/WeLearn-cb359627bf1.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.unosoft.hu/"><img src="assets/company-logos/unosoft-cbda2c2f722.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.variomedia.de/"><img src="assets/company-logos/variomedia-cb87c443834.png"/></a>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 logos">
+      <a href="https://www.weave.works/"><img src="assets/company-logos/weave-cb5b7af7382.png"/></a>
+    </div>
+  </div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

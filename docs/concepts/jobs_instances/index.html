@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Jobs and instances | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb49171dbcf.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav active"><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li class="active"><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <h1 id="jobs-and-instances" class="page-header">Jobs and instances<a class="header-anchor" href="#jobs-and-instances" name="jobs-and-instances"></a>
+</h1>
+
+<p>In Prometheus terms, any individually scraped target is called an <em>instance</em>,
+usually corresponding to a single process. A collection of instances of the
+same type (replicated for scalability or reliability) is called a <em>job</em>.</p>
+
+<p>For example, an API server job with four replicated instances:</p>
+
+<ul>
+<li>job: <code>api-server</code>
+
+<ul>
+<li>instance 1: <code>1.2.3.4:5670</code>
+</li>
+<li>instance 2: <code>1.2.3.4:5671</code>
+</li>
+<li>instance 3: <code>5.6.7.8:5670</code>
+</li>
+<li>instance 4: <code>5.6.7.8:5671</code>
+</li>
+</ul>
+</li>
+</ul>
+
+<h2 id="automatically-generated-labels-and-time-series">Automatically generated labels and time series<a class="header-anchor" href="#automatically-generated-labels-and-time-series" name="automatically-generated-labels-and-time-series"></a>
+</h2>
+
+<p>When Prometheus scrapes a target, it attaches some labels automatically to the
+scraped time series which serve to identify the scraped target:</p>
+
+<ul>
+<li>
+<code>job</code>: The configured job name that the target belongs to.</li>
+<li>
+<code>instance</code>: The <code>&lt;host&gt;:&lt;port&gt;</code> part of the target's URL that was scraped.</li>
+</ul>
+
+<p>If either of these labels are already present in the scraped data, the behavior
+depends on the <code>honor_labels</code> configuration option. See the
+<a href="/docs/operating/configuration/#%3Cscrape_config%3E">scrape configuration documentation</a>
+for more information.</p>
+
+<p>For each instance scrape, Prometheus stores a sample in the following
+time series:</p>
+
+<ul>
+<li>
+<code>up{job="&lt;job-name&gt;", instance="&lt;instance-id&gt;"}</code>: <code>1</code> if the instance is
+healthy, i.e. reachable, or <code>0</code> if the scrape failed.</li>
+<li>
+<code>scrape_duration_seconds{job="&lt;job-name&gt;", instance="&lt;instance-id&gt;"}</code>:
+duration of the scrape.</li>
+</ul>
+
+<p>The <code>up</code> time series is useful for instance availability monitoring.</p>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

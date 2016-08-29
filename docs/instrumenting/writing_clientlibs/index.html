@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbdc07aa911.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb07eb42bf2.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb8e8e32eb9.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cbcc02c6797.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cb4c83ee62c.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb75d3d4808.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb1c3d64031.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cb768736a7d.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cbb275d6db3.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb4125f33f0.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbeb02a34ac.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cb7775fd5d3.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb9f96fc86e.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Writing client libraries | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb49171dbcf.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li><li><a href="/docs/visualization/promdash/">PromDash</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav active"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li class="active"><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="writing-client-libraries" class="page-header">Writing client libraries<a class="header-anchor" href="#writing-client-libraries" name="writing-client-libraries"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#conventions">Conventions
+</a></li>
+<li><a href="#overall-structure">Overall structure
+</a></li>
+<ul><li><a href="#naming">Naming
+</a></li></ul>
+<li><a href="#metrics">Metrics
+</a></li>
+<ul>
+<li><a href="#counter">Counter
+</a></li>
+<li><a href="#gauge">Gauge
+</a></li>
+<li><a href="#summary">Summary
+</a></li>
+<li><a href="#histogram">Histogram
+</a></li>
+<li><a href="#labels">Labels
+</a></li>
+<li><a href="#metric-names">Metric names
+</a></li>
+<li><a href="#metric-description-and-help">Metric description and help
+</a></li>
+</ul>
+<li><a href="#exposition">Exposition
+</a></li>
+<li><a href="#standard-and-runtime-collectors">Standard and runtime collectors
+</a></li>
+<li><a href="#unit-tests">Unit tests
+</a></li>
+<li><a href="#packaging-and-dependencies">Packaging and dependencies
+</a></li>
+<li><a href="#performance-considerations">Performance considerations
+</a></li>
+</ul></div>
+
+<p>This document covers what functionality and API Prometheus client libraries
+should offer, with the aim of consistency across libraries, making the easy use
+cases easy and avoiding offering functionality that may lead users down the
+wrong path.</p>
+
+<p>There are <a href="/docs/instrumenting/clientlibs">10 languages already supported</a> at
+the time of writing, so we’ve gotten a good sense by now of how to write a
+client. These guidelines aim to help authors of new client libraries produce
+good libraries.</p>
+
+<h2 id="conventions">Conventions<a class="header-anchor" href="#conventions" name="conventions"></a>
+</h2>
+
+<p>MUST/MUST NOT/SHOULD/SHOULD NOT/MAY have the meanings given in
+<a href="https://www.ietf.org/rfc/rfc2119.txt">https://www.ietf.org/rfc/rfc2119.txt</a></p>
+
+<p>In addition ENCOURAGED means that a feature is desirable for a library to have,
+but it’s okay if it’s not present. In other words, a nice to have.</p>
+
+<p>Things to keep in mind:</p>
+
+<ul>
+<li><p>Take advantage of each language’s features.</p></li>
+<li><p>The common use cases should be easy.</p></li>
+<li><p>The correct way to do something should be the easy way.</p></li>
+<li><p>More complex use cases should be possible.</p></li>
+</ul>
+
+<p>The common use cases are (in order):</p>
+
+<ul>
+<li><p>Counters without labels spread liberally around libraries/applications.</p></li>
+<li><p>Timing functions/blocks of code in Summaries/Histograms.</p></li>
+<li><p>Gauges to track current states of things (and their limits).</p></li>
+<li><p>Monitoring of batch jobs.</p></li>
+</ul>
+
+<h2 id="overall-structure">Overall structure<a class="header-anchor" href="#overall-structure" name="overall-structure"></a>
+</h2>
+
+<p>Clients MUST be written to be callback based internally. Clients SHOULD
+generally follow the structure described here.</p>
+
+<p>The key class is the Collector. This has a method (typically called ‘collect’)
+that returns zero or more metrics and their samples. Collectors get registered
+with a CollectorRegistry. Data is exposed by passing a CollectorRegistry to a
+class/method/function "bridge", which returns the metrics in a format
+Prometheus supports. Every time the CollectorRegistry is scraped it must
+callback to each of the Collectors’ collect method.</p>
+
+<p>The interface most users interact with are the Counter, Gauge, Summary, and
+Histogram Collectors. These represent a single metric, and should cover the
+vast majority of use cases where a user is instrumenting their own code.</p>
+
+<p>More advanced uses cases (such as proxying from another
+monitoring/instrumentation system) require writing a custom Collector. Someone
+may also want to write a "bridge" that takes a CollectorRegistry and produces
+data in a format a different monitoring/instrumentation system understands,
+allowing users to only have to think about one instrumentation system.</p>
+
+<p>CollectorRegistry SHOULD offer <code>register()</code>/<code>unregister()</code> functions, and a
+Collector SHOULD be allowed to be registered to multiple CollectorRegistrys.</p>
+
+<p>Client libraries MUST be thread safe.</p>
+
+<p>For non-OO languages such as C, client libraries should follow the spirit of
+this structure as much as is practical.</p>
+
+<h3 id="naming">Naming<a class="header-anchor" href="#naming" name="naming"></a>
+</h3>
+
+<p>Client libraries SHOULD follow function/method/class names mentioned in this
+document, keeping in mind the naming conventions of the language they’re
+working in. For example, <code>set_to_current_time()</code> is good for a method name
+Python, but <code>SetToCurrentTime()</code> is better in Go and <code>setToCurrentTime()</code> is
+the convention in Java. Where names differ for technical reasons (e.g. not
+allowing function overloading), documentation/help strings SHOULD point users
+towards the other names.</p>
+
+<p>Libraries MUST NOT offer functions/methods/classes with the same or similar
+names to ones given here, but with different semantics.</p>
+
+<h2 id="metrics">Metrics<a class="header-anchor" href="#metrics" name="metrics"></a>
+</h2>
+
+<p>The Counter, Gauge, Summary and Histogram <a href="/docs/concepts/metric_types/">metric
+types</a> are the primary interface by users.</p>
+
+<p>Counter and Gauge MUST be part of the client library. At least one of Summary
+and Histogram MUST be offered.</p>
+
+<p>These should be primarily used as file-static variables, that is, global
+variables defined in the same file as the code they’re instrumenting. The
+client library SHOULD enable this. The common use case is instrumenting a piece
+of code overall, not a piece of code in the context of one instance of an
+object. Users shouldn’t have to worry about plumbing their metrics throughout
+their code, the client library should do that for them (and if it doesn’t,
+users will write a wrapper around the library to make it "easier" - which
+rarely tends to go well).</p>
+
+<p>There MUST be a default CollectorRegistry, the standard metrics MUST by default
+implicitly register into it with no special work required by the user. There
+MUST be a way to have metrics not register to the default CollectorRegistry,
+for use in batch jobs and unittests. Custom collectors SHOULD also follow this.</p>
+
+<p>Exactly how the metrics should be created varies by language. For some (Java,
+Go) a builder approach is best, whereas for others (Python) function arguments
+are rich enough to do it in one call.</p>
+
+<p>For example in the Java Simpleclient we have:</p>
+
+<pre><code class="java">class YourClass {
+  static final Counter requests = Counter.build()
+      .name("requests_total")
+      .help("Requests.").register();
+}
+</code></pre>
+
+<p>This will register requests with the default CollectorRegistry. By calling
+<code>build()</code> rather than <code>register()</code> the metric won’t be registered (handy for
+unittests), you can also pass in a CollectorRegistry to <code>register()</code> (handy for
+batch jobs).</p>
+
+<h3 id="counter">Counter<a class="header-anchor" href="#counter" name="counter"></a>
+</h3>
+
+<p><a href="/docs/concepts/metric_types/#counter">Counter</a> is a monotonically increasing
+counter. It MUST NOT allow the value to decrease, however it MAY be reset to 0
+(such as by server restart).</p>
+
+<p>A counter MUST have the following methods:</p>
+
+<ul>
+<li>
+<code>inc()</code>: Increment the counter by 1</li>
+<li>
+<code>inc(double v)</code>: Increment the counter by the given amount. MUST check that v &gt;= 0.</li>
+</ul>
+
+<p>A counter is ENCOURAGED to have:</p>
+
+<p>A way to count exceptions throw/raised in a given piece of code, and optionally
+only certain types of exceptions. This is count_exceptions in Python.</p>
+
+<p>Counters MUST start at 0.</p>
+
+<h3 id="gauge">Gauge<a class="header-anchor" href="#gauge" name="gauge"></a>
+</h3>
+
+<p><a href="/docs/concepts/metric_types/#gauge">Gauge</a> represents a value that can go up
+and down.</p>
+
+<p>A gauge MUST have the following methods:</p>
+
+<ul>
+<li>
+<code>inc()</code>: Increment the gauge by 1</li>
+<li>
+<code>inc(double v)</code>: Increment the gauge by the given amount</li>
+<li>
+<code>dec()</code>: Decrement the gauge by 1</li>
+<li>
+<code>dec(double v)</code>: Decrement the gauge by the given amount</li>
+<li>
+<code>set(double v)</code>: Set the gauge to the given value</li>
+</ul>
+
+<p>Gauges MUST start at 0, you MAY offer a way for a given gauge to start at a
+different number.</p>
+
+<p>A gauge SHOULD have the following methods:</p>
+
+<ul>
+<li>
+<code>set_to_current_time()</code>: Set the gauge to the current unixtime in seconds.</li>
+</ul>
+
+<p>A gauge is ENCOURAGED to have:</p>
+
+<p>A way to track in-progress requests in some piece of code/function. This is
+<code>track_inprogress</code> in Python.</p>
+
+<p>A way to time a piece of code and set the gauge to its duration in seconds.
+This is useful for batch jobs. This is startTimer/setDuration in Java and the
+<code>time()</code> decorator/context manager in Python. This SHOULD match the pattern in
+Summary/Histogram (though <code>set()</code> rather than <code>observe()</code>).</p>
+
+<h3 id="summary">Summary<a class="header-anchor" href="#summary" name="summary"></a>
+</h3>
+
+<p>A <a href="/docs/concepts/metric_types/#summary">summary</a> samples observations (usually
+things like request durations) over sliding windows of time and provides
+instantaneous insight into their distributions, frequencies, and sums.</p>
+
+<p>A summary MUST NOT allow the user to set "quantile" as a label name, as this is
+used internally to designate summary quantiles. A summary is ENCOURAGED to
+offer quantiles as exports, though these can’t be aggregated and tend to be
+slow. A summary MUST allow not having quantiles, as just <code>_count</code>/<code>_sum</code> is
+quite useful and this MUST be the default.</p>
+
+<p>A summary MUST have the following methods:</p>
+
+<ul>
+<li>
+<code>observe(double v)</code>: Observe the given amount</li>
+</ul>
+
+<p>A summary SHOULD have the following methods:</p>
+
+<p>Some way to time code for users in seconds. In Python this is the <code>time()</code>
+decorator/context manager. In Java this is startTimer/observeDuration. Units
+other than seconds MUST NOT be offered (if a user wants something else, they
+can do it by hand). This should follow the same pattern as Gauge/Histogram.</p>
+
+<p>Summary <code>_count</code>/<code>_sum</code> MUST start at 0.</p>
+
+<h3 id="histogram">Histogram<a class="header-anchor" href="#histogram" name="histogram"></a>
+</h3>
+
+<p><a href="/docs/concepts/metric_types/#histogram">Histograms</a> allow aggregatable
+distributions of events, such as request latencies. This is at its core a
+counter per bucket.</p>
+
+<p>A histogram MUST NOT allow <code>le</code> as a user-set label, as <code>le</code> is used internally
+to designate buckets.</p>
+
+<p>A histogram MUST offer a way to manually choose the buckets. Ways to set
+buckets in a <code>linear(start, width, count)</code> and <code>exponential(start, factor,
+count)</code> fashion SHOULD be offered. Count MUST exclude the <code>+Inf</code> bucket.</p>
+
+<p>A histogram SHOULD have the same default buckets as other client libraries.
+Buckets MUST NOT be changeable once the metric is created.</p>
+
+<p>A histogram MUST have the following methods:</p>
+
+<ul>
+<li>
+<code>observe(double v)</code>: Observe the given amount</li>
+</ul>
+
+<p>A histogram SHOULD have the following methods:</p>
+
+<p>Some way to time code for users in seconds. In Python this is the <code>time()</code>
+decorator/context manager. In Java this is <code>startTimer</code>/<code>observeDuration</code>.
+Units other than seconds MUST NOT be offered (if a user wants something else,
+they can do it by hand). This should follow the same pattern as Gauge/Summary.</p>
+
+<p>Histogram  <code>_count</code>/<code>_sum</code> and the buckets MUST start at 0.</p>
+
+<p><strong>Further metrics considerations</strong></p>
+
+<p>Providing additional functionality in metrics beyond what’s documented above as
+makes sense for a given language is ENCOURAGED.</p>
+
+<p>If there’s a common use case you can make simpler then go for it, as long as it
+won’t encourage undesirable behaviours (such as suboptimal metric/label
+layouts, or doing computation in the client).</p>
+
+<h3 id="labels">Labels<a class="header-anchor" href="#labels" name="labels"></a>
+</h3>
+
+<p>Labels are one of the <a href="/docs/practices/instrumentation/#use-labels">most powerful
+aspects</a> of Prometheus, but
+<a href="/docs/practices/instrumentation/#do-not-overuse-labels">easily abused</a>.
+Accordingly client libraries must be very careful in how labels are offered to
+users.</p>
+
+<p>Client libraries MUST NOT under any circumstances allow users to have different
+label names for the same metric for Gauge/Counter/Summary/Histogram or any
+other Collector offered by the library.</p>
+
+<p>If your client library does validation of metrics at collect time, it MAY also
+verify this for custom Collectors.</p>
+
+<p>While labels are powerful, the majority of metrics will not have labels.
+Accordingly the API should allow for labels but not dominate it.</p>
+
+<p>A client library MUST allow for optionally specifying a list of label names at
+Gauge/Counter/Summary/Histogram creation time. A client library SHOULD support
+any number of label names. A client library MUST validate that label names meet
+the <a href="/docs/concepts/data_model/#metric-names-and-labels">documented
+requirements</a>.</p>
+
+<p>The general way to provide access to labeled dimension of a metric is via a
+<code>labels()</code> method that takes either a list of the label values or a map from
+label name to label value and returns a "Child". The usual
+<code>.inc()</code>/<code>.dec()</code>/<code>.observe()</code> etc. methods can then be called on the Child.</p>
+
+<p>The Child returned by <code>labels()</code> SHOULD be cacheable by the user, to avoid
+having to look it up again - this matters in latency-critical code.</p>
+
+<p>Metrics with labels SHOULD support a <code>remove()</code> method with the same signature
+as <code>labels()</code> that will remove a Child from the metric no longer exporting it,
+and a <code>clear()</code> method that removes all Children from the metric. These
+invalidate caching of Children.</p>
+
+<p>There SHOULD be a way to initialize a given Child with the default value,
+usually just calling <code>labels()</code>. Metrics without labels MUST always be
+initialized to avoid <a href="/docs/practices/instrumentation/#avoid-missing-metrics">problems with missing
+metrics</a>.</p>
+
+<h3 id="metric-names">Metric names<a class="header-anchor" href="#metric-names" name="metric-names"></a>
+</h3>
+
+<p>Metric names must follow the
+<a href="/docs/concepts/data_model/#metric-names-and-labels">specification</a>. As with
+label names, this MUST be met for uses of Gauge/Counter/Summary/Histogram and
+in any other Collector offered with the library.</p>
+
+<p>Many client libraries offer setting the name in three parts:
+<code>namespace_subsystem_name</code> of which only the <code>name</code> is mandatory.</p>
+
+<p>Dynamic/generated metric names or subparts of metric names MUST be discouraged,
+except when a custom Collector is proxying from other
+instrumentation/monitoring systems. Generated/dynamic metric names are a sign
+that you should be using labels instead.</p>
+
+<h3 id="metric-description-and-help">Metric description and help<a class="header-anchor" href="#metric-description-and-help" name="metric-description-and-help"></a>
+</h3>
+
+<p>Gauge/Counter/Summary/Histogram MUST require metric descriptions/help to be
+provided.</p>
+
+<p>Any custom Collectors provided with the client libraries MUST have
+descriptions/help on their metrics.</p>
+
+<p>It is suggested to make it a mandatory argument, but not to check that it’s of
+a certain length as if someone really doesn’t want to write docs we’re not
+going to convince them otherwise. Collectors offered with the library (and
+indeed everywhere we can within the ecosystem) SHOULD have good metric
+descriptions, to lead by example.</p>
+
+<h2 id="exposition">Exposition<a class="header-anchor" href="#exposition" name="exposition"></a>
+</h2>
+
+<p>Clients MUST implement one of the documented <a href="/docs/instrumenting/exposition_formats">exposition
+formats</a>.</p>
+
+<p>Clients MAY implement more than one format. There SHOULD be a human readable
+format offered.</p>
+
+<p>If in doubt, go for the text format. It doesn’t have a dependency (protobuf),
+tends to be easy to produce, is human readable and the performance benefits of
+protobuf are not that significant for most use cases.</p>
+
+<p>Reproducible order of the exposed metrics is ENCOURAGED (especially for human
+readable formats) if it can be implemented without a significant resource cost.</p>
+
+<h2 id="standard-and-runtime-collectors">Standard and runtime collectors<a class="header-anchor" href="#standard-and-runtime-collectors" name="standard-and-runtime-collectors"></a>
+</h2>
+
+<p>Client libraries SHOULD offer what they can of the Standard exports, documented
+at
+<a href="https://docs.google.com/document/d/1Q0MXWdwp1mdXCzNRak6bW5LLVylVRXhdi7_21Sg15xQ/edit">https://docs.google.com/document/d/1Q0MXWdwp1mdXCzNRak6bW5LLVylVRXhdi7_21Sg15xQ/edit</a></p>
+
+<p>In addition, client libraries are ENCOURAGED to also offer whatever makes sense
+in terms of metrics for their language’s runtime (e.g. Garbage collection
+stats).</p>
+
+<p>These SHOULD be implemented as custom Collectors, and registered by default on
+the default CollectorRegistry. There SHOULD be a way to disable these, as there
+are some very niche use cases where they get in the way.</p>
+
+<h2 id="unit-tests">Unit tests<a class="header-anchor" href="#unit-tests" name="unit-tests"></a>
+</h2>
+
+<p>Client libraries SHOULD have unit tests covering the core instrumentation
+library and exposition.</p>
+
+<p>Client libraries are ENCOURAGED to offer ways that make it easy for users to
+unit-test their use of the instrumentation code. For example, the
+<code>CollectorRegistry.get_sample_value</code> in Python.</p>
+
+<h2 id="packaging-and-dependencies">Packaging and dependencies<a class="header-anchor" href="#packaging-and-dependencies" name="packaging-and-dependencies"></a>
+</h2>
+
+<p>Ideally, a client library can be included in any application to add some
+instrumentation, without having to worry about it breaking the application.</p>
+
+<p>Accordingly, caution is advised when adding dependencies to the client library.
+For example, if a user adds a library that uses a Prometheus client that
+requires version 1.4 of protobuf but the application uses 1.2 elsewhere, what
+will happen?</p>
+
+<p>It is suggested that where this may arise, that the core instrumentation is
+separated from the bridges/exposition of metrics in a given format. For
+example, the Java simpleclient <code>simpleclient</code> module has no dependencies, and
+the <code>simpleclient_servlet</code> has the HTTP bits.</p>
+
+<h2 id="performance-considerations">Performance considerations<a class="header-anchor" href="#performance-considerations" name="performance-considerations"></a>
+</h2>
+
+<p>As client libraries must be thread-safe, some form of concurrency control is
+required and consideration must be given to performance on multi-core machines
+and applications.</p>
+
+<p>In our experience the least performant is mutexes.</p>
+
+<p>Processor atomic instructions tend to be in the middle, and generally
+acceptable.</p>
+
+<p>Approaches that avoid different CPUs mutating the same bit of RAM work best,
+such as the DoubleAdder in Java’s simpleclient. There is a memory cost though.</p>
+
+<p>As noted above, the result of <code>labels()</code> should be cacheable. The concurrent
+maps that tend to back metric with labels tend to be relatively slow.
+Special-casing metrics without labels to avoid <code>labels()</code>-like lookups can help
+a lot.</p>
+
+<p>Metrics SHOULD avoid blocking when they are being incremented/decremented/set
+etc. as it’s undesirable for the whole application to be held up while a scrape
+is ongoing.</p>
+
+<p>Having benchmarks of the main instrumentation operations, including labels, is
+ENCOURAGED.</p>
+
+<p>Resource consumption, particularly RAM, should be kept in mind when performing
+exposition. Consider reducing the memory footprint by streaming results, and
+potentially having a limit on the number of concurrent scrapes.</p>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cbd4de6510b.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
