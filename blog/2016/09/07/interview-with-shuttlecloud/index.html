@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Interview with ShuttleCloud | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbd81c8f773.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>Interview with ShuttleCloud</h1>
+    <aside>Posted at: September 7, 2016 by Brian Brazil</aside>
+    <article class="doc-content">
+      <p><em>Continuing our series of interviews with users of Prometheus, ShuttleCloud talks about how they began using Prometheus. Ignacio from ShuttleCloud also explained how <a href="https://www.youtube.com/watch?v=gMHa4Yh8avk">Prometheus Is Good for Your Small Startup</a> at PromCon 2016.</em></p>
+
+<h2 id="what-does-shuttlecloud-do?">What does ShuttleCloud do?<a class="header-anchor" href="#what-does-shuttlecloud-do" name="what-does-shuttlecloud-do"></a>
+</h2>
+
+<p>ShuttleCloud is the world’s most scalable email and contacts data importing system. We help some of the leading email and address book providers, including Google and Comcast, increase user growth and engagement by automating the switching experience through data import. </p>
+
+<p>By integrating our API into their offerings, our customers allow their users to easily migrate their email and contacts from one participating provider to another, reducing the friction users face when switching to a new provider. The 24/7 email providers supported include all major US internet service providers: Comcast, Time Warner Cable, AT&amp;T, Verizon, and more.</p>
+
+<p>By offering end users a simple path for migrating their emails (while keeping complete control over the import tool’s UI), our customers dramatically improve user activation and onboarding.</p>
+
+<p><img src="/assets/blog/2016-09-07/gmail-integration-cbeb0164c27.png" alt="ShuttleCloud's integration with Gmail">
+<strong><em>ShuttleCloud’s <a href="https://support.google.com/mail/answer/164640?hl=en">integration</a> with Google’s Gmail Platform.</em></strong> <em>Gmail has imported data for 3 million users with our API.</em></p>
+
+<p>ShuttleCloud’s technology encrypts all the data required to process an import, in addition to following the most secure standards (SSL, oAuth) to ensure the confidentiality and integrity of API requests. Our technology allows us to guarantee our platform’s high availability, with up to 99.5% uptime assurances. </p>
+
+<p><img src="/assets/blog/2016-09-07/shuttlecloud-numbers-cb34514c568.png" alt="ShuttleCloud by Numbers"></p>
+
+<h2 id="what-was-your-pre-prometheus-monitoring-experience?">What was your pre-Prometheus monitoring experience?<a class="header-anchor" href="#what-was-your-pre-prometheus-monitoring-experience" name="what-was-your-pre-prometheus-monitoring-experience"></a>
+</h2>
+
+<p>In the beginning, a proper monitoring system for our infrastructure was not one of our main priorities. We didn’t have as many projects and instances as we currently have, so we worked with other simple systems to alert us if anything was not working properly and get it under control.</p>
+
+<ul>
+<li>We had a set of automatic scripts to monitor most of the operational metrics for the machines. These were cron-based and executed, using Ansible from a centralized machine. The alerts were emails sent directly to the entire development team.</li>
+<li>We trusted Pingdom for external blackbox monitoring and checking that all our frontends were up. They provided an easy interface and alerting system in case any of our external services were not reachable.</li>
+</ul>
+
+<p>Fortunately, big customers arrived, and the SLAs started to be more demanding. Therefore, we needed something else to measure how we were performing and to ensure that we were complying with all SLAs. One of the features we required was to have accurate stats about our performance and business metrics (i.e., how many migrations finished correctly), so reporting was more on our minds than monitoring. </p>
+
+<p>We developed the following system:</p>
+
+<p><img src="/assets/blog/2016-09-07/Prometheus-System-1-cba8c7f335c.jpg" alt="Initial Shuttlecloud System"></p>
+
+<ul>
+<li><p>The source of all necessary data is a status database in a CouchDB. There, each document represents one status of an operation. This information is processed by the Status Importer and stored in a relational manner in a MySQL database.</p></li>
+<li>
+<p>A component gathers data from that database, with the information aggregated and post-processed into several views. </p>
+
+<ul>
+<li>One of the views is the email report, which we needed for reporting purposes. This is sent via email. </li>
+<li>The other view pushes data to a dashboard, where it can be easily controlled. The dashboard service we used was external. We trusted Ducksboard, not only because the dashboards were easy to set up and looked beautiful, but also because they provided automatic alerts if a threshold was reached.</li>
+</ul>
+</li>
+</ul>
+
+<p>With all that in place, it didn’t take us long to realize that we would need a proper metrics, monitoring, and alerting system as the number of projects started to increase. </p>
+
+<p>Some drawbacks of the systems we had at that time were:</p>
+
+<ul>
+<li>No centralized monitoring system. Each metric type had a different one:
+
+<ul>
+<li>System metrics → Scripts run by Ansible.</li>
+<li>Business metrics → Ducksboard and email reports.</li>
+<li>Blackbox metrics → Pingdom.</li>
+</ul>
+</li>
+<li>No standard alerting system. Each metric type had different alerts (email, push notification, and so on).</li>
+<li>Some business metrics had no alerts. These were reviewed manually.</li>
+</ul>
+
+<h2 id="why-did-you-decide-to-look-at-prometheus?">Why did you decide to look at Prometheus?<a class="header-anchor" href="#why-did-you-decide-to-look-at-prometheus" name="why-did-you-decide-to-look-at-prometheus"></a>
+</h2>
+
+<p>We analyzed several monitoring and alerting systems. We were eager to get our hands dirty and check if the a solution would succeed or fail. The system we decided to put to the test was Prometheus, for the following reasons:</p>
+
+<ul>
+<li>First of all, you don’t have to define a fixed metric system to start working with it; metrics can be added or changed in the future. This provides valuable flexibility when you don’t know all of the metrics you want to monitor yet.</li>
+<li>If you know anything about Prometheus, you know that metrics can have labels that abstract us from the fact that different time series are considered. This, together with its query language, provided even more flexibility and a powerful tool. For example, we can have the same metric defined for different environments or projects and get a specific time series or aggregate certain metrics with the appropriate labels:
+
+<ul>
+<li>
+<code>http_requests_total{job="my_super_app_1",environment="staging"}</code> - the time series corresponding to the staging environment for the app "my_super_app_1".</li>
+<li>
+<code>http_requests_total{job="my_super_app_1"}</code> - the time series for all environments for the app "my_super_app_1".</li>
+<li>
+<code>http_requests_total{environment="staging"}</code> - the time series for all staging environments for all jobs.</li>
+</ul>
+</li>
+<li>Prometheus supports a DNS service for service discovery. We happened to already  have an internal DNS service.</li>
+<li>There is no need to install any external services (unlike Sensu, for example, which needs a data-storage service like Redis and a message bus like RabbitMQ). This might not be a deal breaker, but it definitely makes the test easier to perform, deploy, and maintain.</li>
+<li>Prometheus is quite easy to install, as you only need to download an executable Go file. The Docker container also works well and it is easy to start.</li>
+</ul>
+
+<h2 id="how-do-you-use-prometheus?">How do you use Prometheus?<a class="header-anchor" href="#how-do-you-use-prometheus" name="how-do-you-use-prometheus"></a>
+</h2>
+
+<p>Initially we were only using some metrics provided out of the box by the <a href="https://github.com/prometheus/node_exporter">node_exporter</a>, including:</p>
+
+<ul>
+<li>hard drive usage.</li>
+<li>memory usage.</li>
+<li>if an instance is up or down.</li>
+</ul>
+
+<p>Our internal DNS service is integrated to be used for service discovery, so every new instance is automatically monitored.</p>
+
+<p>Some of the metrics we used, which were not provided by the node_exporter by default, were exported using the <a href="https://github.com/prometheus/node_exporter#textfile-collector">node_exporter textfile collector</a> feature. The first alerts we declared on the Prometheus Alertmanager were mainly related to the operational metrics mentioned above.</p>
+
+<p>We later developed an operation exporter that allowed us to know the status of the system almost in real time. It exposed business metrics, namely the statuses of all operations, the number of incoming migrations, the number of finished migrations, and the number of errors. We could aggregate these on the Prometheus side and let it calculate different rates. </p>
+
+<p>We decided to export and monitor the following metrics:</p>
+
+<ul>
+<li><code>operation_requests_total</code></li>
+<li><code>operation_statuses_total</code></li>
+<li><code>operation_errors_total</code></li>
+</ul>
+
+<p><img src="/assets/blog/2016-09-07/Prometheus-System-2-cbee2d089c8.jpg" alt="Shuttlecloud Prometheus System"></p>
+
+<p>We have most of our services duplicated in two Google Cloud Platform availability zones. That includes the monitoring system. It’s straightforward to have more than one operation exporter in two or more different zones, as Prometheus can aggregate the data from all of them and make one metric (i.e., the maximum of all). We currently don’t have Prometheus or the Alertmanager in HA — only a metamonitoring instance — but we are working on it.</p>
+
+<p>For external blackbox monitoring, we use the Prometheus <a href="https://github.com/prometheus/blackbox_exporter">Blackbox Exporter</a>. Apart from checking if our external frontends are up, it is especially useful for having metrics for SSL certificates’ expiration dates. It even checks the whole chain of certificates. Kudos to Robust Perception for explaining it perfectly in their <a href="https://www.robustperception.io/get-alerted-before-your-ssl-certificates-expire/">blogpost</a>.</p>
+
+<p>We set up some charts in Grafana for visual monitoring in some dashboards, and the integration with Prometheus was trivial. The query language used to define the charts is the same as in Prometheus, which simplified their creation a lot.</p>
+
+<p>We also integrated Prometheus with Pagerduty and created a schedule of people on-call for the critical alerts. For those alerts that were not considered critical, we only sent an email.</p>
+
+<h2 id="how-does-prometheus-make-things-better-for-you?">How does Prometheus make things better for you?<a class="header-anchor" href="#how-does-prometheus-make-things-better-for-you" name="how-does-prometheus-make-things-better-for-you"></a>
+</h2>
+
+<p>We can't compare Prometheus with our previous solution because we didn’t have one, but we can talk about what features of Prometheus are highlights for us:</p>
+
+<ul>
+<li>It has very few maintenance requirements.</li>
+<li>It’s efficient: one machine can handle monitoring the whole cluster.</li>
+<li>The community is friendly—both dev and users. Moreover, <a href="https://www.robustperception.io/blog/">Brian’s blog</a> is a very good resource.</li>
+<li>It has no third-party requirements; it’s just the server and the exporters. (No RabbitMQ or Redis needs to be maintained.)</li>
+<li>Deployment of Go applications is a breeze.</li>
+</ul>
+
+<h2 id="what-do-you-think-the-future-holds-for-shuttlecloud-and-prometheus?">What do you think the future holds for ShuttleCloud and Prometheus?<a class="header-anchor" href="#what-do-you-think-the-future-holds-for-shuttlecloud-and-prometheus" name="what-do-you-think-the-future-holds-for-shuttlecloud-and-prometheus"></a>
+</h2>
+
+<p>We’re very happy with Prometheus, but new exporters are always welcome (Celery or Spark, for example). </p>
+
+<p>One question that we face every time we add a new alarm is: how do we test that the alarm works as expected? It would be nice to have a way to inject fake metrics in order to raise an alarm, to test it.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Interview with Canonical | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbd81c8f773.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>Interview with Canonical</h1>
+    <aside>Posted at: November 16, 2016 by Brian Brazil</aside>
+    <article class="doc-content">
+      <p><em>Continuing our series of interviews with users of Prometheus, Canonical talks
+about how they are transitioning to Prometheus.</em></p>
+
+<h2 id="can-you-tell-us-about-yourself-and-what-canonical-does?">Can you tell us about yourself and what Canonical does?<a class="header-anchor" href="#can-you-tell-us-about-yourself-and-what-canonical-does" name="can-you-tell-us-about-yourself-and-what-canonical-does"></a>
+</h2>
+
+<p><a href="http://www.canonical.com/">Canonical</a> is probably best known as the company
+that sponsors Ubuntu Linux.  We also produce or contribute to a number of other
+open-source projects including MAAS, Juju, and OpenStack, and provide
+commercial support for these products.  Ubuntu powers the majority of OpenStack
+deployments, with 55% of production clouds and <a href="https://www.openstack.org/assets/survey/April-2016-User-Survey-Report.pdf#page=47">58% of large cloud
+deployments</a>.</p>
+
+<p>My group, BootStack, is our fully managed private cloud service.  We build and
+operate OpenStack clouds for Canonical customers.</p>
+
+<h2 id="what-was-your-pre-prometheus-monitoring-experience?">What was your pre-Prometheus monitoring experience?<a class="header-anchor" href="#what-was-your-pre-prometheus-monitoring-experience" name="what-was-your-pre-prometheus-monitoring-experience"></a>
+</h2>
+
+<p>We’d used a combination of <a href="https://www.nagios.org/">Nagios</a>,
+<a href="https://graphite.readthedocs.io/en/latest/">Graphite</a>/<a href="https://github.com/etsy/statsd">statsd</a>,
+and in-house <a href="https://www.djangoproject.com/">Django</a> apps. These did not offer
+us the level of flexibility and reporting that we need in both our internal and
+customer cloud environments.</p>
+
+<h2 id="why-did-you-decide-to-look-at-prometheus?">Why did you decide to look at Prometheus?<a class="header-anchor" href="#why-did-you-decide-to-look-at-prometheus" name="why-did-you-decide-to-look-at-prometheus"></a>
+</h2>
+
+<p>We’d evaluated a few alternatives, including
+<a href="https://github.com/influxdata/influxdb">InfluxDB</a> and extending our use of
+Graphite, but our first experiences with Prometheus proved it to have the
+combination of simplicity and power that we were looking for.  We especially
+appreciate the convenience of labels, the simple HTTP protocol, and the out of
+box <a href="https://prometheus.io/docs/alerting/rules/">timeseries alerting</a>. The
+potential with Prometheus to replace 2 different tools (alerting and trending)
+with one is particularly appealing.</p>
+
+<p>Also, several of our staff have prior experience with Borgmon from their time
+at Google which greatly added to our interest!</p>
+
+<h2 id="how-did-you-transition?">How did you transition?<a class="header-anchor" href="#how-did-you-transition" name="how-did-you-transition"></a>
+</h2>
+
+<p>We are still in the process of transitioning, we expect this will take some
+time due to the number of custom checks we currently use in our existing
+systems that will need to be re-implemented in Prometheus.  The most useful
+resource has been the <a href="https://prometheus.io/">prometheus.io</a> site documentation.</p>
+
+<p>It took us a while to choose an exporter.  We originally went with
+<a href="https://collectd.org/">collectd</a> but ran into limitations with this.  We’re
+working on writing an
+<a href="https://github.com/CanonicalLtd/prometheus-openstack-exporter">openstack-exporter</a>
+now and were a bit surprised to find there is no good, working, example how to
+write exporter from scratch.</p>
+
+<p>Some challenges we’ve run into are: No downsampling support, no long term
+storage solution (yet), and we were surprised by the default 2 week retention
+period. There's currently no tie-in with Juju, but <a href="https://launchpad.net/prometheus-registration">we’re working on it</a>!</p>
+
+<h2 id="what-improvements-have-you-seen-since-switching?">What improvements have you seen since switching?<a class="header-anchor" href="#what-improvements-have-you-seen-since-switching" name="what-improvements-have-you-seen-since-switching"></a>
+</h2>
+
+<p>Once we got the hang of exporters, we found they were very easy to write and
+have given us very useful metrics.  For example we are developing an
+openstack-exporter for our cloud environments.  We’ve also seen very quick
+cross-team adoption from our DevOps and WebOps groups and developers.  We don’t
+yet have alerting in place but expect to see a lot more to come once we get to
+this phase of the transition.</p>
+
+<h2 id="what-do-you-think-the-future-holds-for-canonical-and-prometheus?">What do you think the future holds for Canonical and Prometheus?<a class="header-anchor" href="#what-do-you-think-the-future-holds-for-canonical-and-prometheus" name="what-do-you-think-the-future-holds-for-canonical-and-prometheus"></a>
+</h2>
+
+<p>We expect Prometheus to be a significant part of our monitoring and reporting
+infrastructure, providing the metrics gathering and storage for numerous
+current and future systems. We see it potentially replacing Nagios as for
+alerting.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+

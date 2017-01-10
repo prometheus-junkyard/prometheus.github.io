@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>PromCon 2016 - It's a wrap! | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbd81c8f773.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>PromCon 2016 - It's a wrap!</h1>
+    <aside>Posted at: September 4, 2016 by Julius Volz</aside>
+    <article class="doc-content">
+      <h2 id="what-happened">What happened<a class="header-anchor" href="#what-happened" name="what-happened"></a>
+</h2>
+
+<p>Last week, eighty Prometheus users and developers from around the world came
+together for two days in Berlin for the first-ever conference about the
+Prometheus monitoring system: <a href="https://promcon.io/">PromCon 2016</a>. The goal of
+this conference was to exchange knowledge, best practices, and experience
+gained using Prometheus. We also wanted to grow the community and help people
+build professional connections around service monitoring. Here are some
+impressions from the first morning:</p>
+
+<!-- more -->
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Just landed at <a href="https://twitter.com/hashtag/promcon?src=hash">#promcon</a>. This is gonna be an exciting conference. <a href="https://t.co/2hsFaS32IK">pic.twitter.com/2hsFaS32IK</a></p>— Till Backhaus (@backhaus) <a href="https://twitter.com/backhaus/status/768705298940956672">August 25, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">The foodening is over, so let's have some talks. <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/GUGq8eLEdQ">pic.twitter.com/GUGq8eLEdQ</a></p>— Richard Hartmann (@TwitchiH) <a href="https://twitter.com/TwitchiH/status/769074566601777152">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>At PromCon, speakers from a variety of large and small companies talked about
+how they were using Prometheus or are building solutions around it. For example,
+<a href="https://www.digitalocean.com/">DigitalOcean</a> spoke about their challenges of
+using Prometheus at massive scale, while
+<a href="https://www.shuttlecloud.com/">ShuttleCloud</a> explained how it was a great fit
+for monitoring their small startup.  Our furthest-traveled speaker came all the
+way from Tokyo to present how <a href="https://linecorp.com/en/">LINE</a> is monitoring
+their systems using Prometheus. <a href="https://www.weave.works/">Weaveworks</a>
+explained how they built a scalable multi-tenant version of Prometheus.</p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">.<a href="https://twitter.com/cagedmantis">@cagedmantis</a> about how they are deploying <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a> at <a href="https://twitter.com/digitalocean">@digitalocean</a> <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/fc7yggVtyY">pic.twitter.com/fc7yggVtyY</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/769161605045161988">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">.<a href="https://twitter.com/Carretops">@Carretops</a> from <a href="https://twitter.com/ShuttleCloud">@ShuttleCloud</a> is explaining how <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a> works well for small companies <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/5ccvGY4fQy">pic.twitter.com/5ccvGY4fQy</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/768724543062024192">August 25, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Directly from Japan, <a href="https://twitter.com/wyukawa">@wyukawa</a> from <a href="https://twitter.com/LINEjp_official">@LINEjp_official</a> about Hadoop/Fluentd monitoring with <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a> <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/irJswioxMf">pic.twitter.com/irJswioxMf</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/769171613577310208">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">It's getting spooky! <a href="https://twitter.com/tom_wilkie">@tom_wilkie</a> from <a href="https://twitter.com/weaveworks">@weaveworks</a> introduces Frankenstein, a distributed Prometheus. <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/6xgvlYv6Tw">pic.twitter.com/6xgvlYv6Tw</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/768826444575309824">August 25, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>Several Prometheus core developers also talked about the the design decisions
+behind the monitoring system, presented upcoming features, or shared best
+practices. On a lighter note, two lightning talks explained the correct plural
+of Prometheus, as well as an implementation of <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway's Game of Life</a>
+in the Prometheus query language.</p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Prometheus Design and Philosophy - Why It Is the Way It Is by <a href="https://twitter.com/juliusvolz">@juliusvolz</a> <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/XrPhXasb9k">pic.twitter.com/XrPhXasb9k</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/768715959926489088">August 25, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">. <a href="https://twitter.com/fabxc">@fabxc</a>, one of our maintainer working at <a href="https://twitter.com/coreoslinux">@coreoslinux</a>, shows us the depth of alerts in <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a>  <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/Wvuc8eUpwg">pic.twitter.com/Wvuc8eUpwg</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/769138985432190976">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>To see the entire program, have a look at <a href="https://promcon.io/schedule">the schedule</a>.</p>
+
+<p>In the breaks between talks, there was a lot of fun (and food) to be had:</p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Having a blast at <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> ! <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a> <a href="https://twitter.com/google">@google</a> <a href="https://twitter.com/hashtag/monitoring?src=hash">#monitoring</a> <a href="https://twitter.com/hashtag/alerting?src=hash">#alerting</a> <a href="https://twitter.com/hashtag/ops?src=hash">#ops</a> <a href="https://twitter.com/hashtag/womenintech?src=hash">#womenintech</a> <a href="https://twitter.com/hashtag/womenwhocode?src=hash">#womenwhocode</a> <a href="https://twitter.com/hashtag/SRE?src=hash">#SRE</a> <a href="https://t.co/A5J4X6ScsO">pic.twitter.com/A5J4X6ScsO</a></p>— Vanesa (@vanesacodes) <a href="https://twitter.com/vanesacodes/status/769164579859492864">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>After wrapping up talks on the first evening, we enjoyed a warm summer night
+with food and drinks on Gendarmenmarkt, one of Berlin's nicest plazas. This
+gave people a chance to mingle even more and exchange thoughts and ideas around
+Prometheus.</p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Had a great evening event at <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a>... thanks everyone :) <a href="https://t.co/GoQtm9Q76d">pic.twitter.com/GoQtm9Q76d</a></p>— PrometheusMonitoring (@PrometheusIO) <a href="https://twitter.com/PrometheusIO/status/768908811339964417">August 25, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>Overall, we were blown away by the quality of talks, the wide diversity of use
+cases, as well as the friendly community coming together in this way and
+forming new connections!</p>
+
+<h2 id="talk-recordings">Talk recordings<a class="header-anchor" href="#talk-recordings" name="talk-recordings"></a>
+</h2>
+
+<p>At PromCon 2016, we made it a priority to record all talks professionally.
+Especially for a small conference like this, recording and sharing talks was
+important, as it dramatically increases the reach of the talks and helps
+Prometheus users and developers around the world to participate and learn.</p>
+
+<p>Today, we are pleased to announce that all talk recordings are now ready and
+publicly available. You can enjoy them <a href="https://www.youtube.com/playlist?list=PLoz-W_CUquUlCq-Q0hy53TolAhaED9vmU">in this Youtube playlist</a>!</p>
+
+<h2 id="reception">Reception<a class="header-anchor" href="#reception" name="reception"></a>
+</h2>
+
+<p>The feedback we got from speakers and attendees at PromCon 2016 was incredibly
+encouraging and positive. A lot of people loved the friendly community feeling
+of the conference, but also learned a lot from the focused talks and
+interesting conversations. Here is what some attendees had to say:</p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">I had to admit as well - one of the best tech conf I have ever attended. <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a> <a href="https://twitter.com/Percona">@Percona</a> <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/5HgKt0r9cu">pic.twitter.com/5HgKt0r9cu</a></p>— Roman Vynar (@rvynar) <a href="https://twitter.com/rvynar/status/769260722496954368">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Sad that <a href="https://twitter.com/hashtag/PromCon2016?src=hash">#PromCon2016</a> is over. Best tech conference I've been to yet!</p>— Nick Cabatoff (@NickCabatoff) <a href="https://twitter.com/NickCabatoff/status/769223981882900481">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr"><a href="https://twitter.com/PrometheusIO">@PrometheusIO</a>  I can't remember the last time I learned so much(or laughed so much) at a tech conference Thanks to all! So glad I attended!</p>— cliff-ops (@cliff_ops) <a href="https://twitter.com/cliff_ops/status/769239347828822016">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">For two days it was tangible that we already have something amazing and that many more, even greater things are still to come. <a href="https://twitter.com/hashtag/PromCon2016?src=hash">#PromCon2016</a></p>— Hynek Schlawack (@hynek) <a href="https://twitter.com/hynek/status/769245966847373312">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr"><a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> was amazing. Thanks to everybody involved <a href="https://twitter.com/PrometheusIO">@PrometheusIO</a> <a href="https://twitter.com/juliusvolz">@juliusvolz</a></p>— tex (@texds) <a href="https://twitter.com/texds/status/769213616541298688">August 26, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>Overall, we were very happy with how PromCon turned out - no event is perfect,
+but for a small community conference organized in free time, it exceeded most
+people's expectations.</p>
+
+<h2 id="thanks">Thanks<a class="header-anchor" href="#thanks" name="thanks"></a>
+</h2>
+
+<p>PromCon 2016 would not have been possible without the help of its sponsors,
+speakers, attendees, and organizers. Thanks so much to all of you! Our Diamond
+and Platinum sponsors deserve a special mention at this point, since they did
+the most to support us and made all the food, drinks, video recordings, and
+swag possible:</p>
+
+<h3>Diamond</h3>
+
+<div class="sponsor-logos">
+  <a href="https://www.robustperception.io/"><img src="/assets/blog/2016-09-02/robust_perception_logo-cb3c7005772.png"></a>
+  <a href="https://www.weave.works/"><img src="/assets/blog/2016-09-02/weave_logo-cb9a545bb7d.png"></a>
+</div>
+
+<h3>Platinum</h3>
+
+<div class="sponsor-logos">
+  <a href="https://cncf.io/"><img src="/assets/blog/2016-09-02/cncf_logo-cbf212ce4e1.png"></a>
+  <a href="https://coreos.com/"><img src="/assets/blog/2016-09-02/coreos_logo.svg"></a>
+</div>
+
+<p>We would also like to thank Google for hosting the conference at their office
+in Berlin!</p>
+
+<h2 id="outlook">Outlook<a class="header-anchor" href="#outlook" name="outlook"></a>
+</h2>
+
+<p>If PromCon 2016 went so well, when will the next one happen?</p>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en">
+<p lang="en" dir="ltr">Promcon was nice. Looking forward to next time. Bye Berlin. <a href="https://twitter.com/hashtag/promcon2016?src=hash">#promcon2016</a> <a href="https://t.co/XInN9OR3pL">pic.twitter.com/XInN9OR3pL</a></p>— Robert Jacob (@xperimental) <a href="https://twitter.com/xperimental/status/769520813385117697">August 27, 2016</a>
+</blockquote>
+
+<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>The answer is that we don't know for sure yet. This first PromCon was organized
+entirely in people's free time, with most of it handled by one person. This
+will surely have to change, especially as we also expect a next Prometheus
+conference to be much larger (even this year, the limited tickets sold out
+within seconds). In the next months, we will discuss within the community what we
+want PromCon to be, who should run it, and where it should take place. Perhaps
+there is even space for multiple Prometheus conferences around the world. We will
+report back when we know more. Stay tuned!</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+

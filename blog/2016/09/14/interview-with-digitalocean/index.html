@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Interview with DigitalOcean | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbd81c8f773.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>Interview with DigitalOcean</h1>
+    <aside>Posted at: September 14, 2016 by Brian Brazil</aside>
+    <article class="doc-content">
+      <p><em>Next in our series of interviews with users of Prometheus, DigitalOcean talks
+about how they use Prometheus. Carlos Amedee also talked about <a href="https://www.youtube.com/watch?v=ieo3lGBHcy8">the social
+aspects of the rollout</a> at PromCon
+2016.</em></p>
+
+<h2 id="can-you-tell-us-about-yourself-and-what-digitalocean-does?">Can you tell us about yourself and what DigitalOcean does?<a class="header-anchor" href="#can-you-tell-us-about-yourself-and-what-digitalocean-does" name="can-you-tell-us-about-yourself-and-what-digitalocean-does"></a>
+</h2>
+
+<p>My name is Ian Hansen and I work on the platform metrics team.
+<a href="https://www.digitalocean.com/">DigitalOcean</a> provides simple cloud computing.
+To date, we’ve created 20 million Droplets (SSD cloud servers) across 13
+regions. We also recently released a new Block Storage product.</p>
+
+<p><img src="/assets/blog/2016-09-14/DO_Logo_Horizontal_Blue-3db19536-cb89e8e1298.png" alt="DigitalOcean logo"></p>
+
+<h2 id="what-was-your-pre-prometheus-monitoring-experience?">What was your pre-Prometheus monitoring experience?<a class="header-anchor" href="#what-was-your-pre-prometheus-monitoring-experience" name="what-was-your-pre-prometheus-monitoring-experience"></a>
+</h2>
+
+<p>Before Prometheus, we were running <a href="https://graphiteapp.org/">Graphite</a> and
+<a href="http://opentsdb.net/">OpenTSDB</a>. Graphite was used for smaller-scale
+applications and OpenTSDB was used for collecting metrics from all of our
+physical servers via <a href="https://collectd.org/">Collectd</a>.
+<a href="https://www.nagios.org/">Nagios</a> would pull these databases to trigger alerts.
+We do still use Graphite but we no longer run OpenTSDB.</p>
+
+<h2 id="why-did-you-decide-to-look-at-prometheus?">Why did you decide to look at Prometheus?<a class="header-anchor" href="#why-did-you-decide-to-look-at-prometheus" name="why-did-you-decide-to-look-at-prometheus"></a>
+</h2>
+
+<p>I was frustrated with OpenTSDB because I was responsible for keeping the
+cluster online, but found it difficult to guard against metric storms.
+Sometimes a team would launch a new (very chatty) service that would impact the
+total capacity of the cluster and hurt my SLAs. </p>
+
+<p>We are able to blacklist/whitelist new metrics coming in to OpenTSDB, but
+didn’t have a great way to guard against chatty services except for
+organizational process (which was hard to change/enforce). Other teams were
+frustrated with the query language and the visualization tools available at the
+time. I was chatting with Julius Volz about push vs pull metric systems and was
+sold in wanting to try Prometheus when I saw that I would really be in control
+of my SLA when I get to determine what I’m pulling and how frequently. Plus, I
+really really liked the query language.</p>
+
+<h2 id="how-did-you-transition?">How did you transition?<a class="header-anchor" href="#how-did-you-transition" name="how-did-you-transition"></a>
+</h2>
+
+<p>We were gathering metrics via Collectd sending to OpenTSDB. Installing the
+<a href="https://github.com/prometheus/node_exporter">Node Exporter</a> in parallel with
+our already running Collectd setup allowed us to start experimenting with
+Prometheus. We also created a custom exporter to expose Droplet metrics. Soon,
+we had feature parity with our OpenTSDB service and started turning off
+Collectd and then turned off the OpenTSDB cluster.</p>
+
+<p>People really liked Prometheus and the visualization tools that came with it.
+Suddenly, my small metrics team had a backlog that we couldn’t get to fast
+enough to make people happy, and instead of providing and maintaining
+Prometheus for people’s services, we looked at creating tooling to make it as
+easy as possible for other teams to run their own Prometheus servers and to
+also run the common exporters we use at the company.</p>
+
+<p>Some teams have started using Alertmanager, but we still have a concept of
+pulling Prometheus from our existing monitoring tools.</p>
+
+<h2 id="what-improvements-have-you-seen-since-switching?">What improvements have you seen since switching?<a class="header-anchor" href="#what-improvements-have-you-seen-since-switching" name="what-improvements-have-you-seen-since-switching"></a>
+</h2>
+
+<p>We’ve improved our insights on hypervisor machines. The data we could get out
+of Collectd and Node Exporter is about the same, but it’s much easier for our
+team of golang developers to create a new custom exporter that exposes data
+specific to the services we run on each hypervisor.</p>
+
+<p>We’re exposing better application metrics. It’s easier to learn and teach how
+to create a Prometheus metric that can be aggregated correctly later. With
+Graphite it’s easy to create a metric that can’t be aggregated in a certain way
+later because the dot-separated-name wasn’t structured right.</p>
+
+<p>Creating alerts is much quicker and simpler than what we had before, plus in a
+language that is familiar. This has empowered teams to create better alerting
+for the services they know and understand because they can iterate quickly.</p>
+
+<h2 id="what-do-you-think-the-future-holds-for-digitalocean-and-prometheus?">What do you think the future holds for DigitalOcean and Prometheus?<a class="header-anchor" href="#what-do-you-think-the-future-holds-for-digitalocean-and-prometheus" name="what-do-you-think-the-future-holds-for-digitalocean-and-prometheus"></a>
+</h2>
+
+<p>We’re continuing to look at how to make collecting metrics as easy as possible
+for teams at DigitalOcean. Right now teams are running their own Prometheus
+servers for the things they care about, which allowed us to gain observability
+we otherwise wouldn’t have had as quickly. But, not every team should have to
+know how to run Prometheus. We’re looking at what we can do to make Prometheus
+as automatic as possible so that teams can just concentrate on what queries and
+alerts they want on their services and databases.</p>
+
+<p>We also created <a href="https://github.com/digitalocean/vulcan">Vulcan</a> so that we
+have long-term data storage, while retaining the Prometheus Query Language that
+we have built tooling around and trained people how to use.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+

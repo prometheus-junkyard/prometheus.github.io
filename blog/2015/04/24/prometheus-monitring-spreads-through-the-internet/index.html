@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Prometheus Monitoring Spreads through the Internet | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cbd81c8f773.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>Prometheus Monitoring Spreads through the Internet</h1>
+    <aside>Posted at: April 24, 2015 by Brian Brazil</aside>
+    <article class="doc-content">
+      <p>It has been almost three months since we publicly announced Prometheus version
+0.10.0, and we're now at version 0.13.1.</p>
+
+<p><a href="https://developers.soundcloud.com/blog/prometheus-monitoring-at-soundcloud">SoundCloud's announcement blog post</a>
+remains the best overview of the key components of Prometheus, but there has
+been a lot of other online activity around Prometheus. This post will let you
+catch up on anything you missed.</p>
+
+<p>In the future, we will use this blog to publish more articles and announcements
+to help you get the most out of Prometheus.</p>
+
+<!-- more -->
+
+<h2 id="using-prometheus">Using Prometheus<a class="header-anchor" href="#using-prometheus" name="using-prometheus"></a>
+</h2>
+
+<p>Posts on how to use Prometheus comprise the majority of online content. Here
+are the ones we're aware of with the part of the ecosystem they cover:</p>
+
+<ul>
+<li>Container Exporter: <a href="https://5pi.de/2015/01/26/monitor-docker-containers-with-prometheus/">Monitor Docker Containers with Prometheus</a>
+</li>
+<li>HAProxy: <a href="http://www.boxever.com/haproxy-monitoring-with-prometheus">HAProxy Monitoring with Prometheus</a>
+</li>
+<li>Java Client: <a href="http://www.boxever.com/easy-java-instrumentation-with-prometheus">Easy Java Instrumentation with Prometheus</a>
+</li>
+<li>Java Client and Labels: <a href="http://www.boxever.com/the-power-of-multi-dimensional-labels-in-prometheus">The Power of Multi-Dimensional Labels in Prometheus</a>
+</li>
+<li>Node Exporter: <a href="http://www.boxever.com/monitoring-your-machines-with-prometheus">Monitoring your Machines with Prometheus</a>
+</li>
+<li>JMX Exporter: <a href="http://www.boxever.com/cassandra-consoles-with-jmx-and-prometheus">Cassandra Consoles with JMX and Prometheus</a>
+</li>
+<li>Python Client and Node Exporter Textfile Collector: <a href="http://www.boxever.com/monitoring-python-batch-jobs">Monitoring Python Batch Jobs</a>
+</li>
+<li>Mesos Exporter: <a href="http://www.antonlindstrom.com/2015/02/24/monitoring-mesos-tasks-with-prometheus.html">Monitoring Mesos tasks with Prometheus</a>
+</li>
+<li>Synapse: <a href="http://matrix.org/blog/2015/04/23/monitoring-synapse-metrics-with-prometheus/">Monitoring Synapse Metrics with Prometheus</a>
+</li>
+</ul>
+
+<h2 id="articles">Articles<a class="header-anchor" href="#articles" name="articles"></a>
+</h2>
+
+<p>These articles look at how Prometheus fits into the broader picture of keeping services up and running:</p>
+
+<ul>
+<li><a href="http://www.boxever.com/prometheus-a-next-generation-monitoring-system">Prometheus: A Next-Generation Monitoring System</a></li>
+<li><a href="http://thenewstack.io/soundclouds-prometheus-monitoring-system-time-series-database-suited-containers/">SoundCloud’s Prometheus: A Monitoring System and Time Series Database Suited for Containers</a></li>
+<li><a href="http://rancher.com/docker-monitoring-continued-prometheus-and-sysdig/">Docker Monitoring Continued: Prometheus and Sysdig</a></li>
+</ul>
+
+<h2 id="philosophy">Philosophy<a class="header-anchor" href="#philosophy" name="philosophy"></a>
+</h2>
+
+<p>Monitoring isn't just about the technical details. How it affects the design of
+your systems, operations, and human factors are important too:</p>
+
+<ul>
+<li><a href="http://www.boxever.com/push-vs-pull-for-monitoring">Push vs Pull for Monitoring</a></li>
+<li><a href="http://www.slideshare.net/brianbrazil/devops-ireland-systems-monitoring-with-prometheus">Systems Monitoring with Prometheus</a></li>
+<li><a href="http://www.slideshare.net/brianbrazil/python-ireland-monitoring-your-python-with-prometheus">Monitoring your Python with Prometheus</a></li>
+</ul>
+
+<p>The comments on the <a href="https://news.ycombinator.com/item?id=8995696">Hacker News post</a> about Prometheus are also insightful.</p>
+
+<h2 id="non-english">Non-English<a class="header-anchor" href="#non-english" name="non-english"></a>
+</h2>
+
+<p>Several posts have appeared in languages beyond English:</p>
+
+<ul>
+<li>Japanese how-to about installing Prometheus on CentOS: <a href="http://y-ken.hatenablog.com/entry/how-to-install-prometheus">データ可視化アプリの新星、PrometheusをCentOSにインストールする方法</a>
+</li>
+<li>Japanese in-depth tutorial: <a href="http://pocketstudio.jp/log3/2015/02/11/what_is_prometheus_monitoring/">【入門】PrometheusでサーバやDockerコンテナのリソース監視</a>
+</li>
+<li>Japanese overview: <a href="http://wazanova.jp/items/1672">Prometheus: Go言語で書かれたモニタリングシステム</a>
+</li>
+<li>Russian podcast that mentions Prometheus: <a href="http://www.rwpod.com/posts/2015/02/02/podcast-03-04.html">RWPOD 04 выпуск 03 сезона</a>
+</li>
+</ul>
+
+<h2 id="closing">Closing<a class="header-anchor" href="#closing" name="closing"></a>
+</h2>
+
+<p>Finally, I'd like to share how to run <a href="https://5pi.de/2015/02/10/prometheus-on-raspberry-pi/">Prometheus on a Raspberry Pi</a>.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2016
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+
