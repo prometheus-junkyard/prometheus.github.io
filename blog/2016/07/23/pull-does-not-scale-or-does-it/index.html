@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Pull doesn't scale - or does it? | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb74caebabb.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>Pull doesn't scale - or does it?</h1>
+    <aside>Posted at: July 23, 2016 by Julius Volz</aside>
+    <article class="doc-content">
+      <p>Let's talk about a particularly persistent myth. Whenever there is a discussion
+about monitoring systems and Prometheus's pull-based metrics collection
+approach comes up, someone inevitably chimes in about how a pull-based approach
+just “fundamentally doesn't scale”. The given reasons are often vague or only
+apply to systems that are fundamentally different from Prometheus. In fact,
+having worked with pull-based monitoring at the largest scales, this claim runs
+counter to our own operational experience.</p>
+
+<p>We already have an FAQ entry about
+<a href="/docs/introduction/faq/#why-do-you-pull-rather-than-push?">why Prometheus chooses pull over push</a>,
+but it does not focus specifically on scaling aspects. Let's have a closer look
+at the usual misconceptions around this claim and analyze whether and how they
+would apply to Prometheus.</p>
+
+<h2 id="prometheus-is-not-nagios">Prometheus is not Nagios<a class="header-anchor" href="#prometheus-is-not-nagios" name="prometheus-is-not-nagios"></a>
+</h2>
+
+<p>When people think of a monitoring system that actively pulls, they often think
+of Nagios. Nagios has a reputation of not scaling well, in part due to spawning
+subprocesses for active checks that can run arbitrary actions on the Nagios
+host in order to determine the health of a certain host or service. This sort
+of check architecture indeed does not scale well, as the central Nagios host
+quickly gets overwhelmed. As a result, people usually configure checks to only
+be executed every couple of minutes, or they run into more serious problems.</p>
+
+<p>However, Prometheus takes a fundamentally different approach altogether.
+Instead of executing check scripts, it only collects time series data from a
+set of instrumented targets over the network. For each target, the Prometheus
+server simply fetches the current state of all metrics of that target over HTTP
+(in a highly parallel way, using goroutines) and has no other execution
+overhead that would be pull-related. This brings us to the next point:</p>
+
+<h2 id="it-doesn't-matter-who-initiates-the-connection">It doesn't matter who initiates the connection<a class="header-anchor" href="#it-doesn-t-matter-who-initiates-the-connection" name="it-doesn-t-matter-who-initiates-the-connection"></a>
+</h2>
+
+<p>For scaling purposes, it doesn't matter who initiates the TCP connection over
+which metrics are then transferred. Either way you do it, the effort for
+establishing a connection is small compared to the metrics payload and other
+required work.</p>
+
+<p>But a push-based approach could use UDP and avoid connection establishment
+altogether, you say! True, but the TCP/HTTP overhead in Prometheus is still
+negligible compared to the other work that the Prometheus server has to do to
+ingest data (especially persisting time series data on disk). To put some
+numbers behind this: a single big Prometheus server can easily store millions
+of time series, with a record of 800,000 incoming samples per second (as
+measured with real production metrics data at SoundCloud). Given a 10-seconds
+scrape interval and 700 time series per host, this allows you to monitor over
+10,000 machines from a single Prometheus server. The scaling bottleneck here
+has never been related to pulling metrics, but usually to the speed at which
+the Prometheus server can ingest the data into memory and then sustainably
+persist and expire data on disk/SSD.</p>
+
+<p>Also, although networks are pretty reliable these days, using a TCP-based pull
+approach makes sure that metrics data arrives reliably, or that the monitoring
+system at least knows immediately when the metrics transfer fails due to a
+broken network.</p>
+
+<h2 id="prometheus-is-not-an-event-based-system">Prometheus is not an event-based system<a class="header-anchor" href="#prometheus-is-not-an-event-based-system" name="prometheus-is-not-an-event-based-system"></a>
+</h2>
+
+<p>Some monitoring systems are event-based. That is, they report each individual
+event (an HTTP request, an exception, you name it) to a central monitoring
+system immediately as it happens. This central system then either aggregates
+the events into metrics (StatsD is the prime example of this) or stores events
+individually for later processing (the ELK stack is an example of that). In
+such a system, pulling would be problematic indeed: the instrumented service
+would have to buffer events between pulls, and the pulls would have to happen
+incredibly frequently in order to simulate the same “liveness” of the
+push-based approach and not overwhelm event buffers.</p>
+
+<p>However, again, Prometheus is not an event-based monitoring system. You do not
+send raw events to Prometheus, nor can it store them. Prometheus is in the
+business of collecting aggregated time series data. That means that it's only
+interested in regularly collecting the current <em>state</em> of a given set of
+metrics, not the underlying events that led to the generation of those metrics.
+For example, an instrumented service would not send a message about each HTTP
+request to Prometheus as it is handled, but would simply count up those
+requests in memory.  This can happen hundreds of thousands of times per second
+without causing any monitoring traffic. Prometheus then simply asks the service
+instance every 15 or 30 seconds (or whatever you configure) about the current
+counter value and stores that value together with the scrape timestamp as a
+sample. Other metric types, such as gauges, histograms, and summaries, are
+handled similarly. The resulting monitoring traffic is low, and the pull-based
+approach also does not create problems in this case.</p>
+
+<h2 id="but-now-my-monitoring-needs-to-know-about-my-service-instances!">But now my monitoring needs to know about my service instances!<a class="header-anchor" href="#but-now-my-monitoring-needs-to-know-about-my-service-instances" name="but-now-my-monitoring-needs-to-know-about-my-service-instances"></a>
+</h2>
+
+<p>With a pull-based approach, your monitoring system needs to know which service
+instances exist and how to connect to them. Some people are worried about the
+extra configuration this requires on the part of the monitoring system and see
+this as an operational scalability problem.</p>
+
+<p>We would argue that you cannot escape this configuration effort for
+serious monitoring setups in any case: if your monitoring system doesn't know
+what the world <em>should</em> look like and which monitored service instances
+<em>should</em> be there, how would it be able to tell when an instance just never
+reports in, is down due to an outage, or really is no longer meant to exist?
+This is only acceptable if you never care about the health of individual
+instances at all, like when you only run ephemeral workers where it is
+sufficient for a large-enough number of them to report in some result. Most
+environments are not exclusively like that.</p>
+
+<p>If the monitoring system needs to know the desired state of the world anyway,
+then a push-based approach actually requires <em>more</em> configuration in total. Not
+only does your monitoring system need to know what service instances should
+exist, but your service instances now also need to know how to reach your
+monitoring system. A pull approach not only requires less configuration,
+it also makes your monitoring setup more flexible. With pull, you can just run
+a copy of production monitoring on your laptop to experiment with it. It also
+allows you just fetch metrics with some other tool or inspect metrics endpoints
+manually. To get high availability, pull allows you to just run two identically
+configured Prometheus servers in parallel. And lastly, if you have to move the
+endpoint under which your monitoring is reachable, a pull approach does not
+require you to reconfigure all of your metrics sources.</p>
+
+<p>On a practical front, Prometheus makes it easy to configure the desired state
+of the world with its built-in support for a wide variety of service discovery
+mechanisms for cloud providers and container-scheduling systems: Consul,
+Marathon, Kubernetes, EC2, DNS-based SD, Azure, Zookeeper Serversets, and more.
+Prometheus also allows you to plug in your own custom mechanism if needed.
+In a microservice world or any multi-tiered architecture, it is also
+fundamentally an advantage if your monitoring system uses the same method to
+discover targets to monitor as your service instances use to discover their
+backends. This way you can be sure that you are monitoring the same targets
+that are serving production traffic and you have only one discovery mechanism
+to maintain.</p>
+
+<h2 id="accidentally-ddos-ing-your-monitoring">Accidentally DDoS-ing your monitoring<a class="header-anchor" href="#accidentally-ddos-ing-your-monitoring" name="accidentally-ddos-ing-your-monitoring"></a>
+</h2>
+
+<p>Whether you pull or push, any time-series database will fall over if you send
+it more samples than it can handle. However, in our experience it's slightly
+more likely for a push-based approach to accidentally bring down your
+monitoring. If the control over what metrics get ingested from which instances
+is not centralized (in your monitoring system), then you run into the danger of
+experimental or rogue jobs suddenly pushing lots of garbage data into your
+production monitoring and bringing it down.  There are still plenty of ways how
+this can happen with a pull-based approach (which only controls where to pull
+metrics from, but not the size and nature of the metrics payloads), but the
+risk is lower. More importantly, such incidents can be mitigated at a central
+point.</p>
+
+<h2 id="real-world-proof">Real-world proof<a class="header-anchor" href="#real-world-proof" name="real-world-proof"></a>
+</h2>
+
+<p>Besides the fact that Prometheus is already being used to monitor very large
+setups in the real world (like using it to <a href="http://promcon.io/talks/scaling_to_a_million_machines_with_prometheus/">monitor millions of machines at
+DigitalOcean</a>),
+there are other prominent examples of pull-based monitoring being used
+successfully in the largest possible environments. Prometheus was inspired by
+Google's Borgmon, which was (and partially still is) used within Google to
+monitor all its critical production services using a pull-based approach. Any
+scaling issues we encountered with Borgmon at Google were not due its pull
+approach either. If a pull-based approach scales to a global environment with
+many tens of datacenters and millions of machines, you can hardly say that pull
+doesn't scale.</p>
+
+<h2 id="but-there-are-other-problems-with-pull!">But there are other problems with pull!<a class="header-anchor" href="#but-there-are-other-problems-with-pull" name="but-there-are-other-problems-with-pull"></a>
+</h2>
+
+<p>There are indeed setups that are hard to monitor with a pull-based approach.
+A prominent example is when you have many endpoints scattered around the
+world which are not directly reachable due to firewalls or complicated
+networking setups, and where it's infeasible to run a Prometheus server
+directly in each of the network segments. This is not quite the environment for
+which Prometheus was built, although workarounds are often possible (<a href="/docs/practices/pushing/">via the
+Pushgateway or restructuring your setup</a>). In any
+case, these remaining concerns about pull-based monitoring are usually not
+scaling-related, but due to network operation difficulties around opening TCP
+connections.</p>
+
+<h2 id="all-good-then?">All good then?<a class="header-anchor" href="#all-good-then" name="all-good-then"></a>
+</h2>
+
+<p>This article addresses the most common scalability concerns around a pull-based
+monitoring approach. With Prometheus and other pull-based systems being used
+successfully in very large environments and the pull aspect not posing a
+bottleneck in reality, the result should be clear: the “pull doesn't scale”
+argument is not a real concern. We hope that future debates will focus on
+aspects that matter more than this red herring.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2017/09/04/promcon-2017-recap/">PromCon 2017 Recap</a></li>
+      
+        <li><a href="/blog/2017/06/21/prometheus-20-alpha3-new-rule-format/">Prometheus 2.0 Alpha.3 with New Rule Format</a></li>
+      
+        <li><a href="/blog/2017/06/14/interview-with-latelier-animation/">Interview with L’Atelier Animation</a></li>
+      
+        <li><a href="/blog/2017/05/17/interview-with-iadvize/">Interview with iAdvize</a></li>
+      
+        <li><a href="/blog/2017/04/10/promehteus-20-sneak-peak/">Sneak Peak of Prometheus 2.0</a></li>
+      
+        <li><a href="/blog/2017/04/06/interview-with-europace/">Interview with Europace</a></li>
+      
+        <li><a href="/blog/2017/02/20/interview-with-weaveworks/">Interview with Weaveworks</a></li>
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2017
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+

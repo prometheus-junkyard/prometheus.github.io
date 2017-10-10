@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Security | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb74caebabb.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav active"><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li><li class="active"><a href="/docs/operating/security/">Security</a></li><li><a href="/docs/operating/integrations/">Integrations</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li><li><a href="/docs/alerting/notifications/">Notification template reference</a></li><li><a href="/docs/alerting/notification_examples/">Notification template examples</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="security-model" class="page-header">Security Model<a class="header-anchor" href="#security-model" name="security-model"></a>
+</h1>
+<div class="toc toc-right">
+<ul><li><a href="#prometheus">Prometheus
+</a></li></ul>
+<li><a href="#alertmanager">Alertmanager
+</a></li>
+<li><a href="#pushgateway">Pushgateway
+</a></li>
+<li><a href="#exporters">Exporters
+</a></li>
+<li><a href="#client-libraries">Client Libraries
+</a></li>
+<li><a href="#authentication/authorisation/encryption">Authentication/Authorisation/Encryption
+</a></li>
+<li><a href="#secrets">Secrets
+</a></li>
+<li><a href="#denial-of-service">Denial of Service
+</a></li>
+<li><a href="#libraries">Libraries
+</a></li>
+<li><a href="#build-process">Build Process
+</a></li>
+</div>
+
+<p>Prometheus is a sophisticated system with many components and many integrations
+with other systems. It can be deployed in a variety of trusted and untrusted
+environments.</p>
+
+<p>This page describes the general security assumptions of Prometheus and the
+attack vectors that some configurations may enable.</p>
+
+<p>As with any complex systems it is not possible to guarantee that there are no
+bugs. If you find a security bug, please file it in the issue tracker of the
+relevant component.</p>
+
+<h3 id="prometheus">Prometheus<a class="header-anchor" href="#prometheus" name="prometheus"></a>
+</h3>
+
+<p>It is presumed that untrusted users have access to the Prometheus HTTP endpoint
+and logs. They have access to all time series information contained in the
+database, plus a variety of operational/debugging information.</p>
+
+<p>It is also presumed that only trusted users have the ability to change the
+command line, configuration file, rule files and other aspects of the runtime
+environment of Prometheus and other components.</p>
+
+<p>Which targets Prometheus scrapes, how often and with what other settings is
+determined entirely via the configuration file. The administrator may
+decide to use information from service discovery systems, which combined with
+relabelling may grant some of this control to anyone who can modify data in
+that service discovery system.</p>
+
+<p>Scraped targets may be run by untrusted users. It should not by default be
+possible for a target to expose data that impersonates a different target.  The
+<code>honor_labels</code> option removes this protection, as can certain relabelling
+setups.</p>
+
+<p>At present the HTTP API grants the ability to reload configuration files,
+shutdown the server, and delete time series. This will be <a href="https://github.com/prometheus/prometheus/issues/2173">changed in Prometheus
+2.0</a>.</p>
+
+<p>The remote read feature allows anyone with HTTP access to send queries to the
+remote read endpoint. If for example the PromQL queries were ending up directly
+run against a relational database, then anyone with the ability to send queries
+to Prometheus (such as via Grafana) can run arbitrary SQL against that
+database.</p>
+
+<h2 id="alertmanager">Alertmanager<a class="header-anchor" href="#alertmanager" name="alertmanager"></a>
+</h2>
+
+<p>Any user with access to the Alertmanager HTTP endpoint has access to its data.
+They can create and resolve alerts. They can create, modify and delete
+silences.</p>
+
+<p>Where notifications are sent to is determined by the configuration file. With
+certain templating setups it is possible for notifications to end up at an
+alert-defined destination. For example if notifications use an alert label as
+the destination email address, anyone who can send alerts to the Alertmanager
+can send notifications to any email address.</p>
+
+<h2 id="pushgateway">Pushgateway<a class="header-anchor" href="#pushgateway" name="pushgateway"></a>
+</h2>
+
+<p>Any user with access to the Pushgateway HTTP endpoint can create, modify and
+delete the metrics contained within. As the Pushgateway is usually scraped with
+<code>honor_labels</code> enabled, this means anyone with access to the Pushgateway can
+create any time series in Prometheus.</p>
+
+<h2 id="exporters">Exporters<a class="header-anchor" href="#exporters" name="exporters"></a>
+</h2>
+
+<p>Exporters generally only talk to one configured instance with a preset set of
+commands/requests, which cannot be expanded via their HTTP endpoint.</p>
+
+<p>There are also exporters such as the SNMP and Blackbox exporters that take
+their targets from URL parameters. Thus anyone with HTTP access to these
+exporters can make them send requests to arbitrary endpoints. As they also
+support client-side authentication, this could lead to a leak of secrets such
+as HTTP Basic Auth passwords or SNMP community strings. Challenge-response
+authentication mechanisms such as TLS are not affected by this.</p>
+
+<h2 id="client-libraries">Client Libraries<a class="header-anchor" href="#client-libraries" name="client-libraries"></a>
+</h2>
+
+<p>Client libraries are intended to be included in users' applications.</p>
+
+<p>If using a client-library-provided HTTP handler, it should not be possible for
+malicious requests that reach that handler to cause issues beyond those
+resulting from additional load and failed scrapes.</p>
+
+<h2 id="authentication/authorisation/encryption">Authentication/Authorisation/Encryption<a class="header-anchor" href="#authentication-authorisation-encryption" name="authentication-authorisation-encryption"></a>
+</h2>
+
+<p>Prometheus and its components do not provide any server-side
+authentication, authorisation or encryption. If you require this, it is
+recommended to use a reverse proxy.</p>
+
+<p>Various Prometheus components support client-side authentication and
+encryption. If TLS client support is offered, there is often also an option
+called <code>insecure_skip_verify</code> which skips SSL verification.</p>
+
+<h2 id="secrets">Secrets<a class="header-anchor" href="#secrets" name="secrets"></a>
+</h2>
+
+<p>Non-secret information or fields may be available via the HTTP API and/or logs.</p>
+
+<p>In Prometheus, metadata retrieved from service discovery is not considered
+secret. Throughout the Prometheus system, metrics are not considered secret.</p>
+
+<p>Fields containing secrets in configuration files (marked explicitly as such in
+the documentation) will not be exposed in logs or via the HTTP API. Secrets
+should not be placed in other configuration fields, as it is common for
+components to expose their configuration over their HTTP endpoint.</p>
+
+<p>Secrets from other sources used by dependencies (e.g. the <code>AWS_SECRET_KEY</code>
+environment variable as used by EC2 service discovery) may end up exposed due to
+code outside of our control or due to functionality that happens to expose
+wherever it is stored.</p>
+
+<h2 id="denial-of-service">Denial of Service<a class="header-anchor" href="#denial-of-service" name="denial-of-service"></a>
+</h2>
+
+<p>There are some mitigations in place for excess load or expensive queries.
+However, if too many or too expensive queries/metrics are provided components
+will fall over. It is more likely that a component will be accidentally taken
+out by a trusted user than by malicious action.</p>
+
+<p>It is the responsibility of the user to ensure they provide components with
+sufficient resources including CPU, RAM, disk space, IOPS, file descriptors,
+and bandwidth.</p>
+
+<p>It is recommended to monitor all components for failure, and to have them
+automatically restart on failure.</p>
+
+<h2 id="libraries">Libraries<a class="header-anchor" href="#libraries" name="libraries"></a>
+</h2>
+
+<p>This document considers vanilla binaries built from the stock source code.
+Information presented here does not apply if you modify Prometheus source code,
+or use Prometheus internals (beyond the official client library APIs) in your
+own code.</p>
+
+<h2 id="build-process">Build Process<a class="header-anchor" href="#build-process" name="build-process"></a>
+</h2>
+
+<p>The build pipeline for Prometheus runs on third-party providers to which many
+members of the Prometheus development team and the staff of those providers
+have access. If you are concerned about the exact provenance of your binaries,
+it is recommended to build them yourself rather than relying on the
+pre-built binaries provided by the project.</p>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2017
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

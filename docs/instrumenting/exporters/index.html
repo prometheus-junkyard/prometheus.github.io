@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Exporters and integrations | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb74caebabb.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav active"><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li class="active"><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li><li><a href="/docs/operating/security/">Security</a></li><li><a href="/docs/operating/integrations/">Integrations</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li><li><a href="/docs/alerting/notifications/">Notification template reference</a></li><li><a href="/docs/alerting/notification_examples/">Notification template examples</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="exporters-and-integrations" class="page-header">Exporters and integrations<a class="header-anchor" href="#exporters-and-integrations" name="exporters-and-integrations"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#third-party-exporters">Third-party exporters
+</a></li>
+<ul>
+<li><a href="#databases">Databases
+</a></li>
+<li><a href="#hardware-related">Hardware related
+</a></li>
+<li><a href="#messaging-systems">Messaging systems
+</a></li>
+<li><a href="#storage">Storage
+</a></li>
+<li><a href="#http">HTTP
+</a></li>
+<li><a href="#apis">APIs
+</a></li>
+<li><a href="#logging">Logging
+</a></li>
+<li><a href="#other-monitoring-systems">Other monitoring systems
+</a></li>
+<li><a href="#miscellaneous">Miscellaneous
+</a></li>
+</ul>
+<li><a href="#software-exposing-prometheus-metrics">Software exposing Prometheus metrics
+</a></li>
+<li><a href="#other-third-party-utilities">Other third-party utilities
+</a></li>
+</ul></div>
+
+<p>There are a number of libraries and servers which help in exporting existing
+metrics from third-party systems as Prometheus metrics. This is useful for
+cases where it is not feasible to instrument a given system with Prometheus
+metrics directly (for example, HAProxy or Linux system stats).</p>
+
+<h2 id="third-party-exporters">Third-party exporters<a class="header-anchor" href="#third-party-exporters" name="third-party-exporters"></a>
+</h2>
+
+<p>Some of these exporters are maintained as part of the official <a href="https://github.com/prometheus">Prometheus GitHub organization</a>,
+those are marked as <em>official</em>, others are externally contributed and maintained.</p>
+
+<p>We encourage the creation of more exporters but, cannot vet all of them for
+<a href="/docs/instrumenting/writing_exporters/">best practices</a>.
+Commonly, those exporters are hosted outside of the Prometheus GitHub
+organization.</p>
+
+<p>The <a href="https://github.com/prometheus/prometheus/wiki/Default-port-allocations">exporter default
+port</a>
+wiki page has become another catalog of exporters, and may include exporters
+not listed here due to overlapping functionality or still being in development.</p>
+
+<p>The <a href="https://github.com/prometheus/jmx_exporter">JMX exporter</a> can export from a
+wide variety of JVM-based applications, for example <a href="http://kafka.apache.org/">Kafka</a> and
+<a href="http://cassandra.apache.org/">Cassandra</a>.</p>
+
+<h3 id="databases">Databases<a class="header-anchor" href="#databases" name="databases"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/alicebob/asprom">Aerospike exporter</a></li>
+<li><a href="https://github.com/f1yegor/clickhouse_exporter">ClickHouse exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/consul_exporter">Consul exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/gesellix/couchdb-exporter">CouchDB exporter</a></li>
+<li><a href="https://github.com/justwatchcom/elasticsearch_exporter">ElasticSearch exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/memcached_exporter">Memcached exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/dcu/mongodb_exporter">MongoDB exporter</a></li>
+<li><a href="https://github.com/awaragi/prometheus-mssql-exporter">MSSQL server exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/mysqld_exporter">MySQL server exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/cloudflare/opentsdb_exporter">OpenTSDB Exporter</a></li>
+<li><a href="http://git.cbaines.net/prometheus-pgbouncer-exporter/about">PgBouncer exporter</a></li>
+<li><a href="https://github.com/wrouesnel/postgres_exporter">PostgreSQL exporter</a></li>
+<li><a href="https://github.com/percona/proxysql_exporter">ProxySQL exporter</a></li>
+<li><a href="https://github.com/oliver006/redis_exporter">Redis exporter</a></li>
+<li><a href="https://github.com/oliver006/rethinkdb_exporter">RethinkDB exporter</a></li>
+<li><a href="https://github.com/chop-dbhi/prometheus-sql">SQL query result set metrics exporter</a></li>
+<li><a href="https://github.com/tarantool/prometheus">Tarantool metric library</a></li>
+</ul>
+
+<h3 id="hardware-related">Hardware related<a class="header-anchor" href="#hardware-related" name="hardware-related"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/mdlayher/apcupsd_exporter">apcupsd exporter</a></li>
+<li><a href="https://github.com/roman-vynar/edison_exporter">IoT Edison exporter</a></li>
+<li><a href="https://github.com/lovoo/ipmi_exporter">IPMI exporter</a></li>
+<li><a href="https://github.com/RichiH/knxd_exporter">knxd exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/node_exporter">Node/system metrics exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/mdlayher/unifi_exporter">Ubiquiti UniFi exporter</a></li>
+</ul>
+
+<h3 id="messaging-systems">Messaging systems<a class="header-anchor" href="#messaging-systems" name="messaging-systems"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/kawamuray/prometheus-kafka-consumer-group-exporter">Kafka consumer group exporter</a></li>
+<li><a href="https://github.com/cloudflare/kafka_zookeeper_exporter">Kafka ZooKeeper exporter</a></li>
+<li><a href="https://github.com/nats-io/prometheus-nats-exporter">NATS exporter</a></li>
+<li><a href="https://github.com/lovoo/nsq_exporter">NSQ exporter</a></li>
+<li><a href="https://github.com/kbudde/rabbitmq_exporter">RabbitMQ exporter</a></li>
+<li><a href="https://github.com/deadtrickster/prometheus_rabbitmq_exporter">RabbitMQ Management Plugin exporter</a></li>
+<li><a href="https://github.com/vynca/mirth_exporter">Mirth Connect exporter</a></li>
+<li><a href="https://github.com/inovex/mqtt_blackbox_exporter">MQTT blackbox exporter</a></li>
+</ul>
+
+<h3 id="storage">Storage<a class="header-anchor" href="#storage" name="storage"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/digitalocean/ceph_exporter">Ceph exporter</a></li>
+<li><a href="https://github.com/ofesseler/gluster_exporter">Gluster exporter</a></li>
+<li><a href="https://github.com/marcelmay/hadoop-hdfs-fsimage-exporter">Hadoop HDFS FSImage exporter</a></li>
+<li><a href="https://github.com/HewlettPackard/lustre_exporter">Lustre exporter</a></li>
+<li><a href="https://github.com/syepes/sio2prom">ScaleIO exporter</a></li>
+</ul>
+
+<h3 id="http">HTTP<a class="header-anchor" href="#http" name="http"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/Lusitaniae/apache_exporter">Apache exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/haproxy_exporter">HAProxy exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/knyar/nginx-lua-prometheus">Nginx metric library</a></li>
+<li><a href="https://github.com/hnlq715/nginx-vts-exporter">Nginx VTS exporter</a></li>
+<li><a href="https://github.com/stuartnelson3/passenger_exporter">Passenger exporter</a></li>
+<li><a href="https://github.com/igzivkov/tinyproxy_exporter">Tinyproxy exporter</a></li>
+<li><a href="https://github.com/jonnenauha/prometheus_varnish_exporter">Varnish exporter</a></li>
+<li><a href="https://github.com/mattbostock/webdriver_exporter">WebDriver exporter</a></li>
+</ul>
+
+<h3 id="apis">APIs<a class="header-anchor" href="#apis" name="apis"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/slok/ecs-exporter">AWS ECS exporter</a></li>
+<li><a href="https://github.com/Jimdo/aws-health-exporter">AWS Health exporter</a></li>
+<li><a href="https://github.com/jmal98/sqs_exporter">AWS SQS exporter</a></li>
+<li><a href="https://github.com/wehkamp/docker-prometheus-cloudflare-exporter">Cloudflare exporter</a></li>
+<li><a href="https://github.com/metalmatze/digitalocean_exporter">DigitalOcean exporter</a></li>
+<li><a href="https://github.com/infinityworksltd/docker-cloud-exporter">Docker Cloud exporter</a></li>
+<li><a href="https://github.com/infinityworksltd/docker-hub-exporter">Docker Hub exporter</a></li>
+<li><a href="https://github.com/infinityworksltd/github-exporter">GitHub exporter</a></li>
+<li><a href="https://github.com/fcgravalos/instaclustr_exporter">InstaClustr exporter</a></li>
+<li><a href="https://github.com/Jimdo/observatory-exporter">Mozilla Observatory exporter</a></li>
+<li><a href="https://github.com/RichiH/openweathermap_exporter">OpenWeatherMap exporter</a></li>
+<li><a href="https://github.com/foomo/pagespeed_exporter">Pagespeed exporter</a></li>
+<li><a href="https://github.com/infinityworksltd/prometheus-rancher-exporter">Rancher exporter</a></li>
+<li><a href="https://github.com/nlamirault/speedtest_exporter">Speedtest exporter</a></li>
+</ul>
+
+<h3 id="logging">Logging<a class="header-anchor" href="#logging" name="logging"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/google/mtail">Google's mtail log data extractor</a></li>
+<li><a href="https://github.com/fstab/grok_exporter">Grok exporter</a></li>
+</ul>
+
+<h3 id="other-monitoring-systems">Other monitoring systems<a class="header-anchor" href="#other-monitoring-systems" name="other-monitoring-systems"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/ExpressenAB/cloudmonitor_exporter">Akamai Cloudmonitor exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/cloudwatch_exporter">AWS CloudWatch exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/cloudfoundry-community/firehose_exporter">Cloud Foundry Firehose exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/collectd_exporter">Collectd exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/frodenas/stackdriver_exporter">Google Stackdriver exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/graphite_exporter">Graphite exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/docker-infra/heka_exporter">Heka dashboard exporter</a></li>
+<li><a href="https://github.com/imgix/heka_exporter">Heka exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/influxdb_exporter">InfluxDB exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/fschlag/javamelody-prometheus-exporter">JavaMelody exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/jmx_exporter">JMX exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/pvdh/munin_exporter">Munin exporter</a></li>
+<li><a href="https://github.com/Griesbacher/Iapetos">Nagios / Naemon exporter</a></li>
+<li><a href="https://github.com/jfindley/newrelic_exporter">New Relic exporter</a></li>
+<li><a href="https://github.com/giantswarm/prometheus-pingdom-exporter">Pingdom exporter</a></li>
+<li><a href="https://github.com/tgulacsi/prometheus_scollector">scollector exporter</a></li>
+<li><a href="https://github.com/reachlin/sensu_exporter">Sensu exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/snmp_exporter">SNMP exporter</a> (<strong>official</strong>)</li>
+<li>
+<a href="https://github.com/prometheus/statsd_exporter">StatsD exporter</a> (<strong>official</strong>)</li>
+</ul>
+
+<h3 id="miscellaneous">Miscellaneous<a class="header-anchor" href="#miscellaneous" name="miscellaneous"></a>
+</h3>
+
+<ul>
+<li><a href="https://github.com/ExpressenAB/bigip_exporter">BIG-IP exporter</a></li>
+<li><a href="https://github.com/digitalocean/bind_exporter">BIND exporter</a></li>
+<li>
+<a href="https://github.com/prometheus/blackbox_exporter">Blackbox exporter</a> (<strong>official</strong>)</li>
+<li><a href="https://github.com/cloudfoundry-community/bosh_exporter">BOSH exporter</a></li>
+<li><a href="https://github.com/google/cadvisor">cAdvisor</a></li>
+<li><a href="https://github.com/kumina/dovecot_exporter">Dovecot exporter</a></li>
+<li><a href="https://github.com/lovoo/jenkins_exporter">Jenkins exporter</a></li>
+<li><a href="https://github.com/giantswarm/prometheus-kemp-exporter">Kemp LoadBalancer exporter</a></li>
+<li><a href="https://atmospherejs.com/sevki/prometheus-exporter">Meteor JS web framework exporter</a></li>
+<li><a href="https://github.com/Baughn/PrometheusIntegration">Minecraft exporter module</a></li>
+<li><a href="https://github.com/bakins/php-fpm-exporter">PHP-FPM exporter</a></li>
+<li><a href="https://github.com/ledgr/powerdns_exporter">PowerDNS exporter</a></li>
+<li><a href="https://github.com/ncabatoff/process-exporter">Process exporter</a></li>
+<li><a href="https://github.com/mdlayher/rtorrent_exporter">rTorrent exporter</a></li>
+<li><a href="https://github.com/adhocteam/script_exporter">Script exporter</a></li>
+<li><a href="https://github.com/cloudfoundry-community/shield_exporter">Shield exporter</a></li>
+<li><a href="https://github.com/cherti/mailexporter">SMTP/Maildir MDA blackbox prober</a></li>
+<li><a href="https://github.com/metalmatze/transmission-exporter">Transmission exporter</a></li>
+<li><a href="https://github.com/kumina/unbound_exporter">Unbound exporter</a></li>
+<li><a href="https://github.com/lovoo/xenstats_exporter">Xen exporter</a></li>
+</ul>
+
+<p>When implementing a new Prometheus exporter, please follow the
+<a href="/docs/instrumenting/writing_exporters">guidelines on writing exporters</a>
+Please also consider consulting the <a href="https://groups.google.com/forum/#!forum/prometheus-developers">development mailing
+list</a>.  We are
+happy to give advice on how to make your exporter as useful and consistent as
+possible.</p>
+
+<h2 id="software-exposing-prometheus-metrics">Software exposing Prometheus metrics<a class="header-anchor" href="#software-exposing-prometheus-metrics" name="software-exposing-prometheus-metrics"></a>
+</h2>
+
+<p>Some third-party software exposes metrics in the Prometheus format, so no
+separate exporters are needed:</p>
+
+<ul>
+<li><a href="http://docs.ceph.com/docs/master/mgr/prometheus/">Ceph</a></li>
+<li><a href="https://collectd.org/wiki/index.php/Plugin:Write_Prometheus">Collectd</a></li>
+<li>
+<a href="https://github.com/rollerderby/scoreboard">CRG Roller Derby Scoreboard</a> (<strong>direct</strong>)</li>
+<li>
+<a href="https://github.com/youtube/doorman">Doorman</a> (<strong>direct</strong>)</li>
+<li>
+<a href="https://github.com/coreos/etcd">Etcd</a> (<strong>direct</strong>)</li>
+<li><a href="https://www.freebsd.org/cgi/man.cgi?query=prometheus_sysctl_exporter&amp;apropos=0&amp;sektion=8&amp;manpath=FreeBSD+12-current&amp;arch=default&amp;format=html">FreeBSD Kernel</a></li>
+<li>
+<a href="https://github.com/kubernetes/kubernetes">Kubernetes</a> (<strong>direct</strong>)</li>
+<li><a href="https://github.com/BuoyantIO/linkerd">Linkerd</a></li>
+<li><a href="https://github.com/firehol/netdata">Netdata</a></li>
+<li><a href="https://pretix.eu/">Pretix</a></li>
+<li>
+<a href="https://www.quobyte.com/">Quobyte</a> (<strong>direct</strong>)</li>
+<li><a href="http://robustirc.net/">RobustIRC</a></li>
+<li>
+<a href="https://github.com/skynetservices/skydns">SkyDNS</a> (<strong>direct</strong>)</li>
+<li><a href="https://github.com/influxdata/telegraf/tree/master/plugins/outputs/prometheus_client">Telegraf</a></li>
+<li><a href="https://github.com/weaveworks/flux">Weave Flux</a></li>
+</ul>
+
+<p>The software marked <em>direct</em> is also directly instrumented with a Prometheus client library.</p>
+
+<h2 id="other-third-party-utilities">Other third-party utilities<a class="header-anchor" href="#other-third-party-utilities" name="other-third-party-utilities"></a>
+</h2>
+
+<p>This section lists libraries and other utilities that help you instrument code
+in a certain language. They are not Prometheus client libraries themselves but
+make use of one of the normal Prometheus client libraries under the hood. As
+for all independently maintained software, we cannot vet all of them for best
+practices.</p>
+
+<ul>
+<li>Clojure: <a href="https://github.com/soundcloud/prometheus-clj">prometheus-clj</a>
+</li>
+<li>Go: <a href="https://github.com/armon/go-metrics">go-metrics instrumentation library</a>
+</li>
+<li>Go: <a href="https://github.com/peterbourgon/gokit">gokit</a>
+</li>
+<li>Go: <a href="https://github.com/mdlayher/prombolt">prombolt</a>
+</li>
+<li>Java/JVM: <a href="https://github.com/ahus1/prometheus-hystrix">Hystrix metrics publisher</a>
+</li>
+<li>Python-Django: <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>
+</li>
+</ul>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2017
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
