@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>Comparison to alternatives | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb74caebabb.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav active"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li class="active"><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li><li><a href="/docs/operating/security/">Security</a></li><li><a href="/docs/operating/integrations/">Integrations</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li><li><a href="/docs/alerting/notifications/">Notification template reference</a></li><li><a href="/docs/alerting/notification_examples/">Notification template examples</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="comparison-to-alternatives" class="page-header">Comparison to alternatives<a class="header-anchor" href="#comparison-to-alternatives" name="comparison-to-alternatives"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#prometheus-vs.-graphite">Prometheus vs. Graphite
+</a></li>
+<ul>
+<li><a href="#scope">Scope
+</a></li>
+<li><a href="#data-model">Data model
+</a></li>
+<li><a href="#storage">Storage
+</a></li>
+<li><a href="#summary">Summary
+</a></li>
+</ul>
+<li><a href="#prometheus-vs.-influxdb">Prometheus vs. InfluxDB
+</a></li>
+<ul>
+<li><a href="#scope">Scope
+</a></li>
+<li><a href="#data-model-/-storage">Data model / storage
+</a></li>
+<li><a href="#architecture">Architecture
+</a></li>
+<li><a href="#summary">Summary
+</a></li>
+</ul>
+<li><a href="#prometheus-vs.-opentsdb">Prometheus vs. OpenTSDB
+</a></li>
+<ul>
+<li><a href="#scope">Scope
+</a></li>
+<li><a href="#data-model">Data model
+</a></li>
+<li><a href="#storage">Storage
+</a></li>
+<li><a href="#summary">Summary
+</a></li>
+</ul>
+<li><a href="#prometheus-vs.-nagios">Prometheus vs. Nagios
+</a></li>
+<ul>
+<li><a href="#scope">Scope
+</a></li>
+<li><a href="#data-model">Data model
+</a></li>
+<li><a href="#storage">Storage
+</a></li>
+<li><a href="#architecture">Architecture
+</a></li>
+<li><a href="#summary">Summary
+</a></li>
+</ul>
+<li><a href="#prometheus-vs.-sensu">Prometheus vs. Sensu
+</a></li>
+<ul>
+<li><a href="#scope">Scope
+</a></li>
+<li><a href="#data-model">Data model
+</a></li>
+<li><a href="#storage">Storage
+</a></li>
+<li><a href="#architecture">Architecture
+</a></li>
+<li><a href="#summary">Summary
+</a></li>
+</ul>
+</ul></div>
+
+<h2 id="prometheus-vs.-graphite">Prometheus vs. Graphite<a class="header-anchor" href="#prometheus-vs-graphite" name="prometheus-vs-graphite"></a>
+</h2>
+
+<h3 id="scope">Scope<a class="header-anchor" href="#scope" name="scope"></a>
+</h3>
+
+<p><a href="http://graphite.readthedocs.org/en/latest/">Graphite</a> focuses on being a
+passive time series database with a query language and graphing features. Any
+other concerns are addressed by external components.</p>
+
+<p>Prometheus is a full monitoring and trending system that includes built-in and
+active scraping, storing, querying, graphing, and alerting based on time series
+data. It has knowledge about what the world should look like (which endpoints
+should exist, what time series patterns mean trouble, etc.), and actively tries
+to find faults.</p>
+
+<h3 id="data-model">Data model<a class="header-anchor" href="#data-model" name="data-model"></a>
+</h3>
+
+<p>Graphite stores numeric samples for named time series, much like Prometheus
+does. However, Prometheus's metadata model is richer: while Graphite metric
+names consist of dot-separated components which implicitly encode dimensions,
+Prometheus encodes dimensions explicitly as key-value pairs, called labels, attached
+to a metric name. This allows easy filtering, grouping, and matching by these
+labels via the query language.</p>
+
+<p>Further, especially when Graphite is used in combination with
+<a href="https://github.com/etsy/statsd/">StatsD</a>, it is common to store only
+aggregated data over all monitored instances, rather than preserving the
+instance as a dimension and being able to drill down into individual
+problematic instances.</p>
+
+<p>For example, storing the number of HTTP requests to API servers with the
+response code <code>500</code> and the method <code>POST</code> to the <code>/tracks</code> endpoint would
+commonly be encoded like this in Graphite/StatsD:</p>
+
+<pre><code>stats.api-server.tracks.post.500 -&gt; 93
+</code></pre>
+
+<p>In Prometheus the same data could be encoded like this (assuming three api-server instances):</p>
+
+<pre><code>api_server_http_requests_total{method="POST",handler="/tracks",status="500",instance="&lt;sample1&gt;"} -&gt; 34
+api_server_http_requests_total{method="POST",handler="/tracks",status="500",instance="&lt;sample2&gt;"} -&gt; 28
+api_server_http_requests_total{method="POST",handler="/tracks",status="500",instance="&lt;sample3&gt;"} -&gt; 31
+</code></pre>
+
+<h3 id="storage">Storage<a class="header-anchor" href="#storage" name="storage"></a>
+</h3>
+
+<p>Graphite stores time series data on local disk in the
+<a href="http://graphite.readthedocs.org/en/latest/whisper.html">Whisper</a> format, an
+RRD-style database that expects samples to arrive at regular intervals. Every
+time series is stored in a separate file, and new samples overwrite old ones
+after a certain amount of time.</p>
+
+<p>Prometheus also creates one local file per time series, but allows storing
+samples at arbitrary intervals as scrapes or rule evaluations occur. Since new
+samples are simply appended, old data may be kept arbitrarily long. Prometheus
+also works well for many short-lived, frequently changing sets of time series.</p>
+
+<h3 id="summary">Summary<a class="header-anchor" href="#summary" name="summary"></a>
+</h3>
+
+<p>Prometheus offers a richer data model and query language, in addition to being
+easier to run and integrate into your environment. If you want a clustered
+solution that can hold historical data long term, Graphite may be a better
+choice.</p>
+
+<h2 id="prometheus-vs.-influxdb">Prometheus vs. InfluxDB<a class="header-anchor" href="#prometheus-vs-influxdb" name="prometheus-vs-influxdb"></a>
+</h2>
+
+<p><a href="https://influxdata.com/">InfluxDB</a> is an open-source time series database,
+with a commercial option for scaling and clustering. The InfluxDB project was
+released almost a year after Prometheus development began, so we were unable to
+consider it as an alternative at the time. Still, there are significant
+differences between Prometheus and InfluxDB, and both systems are geared
+towards slightly different use cases.</p>
+
+<h3 id="scope">Scope<a class="header-anchor" href="#scope-0" name="scope-0"></a>
+</h3>
+
+<p>For a fair comparison, we must also consider
+<a href="https://github.com/influxdata/kapacitor">Kapacitor</a> together with InfluxDB, as
+in combination they address the same problem space as Prometheus and the
+Alertmanager.</p>
+
+<p>The same scope differences as in the case of
+<a href="#prometheus-vs-graphite">Graphite</a> apply here for InfluxDB itself. In addition
+InfluxDB offers continuous queries, which are equivalent to Prometheus
+recording rules.</p>
+
+<p>Kapacitor’s scope is a combination of Prometheus recording rules, alerting
+rules, and the Alertmanager's notification functionality. Prometheus offers <a href="https://www.robustperception.io/translating-between-monitoring-languages/">a
+more powerful query language for graphing and
+alerting</a>.
+The Prometheus Alertmanager additionally offers grouping, deduplication and
+silencing functionality.</p>
+
+<h3 id="data-model-/-storage">Data model / storage<a class="header-anchor" href="#data-model-storage" name="data-model-storage"></a>
+</h3>
+
+<p>Like Prometheus, the InfluxDB data model has key-value pairs as labels, which
+are called tags. In addition, InfluxDB has a second level of labels called
+fields, which are more limited in use. InfluxDB supports timestamps with up to
+nanosecond resolution, and float64, int64, bool, and string data types.
+Prometheus, by contrast, supports the float64 data type with limited support for
+strings, and millisecond resolution timestamps.</p>
+
+<p>InfluxDB uses a variant of a <a href="https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/">log-structured merge tree for storage with a write ahead log</a>,
+sharded by time. This is much more suitable to event logging than Prometheus's
+append-only file per time series approach.</p>
+
+<p><a href="https://blog.raintank.io/logs-and-metrics-and-graphs-oh-my/">Logs and Metrics and Graphs, Oh My!</a>
+describes the differences between event logging and metrics recording.</p>
+
+<h3 id="architecture">Architecture<a class="header-anchor" href="#architecture" name="architecture"></a>
+</h3>
+
+<p>Prometheus servers run independently of each other and only rely on their local
+storage for their core functionality: scraping, rule processing, and alerting.
+The open source version of InfluxDB is similar.</p>
+
+<p>The commercial InfluxDB offering is, by design, a distributed storage cluster
+with storage and queries being handled by many nodes at once.</p>
+
+<p>This means that the commercial InfluxDB will be easier to scale horizontally,
+but it also means that you have to manage the complexity of a distributed
+storage system from the beginning. Prometheus will be simpler to run, but at
+some point you will need to shard servers explicitly along scalability
+boundaries like products, services, datacenters, or similar aspects.
+Independent servers (which can be run redundantly in parallel) may also give
+you better reliability and failure isolation.</p>
+
+<p>Kapacitor currently has no <a href="https://github.com/influxdata/kapacitor/issues/277">built-in distributed/redundant
+options</a> for rules,
+alerting, or notifications. Prometheus and the Alertmanager by contrast offer a
+redundant option via running redundant replicas of Prometheus and using the
+Alertmanager's <a href="https://github.com/prometheus/alertmanager#high-availability">High
+Availability</a>
+mode. In addition, Kapacitor can be scaled via manual sharding by the user,
+similar to Prometheus itself.</p>
+
+<h3 id="summary">Summary<a class="header-anchor" href="#summary-0" name="summary-0"></a>
+</h3>
+
+<p>There are many similarities between the systems. Both have labels (called tags
+in InfluxDB) to efficiently support multi-dimensional metrics. Both use
+basically the same data compression algorithms. Both have extensive
+integrations, including with each other. Both have hooks allowing you to extend
+them further, such as analyzing data in statistical tools or performing
+automated actions.</p>
+
+<p>Where InfluxDB is better:</p>
+
+<ul>
+<li>If you're doing event logging.</li>
+<li>Commercial option offers clustering for InfluxDB, which is also better for long term data storage.</li>
+<li>Eventually consistent view of data between replicas.</li>
+</ul>
+
+<p>Where Prometheus is better:</p>
+
+<ul>
+<li>If you're primarily doing metrics.</li>
+<li>More powerful query language, alerting, and notification functionality.</li>
+<li>Higher availability and uptime for graphing and alerting.</li>
+</ul>
+
+<p>InfluxDB is maintained by a single commercial company following the open-core
+model, offering premium features like closed-source clustering, hosting and
+support. Prometheus is a <a href="/community/">fully open source and independent project</a>, maintained
+by a number of companies and individuals, some of whom also offer commercial
+services and support.</p>
+
+<h2 id="prometheus-vs.-opentsdb">Prometheus vs. OpenTSDB<a class="header-anchor" href="#prometheus-vs-opentsdb" name="prometheus-vs-opentsdb"></a>
+</h2>
+
+<p><a href="http://opentsdb.net/">OpenTSDB</a> is a distributed time series database based on
+<a href="http://hadoop.apache.org/">Hadoop</a> and <a href="http://hbase.apache.org/">HBase</a>.</p>
+
+<h3 id="scope">Scope<a class="header-anchor" href="#scope-1" name="scope-1"></a>
+</h3>
+
+<p>The same scope differences as in the case of
+<a href="/docs/introduction/comparison/#prometheus-vs-graphite">Graphite</a> apply here.</p>
+
+<h3 id="data-model">Data model<a class="header-anchor" href="#data-model-0" name="data-model-0"></a>
+</h3>
+
+<p>OpenTSDB's data model is almost identical to Prometheus's: time series are
+identified by a set of arbitrary key-value pairs (OpenTSDB tags are
+Prometheus labels). All data for a metric is <a href="http://opentsdb.net/docs/build/html/user_guide/writing/index.html#time-series-cardinality">stored together</a>,
+limiting the cardinality of metrics. There are minor differences though: Prometheus allows arbitrary characters in label values, while
+OpenTSDB is more restrictive. OpenTSDB also lacks a full query language,
+only allowing simple aggregation and math via its API.</p>
+
+<h3 id="storage">Storage<a class="header-anchor" href="#storage-0" name="storage-0"></a>
+</h3>
+
+<p><a href="http://opentsdb.net/">OpenTSDB</a>'s storage is implemented on top of
+<a href="http://hadoop.apache.org/">Hadoop</a> and <a href="http://hbase.apache.org/">HBase</a>. This
+means that it is easy to scale OpenTSDB horizontally, but you have to accept
+the overall complexity of running a Hadoop/HBase cluster from the beginning.</p>
+
+<p>Prometheus will be simpler to run initially, but will require explicit sharding
+once the capacity of a single node is exceeded.</p>
+
+<h3 id="summary">Summary<a class="header-anchor" href="#summary-1" name="summary-1"></a>
+</h3>
+
+<p>Prometheus offers a much richer query language, can handle higher cardinality
+metrics, and forms part of a complete monitoring system. If you're already
+running Hadoop and value long term storage over these benefits, OpenTSDB is a
+good choice.</p>
+
+<h2 id="prometheus-vs.-nagios">Prometheus vs. Nagios<a class="header-anchor" href="#prometheus-vs-nagios" name="prometheus-vs-nagios"></a>
+</h2>
+
+<p><a href="https://www.nagios.org/">Nagios</a> is a monitoring system that originated in the
+1990s as NetSaint.</p>
+
+<h3 id="scope">Scope<a class="header-anchor" href="#scope-2" name="scope-2"></a>
+</h3>
+
+<p>Nagios is primarily about alerting based on the exit codes of scripts. These are called “checks”.
+There is silencing of individual alerts, however no grouping, routing or deduplication.</p>
+
+<p>There are a variety of plugins. For example, piping the few kilobytes of
+perfData plugins are allowed to return <a href="https://github.com/shawn-sterling/graphios">to a time series database such as Graphite</a> or using NRPE to <a href="https://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details">run checks on remote machines</a>.</p>
+
+<h3 id="data-model">Data model<a class="header-anchor" href="#data-model-1" name="data-model-1"></a>
+</h3>
+
+<p>Nagios is host-based. Each host can have one or more services and each service can perform one check.</p>
+
+<p>There is no notion of labels or a query language.</p>
+
+<h3 id="storage">Storage<a class="header-anchor" href="#storage-1" name="storage-1"></a>
+</h3>
+
+<p>Nagios has no storage per-se, beyond the current check state.
+There are plugins which can store data such as <a href="https://docs.pnp4nagios.org/">for visualisation</a>.</p>
+
+<h3 id="architecture">Architecture<a class="header-anchor" href="#architecture-0" name="architecture-0"></a>
+</h3>
+
+<p>Nagios servers are standalone. All configuration of checks is via file.</p>
+
+<h3 id="summary">Summary<a class="header-anchor" href="#summary-2" name="summary-2"></a>
+</h3>
+
+<p>Nagios is suitable for basic monitoring of small and/or static systems where
+blackbox probing is sufficient.</p>
+
+<p>If you want to do whitebox monitoring, or have a dynamic or cloud based
+environment, then Prometheus is a good choice.</p>
+
+<h2 id="prometheus-vs.-sensu">Prometheus vs. Sensu<a class="header-anchor" href="#prometheus-vs-sensu" name="prometheus-vs-sensu"></a>
+</h2>
+
+<p><a href="https://sensuapp.org/">Sensu</a> is broadly speaking a more modern Nagios.</p>
+
+<h3 id="scope">Scope<a class="header-anchor" href="#scope-3" name="scope-3"></a>
+</h3>
+
+<p>The same general scope differences as in the case of
+<a href="/docs/introduction/comparison/#prometheus-vs-nagios">Nagios</a> apply here.</p>
+
+<p>The primary difference is that Sensu clients <a href="https://sensuapp.org/docs/0.27/reference/clients.html#what-is-a-sensu-client">register themselves</a>,
+and can determine the checks to run either from central or local configuration.
+Sensu does not have a limit on the amount of perfData.</p>
+
+<p>There is also a <a href="https://sensuapp.org/docs/0.27/reference/clients.html#what-is-the-sensu-client-socket">client socket</a> permitting arbitrary check results to be pushed into Sensu.</p>
+
+<h3 id="data-model">Data model<a class="header-anchor" href="#data-model-2" name="data-model-2"></a>
+</h3>
+
+<p>Sensu has the same rough data model as <a href="/docs/introduction/comparison/#prometheus-vs-nagios">Nagios</a>.</p>
+
+<h3 id="storage">Storage<a class="header-anchor" href="#storage-2" name="storage-2"></a>
+</h3>
+
+<p>Sensu has storage in Redis called stashes. These are used primarily for storing
+silences. It also stores all the clients that have registered with it.</p>
+
+<h3 id="architecture">Architecture<a class="header-anchor" href="#architecture-1" name="architecture-1"></a>
+</h3>
+
+<p>Sensu has a <a href="https://sensuapp.org/docs/0.27/overview/architecture.html">number of components</a>. It uses
+RabbitMQ as a transport, Redis for current state, and a separate server for
+processing.</p>
+
+<p>Both RabbitMQ and Redis can be clustered. Multiple copies of the server can be
+run for scaling and redundancy.</p>
+
+<h3 id="summary">Summary<a class="header-anchor" href="#summary-3" name="summary-3"></a>
+</h3>
+
+<p>If you have an existing Nagios setup that you wish to scale as-is, or want to take advantage of the registration feature of Sensu, then Sensu is a good choice.</p>
+
+<p>If you want to do whitebox monitoring, or have a very dynamic or cloud based
+environment, then Prometheus is a good choice.</p>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2017
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>FAQ | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb74caebabb.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-hand-o-right"></i> <span>Introduction</span></span><ul class="nav active"><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/install/">Installing</a></li><li><a href="/docs/introduction/getting_started/">Getting started</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li class="active"><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <span>Concepts</span></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-search"></i> <span>Querying</span></span><ul class="nav "><li><a href="/docs/querying/basics/">Basics</a></li><li><a href="/docs/querying/operators/">Operators</a></li><li><a href="/docs/querying/functions/">Functions</a></li><li><a href="/docs/querying/examples/">Examples</a></li><li><a href="/docs/querying/rules/">Recording rules</a></li><li><a href="/docs/querying/api/">HTTP API</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <span>Visualization</span></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li><li><a href="/docs/visualization/template_examples/">Template examples</a></li><li><a href="/docs/visualization/template_reference/">Template reference</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <span>Instrumenting</span></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <span>Operating</span></span><ul class="nav "><li><a href="/docs/operating/configuration/">Configuration</a></li><li><a href="/docs/operating/storage/">Storage</a></li><li><a href="/docs/operating/federation/">Federation</a></li><li><a href="/docs/operating/security/">Security</a></li><li><a href="/docs/operating/integrations/">Integrations</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <span>Alerting</span></span><ul class="nav "><li><a href="/docs/alerting/overview/">Alerting overview</a></li><li><a href="/docs/alerting/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/configuration/">Configuration</a></li><li><a href="/docs/alerting/rules/">Alerting rules</a></li><li><a href="/docs/alerting/clients/">Clients</a></li><li><a href="/docs/alerting/notifications/">Notification template reference</a></li><li><a href="/docs/alerting/notification_examples/">Notification template examples</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <span>Best practices</span></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<h1 id="frequently-asked-questions" class="page-header">Frequently Asked Questions<a class="header-anchor" href="#frequently-asked-questions" name="frequently-asked-questions"></a>
+</h1>
+<div class="toc toc-full-width"><ul>
+<li><a href="#general">General
+</a></li>
+<ul>
+<li><a href="#what-is-prometheus?">What is Prometheus?
+</a></li>
+<li><a href="#how-does-prometheus-compare-against-other-monitoring-systems?">How does Prometheus compare against other monitoring systems?
+</a></li>
+<li><a href="#what-dependencies-does-prometheus-have?">What dependencies does Prometheus have?
+</a></li>
+<li><a href="#can-prometheus-be-made-highly-available?">Can Prometheus be made highly available?
+</a></li>
+<li><a href="#i-was-told-prometheus-%E2%80%9Cdoesn't-scale%E2%80%9D.">I was told Prometheus “doesn't scale”.
+</a></li>
+<li><a href="#what-language-is-prometheus-written-in?">What language is Prometheus written in?
+</a></li>
+<li><a href="#how-stable-are-prometheus-features,-storage-formats,-and-apis?">How stable are Prometheus features, storage formats, and APIs?
+</a></li>
+<li><a href="#why-do-you-pull-rather-than-push?">Why do you pull rather than push?
+</a></li>
+<li><a href="#how-to-feed-logs-into-prometheus?">How to feed logs into Prometheus?
+</a></li>
+<li><a href="#who-wrote-prometheus?">Who wrote Prometheus?
+</a></li>
+<li><a href="#what-license-is-prometheus-released-under?">What license is Prometheus released under?
+</a></li>
+<li><a href="#what-is-the-plural-of-prometheus?">What is the plural of Prometheus?
+</a></li>
+<li><a href="#can-i-reload-prometheus's-configuration?">Can I reload Prometheus's configuration?
+</a></li>
+<li><a href="#can-i-send-alerts?">Can I send alerts?
+</a></li>
+<li><a href="#can-i-create-dashboards?">Can I create dashboards?
+</a></li>
+<li><a href="#can-i-change-the-timezone?-why-is-everything-in-utc?">Can I change the timezone? Why is everything in UTC?
+</a></li>
+</ul>
+<li><a href="#instrumentation">Instrumentation
+</a></li>
+<ul>
+<li><a href="#which-languages-have-instrumentation-libraries?">Which languages have instrumentation libraries?
+</a></li>
+<li><a href="#can-i-monitor-machines?">Can I monitor machines?
+</a></li>
+<li><a href="#can-i-monitor-network-devices?">Can I monitor network devices?
+</a></li>
+<li><a href="#can-i-monitor-batch-jobs?">Can I monitor batch jobs?
+</a></li>
+<li><a href="#what-applications-can-prometheus-monitor-out-of-the-box?">What applications can Prometheus monitor out of the box?
+</a></li>
+<li><a href="#can-i-monitor-jvm-applications-via-jmx?">Can I monitor JVM applications via JMX?
+</a></li>
+<li><a href="#what-is-the-performance-impact-of-instrumentation?">What is the performance impact of instrumentation?
+</a></li>
+</ul>
+<li><a href="#troubleshooting">Troubleshooting
+</a></li>
+<ul>
+<li><a href="#my-prometheus-server-takes-a-long-time-to-start-up-and-spams-the-log-with-copious-information-about-crash-recovery.">My Prometheus server takes a long time to start up and spams the log with copious information about crash recovery.
+</a></li>
+<li><a href="#my-prometheus-server-runs-out-of-memory.">My Prometheus server runs out of memory.
+</a></li>
+<li><a href="#my-prometheus-server-reports-to-be-in-%E2%80%9Crushed-mode%E2%80%9D-or-that-%E2%80%9Cstorage-needs-throttling%E2%80%9D.">My Prometheus server reports to be in “rushed mode” or that “storage needs throttling”.
+</a></li>
+</ul>
+<li><a href="#implementation">Implementation
+</a></li>
+<ul>
+<li><a href="#why-are-all-sample-values-64-bit-floats?-i-want-integers.">Why are all sample values 64-bit floats? I want integers.
+</a></li>
+<li><a href="#why-does-prometheus-use-a-custom-storage-backend-rather-than-%5Bsome-other-storage-method%5D?-isn't-the-" one-file-per-time-series>Why does Prometheus use a custom storage backend rather than [some other storage method]? Isn't the "one file per time series" approach killing performance?
+</a></li>
+<li><a href="#why-don't-the-prometheus-server-components-support-tls-or-authentication?-can-i-add-those?">Why don't the Prometheus server components support TLS or authentication? Can I add those?
+</a></li>
+</ul>
+</ul></div>
+
+<h2 id="general">General<a class="header-anchor" href="#general" name="general"></a>
+</h2>
+
+<h3 id="what-is-prometheus?">What is Prometheus?<a class="header-anchor" href="#what-is-prometheus" name="what-is-prometheus"></a>
+</h3>
+
+<p>Prometheus is an open-source systems monitoring and alerting toolkit
+with an active ecosystem. See the <a href="/docs/introduction/overview/">overview</a>.</p>
+
+<h3 id="how-does-prometheus-compare-against-other-monitoring-systems?">How does Prometheus compare against other monitoring systems?<a class="header-anchor" href="#how-does-prometheus-compare-against-other-monitoring-systems" name="how-does-prometheus-compare-against-other-monitoring-systems"></a>
+</h3>
+
+<p>See the <a href="/docs/introduction/comparison/">comparison</a> page.</p>
+
+<h3 id="what-dependencies-does-prometheus-have?">What dependencies does Prometheus have?<a class="header-anchor" href="#what-dependencies-does-prometheus-have" name="what-dependencies-does-prometheus-have"></a>
+</h3>
+
+<p>The main Prometheus server runs standalone and has no external dependencies.</p>
+
+<h3 id="can-prometheus-be-made-highly-available?">Can Prometheus be made highly available?<a class="header-anchor" href="#can-prometheus-be-made-highly-available" name="can-prometheus-be-made-highly-available"></a>
+</h3>
+
+<p>Yes, run identical Prometheus servers on two or more separate machines.
+Identical alerts will be deduplicated by the <a href="https://github.com/prometheus/alertmanager">Alertmanager</a>.</p>
+
+<p>For <a href="https://github.com/prometheus/alertmanager#high-availability">high availability of the Alertmanager</a>,
+you can run multiple instances in a
+<a href="https://github.com/weaveworks/mesh">Mesh cluster</a> and configure the Prometheus
+servers to send notifications to each of them.</p>
+
+<h3 id="i-was-told-prometheus-“doesn't-scale”.">I was told Prometheus “doesn't scale”.<a class="header-anchor" href="#i-was-told-prometheus-doesn-t-scale" name="i-was-told-prometheus-doesn-t-scale"></a>
+</h3>
+
+<p>There are in fact various ways to scale and federate
+Prometheus. Read <a href="https://www.robustperception.io/scaling-and-federating-prometheus/">Scaling and Federating Prometheus</a>
+on the Robust Perception blog to get started.</p>
+
+<h3 id="what-language-is-prometheus-written-in?">What language is Prometheus written in?<a class="header-anchor" href="#what-language-is-prometheus-written-in" name="what-language-is-prometheus-written-in"></a>
+</h3>
+
+<p>Most Prometheus components are written in Go. Some are also written in Java,
+Python, and Ruby.</p>
+
+<h3 id="how-stable-are-prometheus-features,-storage-formats,-and-apis?">How stable are Prometheus features, storage formats, and APIs?<a class="header-anchor" href="#how-stable-are-prometheus-features-storage-formats-and-apis" name="how-stable-are-prometheus-features-storage-formats-and-apis"></a>
+</h3>
+
+<p>All repositories in the Prometheus GitHub organization that have reached
+version 1.0.0 broadly follow
+<a href="http://semver.org/">semantic versioning</a>. Breaking changes are indicated by
+increments of the major version. Exceptions are possible for experimental
+components, which are clearly marked as such in announcements.</p>
+
+<p>Even repositories that have not yet reached version 1.0.0 are, in general, quite
+stable. We aim for a proper release process and an eventual 1.0.0 release for
+each repository. In any case, breaking changes will be pointed out in release
+notes (marked by <code>[CHANGE]</code>) or communicated clearly for components that do not
+have formal releases yet.</p>
+
+<h3 id="why-do-you-pull-rather-than-push?">Why do you pull rather than push?<a class="header-anchor" href="#why-do-you-pull-rather-than-push" name="why-do-you-pull-rather-than-push"></a>
+</h3>
+
+<p>Pulling over HTTP offers a number of advantages:</p>
+
+<ul>
+<li>You can run your monitoring on your laptop when developing changes.</li>
+<li>You can more easily tell if a target is down.</li>
+<li>You can manually go to a target and inspect its health with a web browser.</li>
+</ul>
+
+<p>Overall, we believe that pulling is slightly better than pushing, but it should
+not be considered a major point when considering a monitoring system.</p>
+
+<p>For cases where you must push, we offer the <a href="/docs/instrumenting/pushing/">Pushgateway</a>.</p>
+
+<h3 id="how-to-feed-logs-into-prometheus?">How to feed logs into Prometheus?<a class="header-anchor" href="#how-to-feed-logs-into-prometheus" name="how-to-feed-logs-into-prometheus"></a>
+</h3>
+
+<p>Short answer: Don't! Use something like the <a href="https://www.elastic.co/products">ELK stack</a> instead.</p>
+
+<p>Longer answer: Prometheus is a system to collect and process metrics, not an
+event logging system. The Raintank blog post
+<a href="https://blog.raintank.io/logs-and-metrics-and-graphs-oh-my/">Logs and Metrics and Graphs, Oh My!</a>
+provides more details about the differences between logs and metrics.</p>
+
+<p>If you want to extract Prometheus metrics from application logs, Google's
+<a href="https://github.com/google/mtail">mtail</a> might be helpful.</p>
+
+<h3 id="who-wrote-prometheus?">Who wrote Prometheus?<a class="header-anchor" href="#who-wrote-prometheus" name="who-wrote-prometheus"></a>
+</h3>
+
+<p>Prometheus was initially started privately by
+<a href="http://www.matttproud.com">Matt T. Proud</a> and
+<a href="http://juliusv.com">Julius Volz</a>. The majority of its
+initial development was sponsored by <a href="https://soundcloud.com">SoundCloud</a>.</p>
+
+<p>It's now maintained and extended by a wide range of companies and individuals.</p>
+
+<h3 id="what-license-is-prometheus-released-under?">What license is Prometheus released under?<a class="header-anchor" href="#what-license-is-prometheus-released-under" name="what-license-is-prometheus-released-under"></a>
+</h3>
+
+<p>Prometheus is released under the
+<a href="https://github.com/prometheus/prometheus/blob/master/LICENSE">Apache 2.0</a> license.</p>
+
+<h3 id="what-is-the-plural-of-prometheus?">What is the plural of Prometheus?<a class="header-anchor" href="#what-is-the-plural-of-prometheus" name="what-is-the-plural-of-prometheus"></a>
+</h3>
+
+<p>After <a href="https://youtu.be/B_CDeYrqxjQ">extensive research</a>, it has been determined
+that the correct plural of 'Prometheus' is 'Prometheis'.</p>
+
+<h3 id="can-i-reload-prometheus's-configuration?">Can I reload Prometheus's configuration?<a class="header-anchor" href="#can-i-reload-prometheus-s-configuration" name="can-i-reload-prometheus-s-configuration"></a>
+</h3>
+
+<p>Yes, sending <code>SIGHUP</code> to the Prometheus process or an HTTP POST request to the
+<code>/-/reload</code> endpoint will reload and apply the configuration file. The
+various components attempt to handle failing changes gracefully.</p>
+
+<h3 id="can-i-send-alerts?">Can I send alerts?<a class="header-anchor" href="#can-i-send-alerts" name="can-i-send-alerts"></a>
+</h3>
+
+<p>Yes, with the <a href="https://github.com/prometheus/alertmanager">Alertmanager</a>.</p>
+
+<p>Currently, the following external systems are supported:</p>
+
+<ul>
+<li>Email</li>
+<li>Generic Webhooks</li>
+<li><a href="https://www.hipchat.com/">HipChat</a></li>
+<li><a href="https://www.opsgenie.com/">OpsGenie</a></li>
+<li><a href="http://www.pagerduty.com/">PagerDuty</a></li>
+<li><a href="https://pushover.net/">Pushover</a></li>
+<li><a href="https://slack.com/">Slack</a></li>
+</ul>
+
+<h3 id="can-i-create-dashboards?">Can I create dashboards?<a class="header-anchor" href="#can-i-create-dashboards" name="can-i-create-dashboards"></a>
+</h3>
+
+<p>Yes, we recommend <a href="/docs/visualization/grafana/">Grafana</a> for production
+usage. There are also <a href="/docs/visualization/consoles/">Console templates</a>.</p>
+
+<h3 id="can-i-change-the-timezone?-why-is-everything-in-utc?">Can I change the timezone? Why is everything in UTC?<a class="header-anchor" href="#can-i-change-the-timezone-why-is-everything-in-utc" name="can-i-change-the-timezone-why-is-everything-in-utc"></a>
+</h3>
+
+<p>To avoid any kind of timezone confusion, especially when the so-called
+daylight saving time is involved, we decided to exclusively use Unix
+time internally and UTC for display purposes in all components of
+Prometheus. A carefully done timezone selection could be introduced
+into the UI. Contributions are welcome. See
+<a href="https://github.com/prometheus/prometheus/issues/500">issue #500</a>
+for the current state of this effort.</p>
+
+<h2 id="instrumentation">Instrumentation<a class="header-anchor" href="#instrumentation" name="instrumentation"></a>
+</h2>
+
+<h3 id="which-languages-have-instrumentation-libraries?">Which languages have instrumentation libraries?<a class="header-anchor" href="#which-languages-have-instrumentation-libraries" name="which-languages-have-instrumentation-libraries"></a>
+</h3>
+
+<p>There are a number of client libraries for instrumenting your services with
+Prometheus metrics. See the <a href="/docs/instrumenting/clientlibs/">client libraries</a>
+documentation for details.</p>
+
+<p>If you are interested in contributing a client library for a new language, see
+the <a href="/docs/instrumenting/exposition_formats/">exposition formats</a>.</p>
+
+<h3 id="can-i-monitor-machines?">Can I monitor machines?<a class="header-anchor" href="#can-i-monitor-machines" name="can-i-monitor-machines"></a>
+</h3>
+
+<p>Yes, the <a href="https://github.com/prometheus/node_exporter">Node Exporter</a> exposes
+an extensive set of machine-level metrics on Linux and other Unix systems such
+as CPU usage, memory, disk utilization, filesystem fullness, and network
+bandwidth.</p>
+
+<h3 id="can-i-monitor-network-devices?">Can I monitor network devices?<a class="header-anchor" href="#can-i-monitor-network-devices" name="can-i-monitor-network-devices"></a>
+</h3>
+
+<p>Yes, the <a href="https://github.com/prometheus/snmp_exporter">SNMP Exporter</a> allows
+monitoring of devices that support SNMP.</p>
+
+<h3 id="can-i-monitor-batch-jobs?">Can I monitor batch jobs?<a class="header-anchor" href="#can-i-monitor-batch-jobs" name="can-i-monitor-batch-jobs"></a>
+</h3>
+
+<p>Yes, using the <a href="/docs/instrumenting/pushing/">Pushgateway</a>. See also the
+<a href="/docs/practices/instrumentation/#batch-jobs">best practices</a> for monitoring batch
+jobs.</p>
+
+<h3 id="what-applications-can-prometheus-monitor-out-of-the-box?">What applications can Prometheus monitor out of the box?<a class="header-anchor" href="#what-applications-can-prometheus-monitor-out-of-the-box" name="what-applications-can-prometheus-monitor-out-of-the-box"></a>
+</h3>
+
+<p>See <a href="/docs/instrumenting/exporters/">the list of exporters and integrations</a>.</p>
+
+<h3 id="can-i-monitor-jvm-applications-via-jmx?">Can I monitor JVM applications via JMX?<a class="header-anchor" href="#can-i-monitor-jvm-applications-via-jmx" name="can-i-monitor-jvm-applications-via-jmx"></a>
+</h3>
+
+<p>Yes, for applications that you cannot instrument directly with the Java client, you can use the <a href="https://github.com/prometheus/jmx_exporter">JMX Exporter</a>
+either standalone or as a Java Agent.</p>
+
+<h3 id="what-is-the-performance-impact-of-instrumentation?">What is the performance impact of instrumentation?<a class="header-anchor" href="#what-is-the-performance-impact-of-instrumentation" name="what-is-the-performance-impact-of-instrumentation"></a>
+</h3>
+
+<p>Performance across client libraries and languages may vary. For Java,
+<a href="https://github.com/prometheus/client_java/blob/master/benchmark/README.md">benchmarks</a>
+indicate that incrementing a counter/gauge with the Java client will take
+12-17ns, depending on contention. This is negligible for all but the most
+latency-critical code.</p>
+
+<h2 id="troubleshooting">Troubleshooting<a class="header-anchor" href="#troubleshooting" name="troubleshooting"></a>
+</h2>
+
+<h3 id="my-prometheus-server-takes-a-long-time-to-start-up-and-spams-the-log-with-copious-information-about-crash-recovery.">My Prometheus server takes a long time to start up and spams the log with copious information about crash recovery.<a class="header-anchor" href="#my-prometheus-server-takes-a-long-time-to-start-up-and-spams-the-log-with-copious-information-about-crash-recovery" name="my-prometheus-server-takes-a-long-time-to-start-up-and-spams-the-log-with-copious-information-about-crash-recovery"></a>
+</h3>
+
+<p>You are suffering from an unclean shutdown. Prometheus has to shut down cleanly
+after a <code>SIGTERM</code>, which might take a while for heavily used servers. If the
+server crashes or is killed hard (e.g. OOM kill by the kernel or your runlevel
+system got impatient while waiting for Prometheus to shutdown), a crash
+recovery has to be performed, which should take less than a minute under normal
+circumstances, but can take quite long under certain circumstances. See
+<a href="/docs/operating/storage/#crash-recovery">crash recovery</a> for details.</p>
+
+<h3 id="my-prometheus-server-runs-out-of-memory.">My Prometheus server runs out of memory.<a class="header-anchor" href="#my-prometheus-server-runs-out-of-memory" name="my-prometheus-server-runs-out-of-memory"></a>
+</h3>
+
+<p>See <a href="/docs/operating/storage/#memory-usage">the section about memory usage</a>
+to configure Prometheus for the amount of memory you have available.</p>
+
+<h3 id="my-prometheus-server-reports-to-be-in-“rushed-mode”-or-that-“storage-needs-throttling”.">My Prometheus server reports to be in “rushed mode” or that “storage needs throttling”.<a class="header-anchor" href="#my-prometheus-server-reports-to-be-in-rushed-mode-or-that-storage-needs-throttling" name="my-prometheus-server-reports-to-be-in-rushed-mode-or-that-storage-needs-throttling"></a>
+</h3>
+
+<p>Your storage is under heavy load. Read
+<a href="/docs/operating/storage/">the section about configuring the local storage</a>
+to find out how you can tweak settings for better performance.</p>
+
+<h2 id="implementation">Implementation<a class="header-anchor" href="#implementation" name="implementation"></a>
+</h2>
+
+<h3 id="why-are-all-sample-values-64-bit-floats?-i-want-integers.">Why are all sample values 64-bit floats? I want integers.<a class="header-anchor" href="#why-are-all-sample-values-64-bit-floats-i-want-integers" name="why-are-all-sample-values-64-bit-floats-i-want-integers"></a>
+</h3>
+
+<p>We restrained ourselves to 64-bit floats to simplify the design. The
+<a href="http://en.wikipedia.org/wiki/Double-precision_floating-point_format">IEEE 754 double-precision binary floating-point
+format</a>
+supports integer precision for values up to 2<sup>53</sup>. Supporting
+native 64 bit integers would (only) help if you need integer precision
+above 2<sup>53</sup> but below 2<sup>63</sup>. In principle, support
+for different sample value types (including some kind of big integer,
+supporting even more than 64 bit) could be implemented, but it is not
+a priority right now. A counter, even if incremented one million times per
+second, will only run into precision issues after over 285 years.</p>
+
+<h3 id="why-does-prometheus-use-a-custom-storage-backend-rather-than-[some-other-storage-method]?-isn't-the-&quot;one-file-per-time-series&quot;-approach-killing-performance?">Why does Prometheus use a custom storage backend rather than [some other storage method]? Isn't the "one file per time series" approach killing performance?<a class="header-anchor" href="#why-does-prometheus-use-a-custom-storage-backend-rather-than-some-other-storage-method-isn-t-the-one-file-per-time-series-approach-killing-performance" name="why-does-prometheus-use-a-custom-storage-backend-rather-than-some-other-storage-method-isn-t-the-one-file-per-time-series-approach-killing-performance"></a>
+</h3>
+
+<p>Initially, Prometheus ran completely on LevelDB, but to achieve better
+performance, we had to change the storage for bulk sample data. We evaluated
+many storage backends that were available at the time, without getting
+satisfactory results. So we implemented exactly the parts we needed, while
+keeping LevelDB for indexes and making heavy use of file system
+capabilities. Obviously, we could not evaluate every single storage backend out
+there, and storage backends have evolved meanwhile. However, the performance of
+the solution implemented now is satisfactory for most use-cases. Our most
+important requirements are an acceptable query speed for common queries and a
+sustainable ingestion rate of hundreds of thousands of samples per second. The
+latter depends on many parameters, like the compressibility of the sample data,
+the number of time series the samples belong to, the retention policy, and even
+more subtle aspects like how full your SSD is. If you want to know all the
+details, read
+<a href="https://docs.google.com/document/d/1lRKBaz9oXI5nwFZfvSbPhpwzUbUr3-9qryQGG1C6ULk/edit?usp=sharing">this document with detailed benchmark results</a>. The highlights:</p>
+
+<ul>
+<li><p>On a typical bare-metal server with 64GiB RAM, 32 CPU cores, and SSD,
+Prometheus sustained an ingestion rate of 900k samples per second, belonging
+to 1M time series, scraped from 720 targets.</p></li>
+<li><p>On a server with HDD and 128GiB RAM, Prometheus sustained an ingestion rate
+of 250k samples per second, belonging to 1M time series, scraped from 720
+targets.</p></li>
+</ul>
+
+<p>Running out of inodes is unlikely in a usual set-up. However, if you have a lot
+of short-lived time series, or you have configured your file system with an
+unusual low amount of inodes, you might run into inode depletion. Also, if you
+want to delete Prometheus's storage directory, you will notice that some file
+systems are very slow when deleting a large number of files.</p>
+
+<h3 id="why-don't-the-prometheus-server-components-support-tls-or-authentication?-can-i-add-those?">Why don't the Prometheus server components support TLS or authentication? Can I add those?<a class="header-anchor" href="#why-don-t-the-prometheus-server-components-support-tls-or-authentication-can-i-add-those" name="why-don-t-the-prometheus-server-components-support-tls-or-authentication-can-i-add-those"></a>
+</h3>
+
+<p>While TLS and authentication are frequently requested features, we have
+intentionally not implemented them in any of Prometheus's server-side
+components. There are so many different options and parameters for both (10+
+options for TLS alone) that we have decided to focus on building the best
+monitoring system possible rather than supporting fully generic TLS and
+authentication solutions in every server component.</p>
+
+<p>If you need TLS or authentication, we recommend putting a reverse proxy in
+front of Prometheus. See, for example <a href="https://www.robustperception.io/adding-basic-auth-to-prometheus-with-nginx/">Adding Basic Auth to Prometheus with
+Nginx</a>.</p>
+
+<p>This applies only to inbound connections. Prometheus does support
+<a href="/docs/operating/configuration/#%3Cscrape_config%3E">scraping TLS- and auth-enabled targets</a>, and other
+Prometheus components that create outbound connections have similar support.</p>
+</body></html>
+
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2017
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

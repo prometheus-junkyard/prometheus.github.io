@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57-cbe16921e26.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60-cb34684d423.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72-cb804bd5fae.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76-cb4a7d77a78.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114-cbb4144a5d4.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120-cb24b29faf0.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144-cb590f03c01.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152-cbb45d875fa.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180-cb5da064c37.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32-cb6bc898e38.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192-cbd9b99e56f.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96-cbe466ffcf9.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16-cb02406aa58.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <title>When (not) to use varbit chunks | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.3.1/css/bootstrap.min-cb3ab3438f8.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs-cb74caebabb.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor-cbd4d13cac6.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.2.0/css/font-awesome.min-cbfeda974a7.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,300italic,400' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  
+<div class="row">
+  <div class="col-md-9 blog doc-content">
+    <h1>When (not) to use varbit chunks</h1>
+    <aside>Posted at: May 8, 2016 by Björn “Beorn” Rabenstein</aside>
+    <article class="doc-content">
+      <p>The embedded time serie database (TSDB) of the Prometheus server organizes the
+raw sample data of each time series in chunks of constant 1024 bytes size. In
+addition to the raw sample data, a chunk contains some meta-data, which allows
+the selection of a different encoding for each chunk. The most fundamental
+distinction is the encoding version. You select the version for newly created
+chunks via the command line flag <code>-storage.local.chunk-encoding-version</code>. Up to
+now, there were only two supported versions: 0 for the original delta encoding,
+and 1 for the improved double-delta encoding. With release
+<a href="https://github.com/prometheus/prometheus/releases/tag/0.18.0">0.18.0</a>, we
+added version 2, which is another variety of double-delta encoding. We call it
+<em>varbit encoding</em> because it involves a variable bit-width per sample within
+the chunk. While version 1 is superior to version 0 in almost every aspect,
+there is a real trade-off between version 1 and 2. This blog post will help you
+to make that decision. Version 1 remains the default encoding, so if you want
+to try out version 2 after reading this article, you have to select it
+explicitly via the command line flag. There is no harm in switching back and
+forth, but note that existing chunks will not change their encoding version
+once they have been created. However, these chunks will gradually be phased out
+according to the configured retention time and will thus be replaced by chunks
+with the encoding specified in the command-line flag.</p>
+
+<!-- more -->
+
+<h2 id="what-is-varbit-encoding?">What is varbit encoding?<a class="header-anchor" href="#what-is-varbit-encoding" name="what-is-varbit-encoding"></a>
+</h2>
+
+<p>From the beginning, we designed the chunked sample storage for easy addition of
+new encodings. When Facebook published a
+<a href="http://www.vldb.org/pvldb/vol8/p1816-teller.pdf">paper on their in-memory TSDB Gorilla</a>,
+we were intrigued by a number of similarities between the independently
+developed approaches of Gorilla and Prometheus. However, there were also many
+fundamental differences, which we studied in detail, wondering if we could get
+some inspiration from Gorilla to improve Prometheus.</p>
+
+<p>On the rare occasion of a free weekend ahead of me, I decided to give it a
+try. In a coding spree, I implemented what would later (after a considerable
+amount of testing and debugging) become the varbit encoding.</p>
+
+<p>In a future blog post, I will describe the technical details of the
+encoding. For now, you only need to know a few characteristics for your
+decision between the new varbit encoding and the traditional double-delta
+encoding. (I will call the latter just “double-delta encoding” from now on but
+note that the varbit encoding also uses double deltas, just in a different
+way.)</p>
+
+<h2 id="what-are-the-advantages-of-varbit-encoding?">What are the advantages of varbit encoding?<a class="header-anchor" href="#what-are-the-advantages-of-varbit-encoding" name="what-are-the-advantages-of-varbit-encoding"></a>
+</h2>
+
+<p>In short: It offers a way better compression ratio. While the double-delta
+encoding needs about 3.3 bytes per sample for real-life data sets, the varbit
+encoding went as far down as 1.28 bytes per sample on a typical large
+production server at SoundCloud. That's almost three times more space efficient
+(and even slightly better than the 1.37 bytes per sample reported for Gorilla –
+but take that with a grain of salt as the typical data set at SoundCloud might
+look different from the typical data set at Facebook).</p>
+
+<p>Now think of the implications: Three times more samples in RAM, three times
+more samples on disk, only a third of disk ops, and since disk ops are
+currently the bottleneck for ingestion speed, it will also allow ingestion to
+be three times faster. In fact, the recently reported new ingestion record of
+800,000 samples per second was only possible with varbit chunks – and with an
+SSD, obviously. With spinning disks, the bottleneck is reached far earlier, and
+thus the 3x gain matters even more.</p>
+
+<p>All of this sounds too good to be true…</p>
+
+<h2 id="so-where-is-the-catch?">So where is the catch?<a class="header-anchor" href="#so-where-is-the-catch" name="so-where-is-the-catch"></a>
+</h2>
+
+<p>For one, the varbit encoding is more complex. The computational cost to encode
+and decode values is therefore somewhat increased, which fundamentally affects
+everything that writes or reads sample data. Luckily, it is only a proportional
+increase of something that usually contributes only a small part to the total
+cost of an operation.</p>
+
+<p>Another property of the varbit encoding is potentially way more relevant:
+samples in varbit chunks can only be accessed sequentially, while samples in
+double-delta encoded chunks are randomly accessible by index. Since writes in
+Prometheus are append-only, the different access patterns only affect reading
+of sample data. The practical impact depends heavily on the nature of the
+originating PromQL query.</p>
+
+<p>A pretty harmless case is the retrieval of all samples within a time
+interval. This happens when evaluating a range selector or rendering a
+dashboard with a resolution similar to the scrape frequency. The Prometheus
+storage engine needs to find the starting point of the interval. With
+double-delta chunks, it can perform a binary search, while it has to scan
+sequentially through a varbit chunk. However, once the starting point is found,
+all remaining samples in the interval need to be decoded sequentially anyway,
+which is only slightly more expensive with the varbit encoding.</p>
+
+<p>The trade-off is different for retrieving a small number of non-adjacent
+samples from a chunk, or for plainly retrieving a single sample in a so-called
+instant query. Potentially, the storage engine has to iterate through a lot of
+samples to find the few samples to be returned. Fortunately, the most common
+source of instant queries are rule evaluations referring to the latest sample
+in each involved time series. Not completely by coincidence, I recently
+improved the retrieval of the latest sample of a time series. Essentially, the
+last sample added to a time series is cached now. A query that needs only the
+most recent sample of a time series doesn't even hit the chunk layer anymore,
+and the chunk encoding is irrelevant in that case.</p>
+
+<p>Even if an instant query refers to a sample in the past and therefore has to
+hit the chunk layer, most likely other parts of the query, like the index
+lookup, will dominate the total query time. But there are real-life queries
+where the sequential access pattern required by varbit chunks will start to
+matter a lot.</p>
+
+<h2 id="what-is-the-worst-case-query-for-varbit-chunks?">What is the worst-case query for varbit chunks?<a class="header-anchor" href="#what-is-the-worst-case-query-for-varbit-chunks" name="what-is-the-worst-case-query-for-varbit-chunks"></a>
+</h2>
+
+<p>The worst case for varbit chunks is if you need just one sample from somewhere
+in the middle of <em>each</em> chunk of a very long time series. Unfortunately, there
+is a real use-case for that. Let's assume a time series compresses nicely
+enough to make each chunk last for about eight hours. That's about three chunks
+a day, or about 100 chunks a month. If you have a dashboard that displays the
+time series in question for the last month with a resolution of 100 data
+points, the dashboard will execute a query that retrieves a single sample from
+100 different chunks. Even then, the differences between chunk encodings will
+be dominated by other parts of the query execution time. Depending on
+circumstances, my guess would be that the query might take 50ms with
+double-delta encoding and 100ms with varbit encoding.</p>
+
+<p>However, if your dashboard query doesn't only touch a single time series but
+aggregates over thousands of time series, the number of chunks to access
+multiplies accordingly, and the overhead of the sequential scan will become
+dominant. (Such queries are frowned upon, and we usually recommend to use a
+<a href="https://prometheus.io/docs/querying/rules/#recording-rules">recording rule</a>
+for queries of that kind that are used frequently, e.g. in a dashboard.)  But
+with the double-delta encoding, the query time might still have been
+acceptable, let's say around one second. After the switch to varbit encoding,
+the same query might last tens of seconds, which is clearly not what you want
+for a dashboard.</p>
+
+<h2 id="what-are-the-rules-of-thumb?">What are the rules of thumb?<a class="header-anchor" href="#what-are-the-rules-of-thumb" name="what-are-the-rules-of-thumb"></a>
+</h2>
+
+<p>To put it as simply as possible: If you are neither limited on disk capacity
+nor on disk ops, don't worry and stick with the default of the classical
+double-delta encoding.</p>
+
+<p>However, if you would like a longer retention time or if you are currently
+bottle-necked on disk ops, I invite you to play with the new varbit
+encoding. Start your Prometheus server with
+<code>-storage.local.chunk-encoding-version=2</code> and wait for a while until you have
+enough new chunks with varbit encoding to vet the effects. If you see queries
+that are becoming unacceptably slow, check if you can use
+<a href="https://prometheus.io/docs/querying/rules/#recording-rules">recording rules</a>
+to speed them up. Most likely, those queries will gain a lot from that even
+with the old double-delta encoding.</p>
+
+<p>If you are interested in how the varbit encoding works behind the scenes, stay
+tuned for another blog post in the not too distant future.</p>
+
+    <article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'prometheus-blog';
+     
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+
+  <div class="col-md-3 side-nav-col">
+  <ul class="nav navbar-nav side-nav">
+    <li>
+      <span class="nav-header">Blog posts</span>
+      <ul class="nav active">
+      
+        <li><a href="/blog/2017/09/04/promcon-2017-recap/">PromCon 2017 Recap</a></li>
+      
+        <li><a href="/blog/2017/06/21/prometheus-20-alpha3-new-rule-format/">Prometheus 2.0 Alpha.3 with New Rule Format</a></li>
+      
+        <li><a href="/blog/2017/06/14/interview-with-latelier-animation/">Interview with L’Atelier Animation</a></li>
+      
+        <li><a href="/blog/2017/05/17/interview-with-iadvize/">Interview with iAdvize</a></li>
+      
+        <li><a href="/blog/2017/04/10/promehteus-20-sneak-peak/">Sneak Peak of Prometheus 2.0</a></li>
+      
+        <li><a href="/blog/2017/04/06/interview-with-europace/">Interview with Europace</a></li>
+      
+        <li><a href="/blog/2017/02/20/interview-with-weaveworks/">Interview with Weaveworks</a></li>
+      
+        <li><a href="/blog/2016/11/16/interview-with-canonical/">Interview with Canonical</a></li>
+      
+        <li><a href="/blog/2016/10/12/interview-with-justwatch/">Interview with JustWatch</a></li>
+      
+        <li><a href="/blog/2016/09/21/interview-with-compose/">Interview with Compose</a></li>
+      
+        <li><a href="/blog/2016/09/14/interview-with-digitalocean/">Interview with DigitalOcean</a></li>
+      
+        <li><a href="/blog/2016/09/07/interview-with-shuttlecloud/">Interview with ShuttleCloud</a></li>
+      
+        <li><a href="/blog/2016/09/04/promcon-2016-its-a-wrap/">PromCon 2016 - It's a wrap!</a></li>
+      
+        <li><a href="/blog/2016/07/23/pull-does-not-scale-or-does-it/">Pull doesn't scale - or does it?</a></li>
+      
+        <li><a href="/blog/2016/07/18/prometheus-1-0-released/">Prometheus reaches 1.0</a></li>
+      
+        <li><a href="/blog/2016/05/09/prometheus-to-join-the-cloud-native-computing-foundation/">Prometheus to Join the Cloud Native Computing Foundation</a></li>
+      
+        <li><a href="/blog/2016/05/08/when-to-use-varbit-chunks/">When (not) to use varbit chunks</a></li>
+      
+        <li><a href="/blog/2016/05/01/interview-with-showmax/">Interview with ShowMax</a></li>
+      
+        <li><a href="/blog/2016/03/23/interview-with-life360/">Interview with Life360</a></li>
+      
+        <li><a href="/blog/2016/03/03/custom-alertmanager-templates/">Custom Alertmanager Templates</a></li>
+      
+        <li><a href="/blog/2016/01/26/one-year-of-open-prometheus-development/">One Year of Open Prometheus Development</a></li>
+      
+        <li><a href="/blog/2015/08/17/service-discovery-with-etcd/">Custom service discovery with etcd</a></li>
+      
+        <li><a href="/blog/2015/06/24/monitoring-dreamhack/">Monitoring DreamHack - the World's Largest Digital Festival</a></li>
+      
+        <li><a href="/blog/2015/06/18/practical-anomaly-detection/">Practical Anomaly Detection</a></li>
+      
+        <li><a href="/blog/2015/06/01/advanced-service-discovery/">Advanced Service Discovery in Prometheus 0.14.0</a></li>
+      
+        <li><a href="/blog/2015/04/24/prometheus-monitring-spreads-through-the-internet/">Prometheus Monitoring Spreads through the Internet</a></li>
+      
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</div>
+
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    &copy; Prometheus Authors 2017
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.3.1/js/bootstrap.min-cb2616d3564.js"></script>
+    <script src="/assets/docs-cb53fb1bfd3.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround-cbb5a0dd7ce.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
+
